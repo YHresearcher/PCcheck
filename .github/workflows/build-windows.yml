@@ -1,6 +1,6 @@
-# Build Test Máy An Tâm trên máy chủ Windows của GitHub, không cần máy Windows ở nhà.
+# Build An Tâm PC test trên máy chủ Windows của GitHub, không cần máy Windows ở nhà.
 # Cách dùng: push repo này lên GitHub, vào tab Actions, chọn workflow này, bấm Run workflow,
-# chờ build xong, tải artifact "TestMayAnTam-portable" về, giải nén ra USB là chạy được trên máy Windows.
+# chờ build xong, tải artifact "AnTamPCtest-portable" về, giải nén ra USB là chạy được trên máy Windows.
 # Chạy tự động mỗi lần push lên main (để push bằng deploy key cũng tự build được,
 # không cần gọi API workflow_dispatch), và vẫn bấm tay chạy lại được khi cần.
 name: Build Windows portable
@@ -38,6 +38,6 @@ jobs:
       - name: Đóng gói portable làm artifact
         uses: actions/upload-artifact@v4
         with:
-          name: TestMayAnTam-portable
+          name: AnTamPCtest-portable
           path: publish/**
           if-no-files-found: error

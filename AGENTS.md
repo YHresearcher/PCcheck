@@ -1,8 +1,8 @@
-# GHI CHÚ BẢN DỊCH TIẾNG VIỆT (Test Máy An Tâm v0.0.4-VN) — đọc trước
+# GHI CHÚ BẢN DỊCH TIẾNG VIỆT (An Tâm PC test v0.0.4-VN) — đọc trước
 # Đây là bản fork dịch giao diện sang tiếng Việt từ BibaYanji gốc, giữ nguyên bản quyền MIT của Bibapcs.
-# Thay đổi so với bản gốc: (1) chữ hiện ra cho người dùng đã sang tiếng Việt, tên app thành "Test Máy An Tâm",
-# nhà phát hành thành "Vi Tính An Tâm"; (2) trình cài đặt ra file TestMayAnTamSetup-v0.0.4-VN.exe, cài vào
-# {autopf}\TestMayAnTam, nhưng tên file exe chính vẫn giữ nguyên 验机软件.exe; (3) tên file kết quả đo ổ đổi thành
+# Thay đổi so với bản gốc: (1) chữ hiện ra cho người dùng đã sang tiếng Việt, tên app thành "An Tâm PC test",
+# nhà phát hành thành "Vi Tính An Tâm"; (2) trình cài đặt ra file AnTamPCtestSetup-v0.0.4-VN.exe, cài vào
+# {autopf}\AnTamPCtest, nhưng tên file exe chính vẫn giữ nguyên 验机软件.exe; (3) tên file kết quả đo ổ đổi thành
 # KetQuaDoO.json và LichSuDoO.csv trong %APPDATA%\YanJi\disk_result; (4) KHÔNG tích hợp phần mềm thương mại
 # đóng nguồn nào (ví dụ HWiNFO) vào code này, theo quy tắc gốc; (5) dòng ghi công bài nhạc test ở trang
 # Camera - Mic - Loa giữ nguyên văn bản gốc, không được đổi, theo quy tắc gốc; (6) giao diện thương hiệu An Tâm:

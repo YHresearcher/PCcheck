@@ -1,6 +1,6 @@
 ; 笔吧验机 安装向导脚本（Inno Setup 6，中文界面）
 ; 构建："%ProgramFiles(x86)%\Inno Setup 6\ISCC.exe" installer\setup.iss
-; 源 = publish\ 整目录（self-contained 便携包）；产物 = installer\TestMayAnTamSetup-v0.0.4-VN.exe (bản dịch tiếng Việt, tên file exe chính vẫn giữ nguyên 验机软件.exe)
+; 源 = publish\ 整目录（self-contained 便携包）；产物 = installer\AnTamPCtestSetup-v0.0.4-VN.exe (bản dịch tiếng Việt, tên file exe chính vẫn giữ nguyên 验机软件.exe)
 ; 注意：OutputBaseFilename 不能含多余的点（"Setup-0.0.2" 的 ".0" 会被 Inno 当扩展名剥掉），用 v0.0.2 形式
 ;
 ; 插件化结构：主程序 = 验机软件.exe + 运行时 + YanJi.PluginSdk.dll（组件 main，固定必装）；
@@ -20,19 +20,19 @@
 #endif
 
 [Setup]
-AppName=Test Máy An Tâm
+AppName=An Tâm PC test
 AppVersion=0.0.4
-AppVerName=Test Máy An Tâm 0.0.4
+AppVerName=An Tâm PC test 0.0.4
 AppPublisher=Vi Tính An Tâm
 ; 只面向 x64 Windows（self-contained win-x64），且装到 C:\Program Files（而非 (x86)）
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
-; 默认目录用纯英文 TestMayAnTam：规避外部组件/CLI 对中文路径的兼容问题
-DefaultDirName={autopf}\TestMayAnTam
-DefaultGroupName=Test Máy An Tâm
+; 默认目录用纯英文 AnTamPCtest：规避外部组件/CLI 对中文路径的兼容问题
+DefaultDirName={autopf}\AnTamPCtest
+DefaultGroupName=An Tâm PC test
 PrivilegesRequired=admin
 OutputDir=.
-OutputBaseFilename=TestMayAnTamSetup-v0.0.4-VN
+OutputBaseFilename=AnTamPCtestSetup-v0.0.4-VN
 Compression=lzma2/max
 SolidCompression=yes
 ; 块级并行压缩：多线程各压一块（压缩率略降）；独立 64 位压缩进程，规避 32 位编译器内存上限
@@ -40,9 +40,9 @@ LZMANumBlockThreads={#BlockThreads}
 LZMAUseSeparateProcess=yes
 VersionInfoVersion=0.0.4.0
 VersionInfoCompany=Vi Tính An Tâm
-VersionInfoDescription=Test Máy An Tâm - Trình cài đặt
-VersionInfoProductName=Test Máy An Tâm
-UninstallDisplayName=Test Máy An Tâm
+VersionInfoDescription=An Tâm PC test - Trình cài đặt
+VersionInfoProductName=An Tâm PC test
+UninstallDisplayName=An Tâm PC test
 ; 安装/卸载程序 exe 的图标 = 主程序同款 app.ico
 SetupIconFile=..\验机软件\app.ico
 WizardStyle=modern
@@ -86,9 +86,9 @@ Source: "..\publish\plugins\disk\*"; DestDir: "{app}\plugins\disk"; Components: 
 Source: "..\publish\Tools\*"; DestDir: "{app}\Tools"; Components: stress; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
-Name: "{group}\Test Máy An Tâm"; Filename: "{app}\验机软件.exe"; Check: WizardIsTaskSelected('startmenu')
-Name: "{group}\Gỡ cài đặt Test Máy An Tâm"; Filename: "{uninstallexe}"; Check: WizardIsTaskSelected('startmenu')
-Name: "{commondesktop}\Test Máy An Tâm"; Filename: "{app}\验机软件.exe"; Check: WizardIsTaskSelected('desktopicon')
+Name: "{group}\An Tâm PC test"; Filename: "{app}\验机软件.exe"; Check: WizardIsTaskSelected('startmenu')
+Name: "{group}\Gỡ cài đặt An Tâm PC test"; Filename: "{uninstallexe}"; Check: WizardIsTaskSelected('startmenu')
+Name: "{commondesktop}\An Tâm PC test"; Filename: "{app}\验机软件.exe"; Check: WizardIsTaskSelected('desktopicon')
 
 ; 安装末尾自动安装 PawnIO 内核驱动（默认勾选的附加任务）。
 ; 必须 -install -silent：只传 -install 时其安装器会弹版权确认窗（已实测）——
@@ -131,12 +131,12 @@ var
 begin
   DeleteUserData := True; { 静默卸载/异常路径下的默认值 }
   Form := CreateCustomForm(ScaleX(420), ScaleY(150), False, True);
-  Form.Caption := 'Gỡ cài đặt Test Máy An Tâm';
+  Form.Caption := 'Gỡ cài đặt An Tâm PC test';
   Form.Position := poScreenCenter;
 
   Lbl := TNewStaticText.Create(Form);
   Lbl.Parent := Form;
-  Lbl.Caption := 'Sắp gỡ cài đặt Test Máy An Tâm. Có xóa luôn dữ liệu người dùng mà phần mềm đã lưu không?';
+  Lbl.Caption := 'Sắp gỡ cài đặt An Tâm PC test. Có xóa luôn dữ liệu người dùng mà phần mềm đã lưu không?';
   Lbl.Left := ScaleX(16);
   Lbl.Top := ScaleY(12);
   Lbl.Width := Form.ClientWidth - ScaleX(32);

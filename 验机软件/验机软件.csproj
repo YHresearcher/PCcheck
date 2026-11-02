@@ -12,7 +12,7 @@
     <AssemblyName>验机软件</AssemblyName>
     <RootNamespace>YanJi</RootNamespace>
     <Version>0.0.1</Version>
-    <Product>Test Máy An Tâm</Product>
+    <Product>An Tâm PC test</Product>
     <Description>Test máy Vi Tính An Tâm：đối chiếu cấu hình, test bàn phím, màn hình, camera - mic - loa, tản nhiệt, đo tốc độ ổ.</Description>
   </PropertyGroup>
 

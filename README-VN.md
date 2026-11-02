@@ -1,4 +1,4 @@
-# Test Máy An Tâm — bản dịch tiếng Việt từ BibaYanji
+# An Tâm PC test — bản dịch tiếng Việt từ BibaYanji
 
 Đây là bản dịch tiếng Việt từ BibaYanji của Bibapcs, tool test máy trước khi bán.
 Mã gốc theo giấy phép MIT, bản quyền gốc của Bibapcs vẫn giữ nguyên, file LICENSE
@@ -11,7 +11,7 @@ giữ nguyên các file LICENSE kèm theo, đừng xóa.
 
 Bản này đã dịch toàn bộ chữ hiện ra cho người dùng sang tiếng Việt, gồm:
 
-- Khung chính: tiêu đề "Test Máy An Tâm", dòng thông tin Vi Tính An Tâm ở
+- Khung chính: tiêu đề "An Tâm PC test", dòng thông tin Vi Tính An Tâm ở
   top bar, quản lý module, nút và thông báo.
 - 6 module: **Đối chiếu cấu hình**, **Test bàn phím**, **Test điểm chết màn
   hình**, **Camera - Mic - Loa**, **Test tản nhiệt**, **Đo tốc độ ổ**.
@@ -92,8 +92,8 @@ Muốn đóng gói trình cài đặt thì chạy tiếp bằng Inno Setup 6:
 "%ProgramFiles(x86)%\Inno Setup 6\ISCC.exe" installer\setup.iss
 ```
 
-File cài đặt thu được là `TestMayAnTamSetup-v0.0.4-VN.exe` trong thư mục
-`installer`, cài mặc định vào `{autopf}\TestMayAnTam`.
+File cài đặt thu được là `AnTamPCtestSetup-v0.0.4-VN.exe` trong thư mục
+`installer`, cài mặc định vào `{autopf}\AnTamPCtest`.
 
 ## Chạy portable từ USB
 
