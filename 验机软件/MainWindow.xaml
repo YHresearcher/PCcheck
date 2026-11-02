@@ -4,22 +4,31 @@
         Title="Test Máy An Tâm" Width="980" Height="720"
         MinWidth="880" MinHeight="640"
         Background="{DynamicResource WindowBgBrush}"
-        FontFamily="Microsoft YaHei UI, Segoe UI"
+        FontFamily="Segoe UI, Microsoft YaHei UI"
         TextElement.Foreground="{DynamicResource TextBrush}">
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="3"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- ═══ 顶栏：应用名 + 右侧 插件管理 + 主题开关 ═══ -->
-        <Border Grid.Row="0" Background="{DynamicResource SubtleBgBrush}"
+        <!-- ═══ Dải cam thương hiệu An Tâm trên cùng ═══ -->
+        <Border Grid.Row="0" Background="{DynamicResource AccentBrush}"/>
+
+        <!-- ═══ 顶栏：logo + 应用名 + 右侧 插件管理 + 主题开关 ═══ -->
+        <Border Grid.Row="1" Background="{DynamicResource SubtleBgBrush}"
                 BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1"
                 Padding="14,8">
             <Grid>
-                <StackPanel VerticalAlignment="Center">
-                    <TextBlock Text="Test Máy An Tâm" FontSize="14" FontWeight="SemiBold"/>
-                    <TextBlock Text="Vi Tính An Tâm • Máy bán ra đã kiểm tra toàn bộ, bảo hành 6 tháng" FontSize="10" Foreground="{DynamicResource TextSecondaryBrush}"/>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <Image Source="pack://application:,,,/Assets/logo-antam.png"
+                           Width="36" Height="36" Margin="0,0,10,0"
+                           RenderOptions.BitmapScalingMode="HighQuality"/>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="Test Máy An Tâm" FontSize="14" FontWeight="SemiBold"/>
+                        <TextBlock Text="Vi Tính An Tâm • Máy bán ra đã kiểm tra toàn bộ, bảo hành 6 tháng" FontSize="10" Foreground="{DynamicResource TextSecondaryBrush}"/>
+                    </StackPanel>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
                     <Button Content="Quản lý Module" Click="OnPluginManagerClick" Padding="12,4" Margin="0,0,12,0"
@@ -34,7 +43,7 @@
         </Border>
 
         <!-- ═══ 主区：左导航 + 内容 ═══ -->
-        <Grid Grid.Row="1">
+        <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="200"/>
                 <ColumnDefinition Width="*"/>
@@ -55,6 +64,9 @@
                     <TextBlock DockPanel.Dock="Bottom" x:Name="AllDoneHint" Text="🎉 Đã kiểm tra xong tất cả hạng mục"
                                Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11"
                                TextWrapping="Wrap" Margin="12,4,12,10" Visibility="Collapsed"/>
+                    <TextBlock DockPanel.Dock="Bottom" Text="Vi Tính An Tâm • vitinhantam.com"
+                               Foreground="{DynamicResource TextSecondaryBrush}" FontSize="10"
+                               TextWrapping="Wrap" Margin="12,4,12,10"/>
                     <ListBox x:Name="NavList" SelectionChanged="OnNavSelect" Margin="4,0,4,4"/>
                 </DockPanel>
             </Border>

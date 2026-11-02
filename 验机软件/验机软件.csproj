@@ -12,8 +12,8 @@
     <AssemblyName>验机软件</AssemblyName>
     <RootNamespace>YanJi</RootNamespace>
     <Version>0.0.1</Version>
-    <Product>笔记本电脑验机</Product>
-    <Description>笔吧验机：主程序外壳 + plugins/ 插件模块（配置核对/键盘测试/屏幕坏点/影音会议/散热测试/验机结束）</Description>
+    <Product>Test Máy An Tâm</Product>
+    <Description>Test máy Vi Tính An Tâm：đối chiếu cấu hình, test bàn phím, màn hình, camera - mic - loa, tản nhiệt, đo tốc độ ổ.</Description>
   </PropertyGroup>
 
   <ItemGroup>
@@ -106,6 +106,8 @@
 
   <ItemGroup>
     <Resource Include="app.ico" />
+    <!-- Logo thương hiệu An Tâm：nhúng vào exe, MainWindow top bar dùng pack URI Assets/logo-antam.png -->
+    <Resource Include="Assets\logo-antam.png" />
     <!-- 烤机工具负载：Tools/prime95/（手工放入的 prime95.exe）与 Tools/furmark/（FurMark 工程构建后自动拷贝）
          与 Tools/pawnio/，整体随输出拷贝到 exe 同级 Tools/ 下（散热测试插件按 AppContext.BaseDirectory 定位） -->
     <None Update="Tools\**\*" CopyToOutputDirectory="PreserveNewest" />

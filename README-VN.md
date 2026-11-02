@@ -42,6 +42,30 @@ Còn sót lại, cố tình giữ nguyên hoặc chưa dịch được, xem kỹ
 - An Tâm bán máy đã qua sử dụng đã test kỹ, **không phải tiệm sửa máy**.
   An Tâm **không có showroom bán lẻ**, không nhận máy ngoài vào sửa.
 
+## Giao diện thương hiệu An Tâm
+
+- Màu cam logo: **#ED740C** (đo trực tiếp từ file logo gốc, 2000×2000 PNG
+  nền trong suốt). Logo nằm ở `验机软件/Assets/logo-antam.png`, nhúng vào
+  exe, hiện ở top bar bên trái tên app.
+- Top bar có dải cam 3px trên cùng, cuối thanh điều hướng trái có dòng
+  "Vi Tính An Tâm • vitinhantam.com".
+- Icon app và icon trình cài đặt là logo An Tâm, tạo từ chính file logo
+  trên (`验机软件/app.ico`, đủ 16/32/48/64/128/256px, nền trong suốt).
+  Icon cũ vẫn còn trong lịch sử git nếu cần khôi phục.
+- Hai theme đều dùng cam, chỉ đổi sắc độ cho đủ tương phản, không đổi
+  tên hay số lượng token trong `Themes/Light.xaml` và `Themes/Dark.xaml`:
+  - Sáng (dùng ban ngày): nền trắng, nền phụ #FFF6EC, cam #D95E00,
+    hover #C25200, mục đang chọn #FFE7CC.
+  - Tối (giao diện thương hiệu chính, nền gần đen như logo trình bày):
+    nền #111111, nền phụ #262626, cam đúng #ED740C, hover #F5861F,
+    mục đang chọn #3D2A1A.
+- Vì toàn bộ control đều dùng DynamicResource trỏ vào token theme nên
+  đổi 2 file theme là toàn bộ app (khung chính + 6 module + cửa sổ quản
+  lý module) đổi màu theo, không cần sửa từng trang. Màu đỏ lỗi giữ
+  nguyên #C42B1C / #FF6B5E, không dùng cam cho lỗi để khỏi nhầm.
+- Font chính đổi thứ tự thành "Segoe UI, Microsoft YaHei UI" cho chữ
+  tiếng Việt có dấu hiển thị đúng; font Consolas ở các ô log giữ nguyên.
+
 ## Build trên máy Windows có .NET SDK 10 — và nếu đang xài Mac thì sao
 
 Nếu đang xài Mac, đọc file `Huong_dan_build_tren_Mac.md` trong gói này

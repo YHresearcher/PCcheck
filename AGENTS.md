@@ -5,7 +5,10 @@
 # {autopf}\TestMayAnTam, nhưng tên file exe chính vẫn giữ nguyên 验机软件.exe; (3) tên file kết quả đo ổ đổi thành
 # KetQuaDoO.json và LichSuDoO.csv trong %APPDATA%\YanJi\disk_result; (4) KHÔNG tích hợp phần mềm thương mại
 # đóng nguồn nào (ví dụ HWiNFO) vào code này, theo quy tắc gốc; (5) dòng ghi công bài nhạc test ở trang
-# Camera - Mic - Loa giữ nguyên văn bản gốc, không được đổi, theo quy tắc gốc. Phần còn lại của file này vẫn là
+# Camera - Mic - Loa giữ nguyên văn bản gốc, không được đổi, theo quy tắc gốc; (6) giao diện thương hiệu An Tâm:
+# logo #ED740C ở 验机软件/Assets/logo-antam.png + app.ico, theme Light/Dark dùng cam An Tâm (sáng #D95E00,
+# tối #ED740C), dải cam top bar + logo top bar + footer vitinhantam.com, token theme giữ nguyên 18 khóa hai bên.
+# Phần còn lại của file này vẫn là
 # tài liệu gốc bằng tiếng Trung, chưa dịch, dùng để tham khảo kỹ thuật.
 
 # AGENTS.md — 笔吧验机

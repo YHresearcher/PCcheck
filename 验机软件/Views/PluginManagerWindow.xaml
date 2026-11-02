@@ -4,7 +4,7 @@
         Title="Quản lý Module" Width="600" Height="440" MinWidth="520" MinHeight="360"
         WindowStartupLocation="CenterOwner"
         Background="{DynamicResource WindowBgBrush}"
-        FontFamily="Microsoft YaHei UI, Segoe UI"
+        FontFamily="Segoe UI, Microsoft YaHei UI"
         TextElement.Foreground="{DynamicResource TextBrush}">
     <Grid Margin="16">
         <Grid.RowDefinitions>
