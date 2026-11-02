@@ -55,7 +55,7 @@ Name: "chinesesimplified"; MessagesFile: "compiler:Languages\ChineseSimplified.i
 Name: "full"; Description: "Cài đặt đầy đủ"
 Name: "custom"; Description: "Cài đặt tùy chọn"; Flags: iscustom
 
-; 可选组件：主程序固定必装；六个验机模块插件逐项可选（默认全勾）
+; 可选组件：主程序固定必装；七个验机模块插件逐项可选（默认全勾）
 [Components]
 Name: "main"; Description: "Chương trình chính (bắt buộc)"; Types: full custom; Flags: fixed
 Name: "config"; Description: "Đối chiếu cấu hình (CPU/card màn hình/RAM/ổ/card mạng/màn hình/pin)"; Types: full
@@ -63,6 +63,7 @@ Name: "keyboard"; Description: "Kiểm tra bàn phím (hiển thị 104 phím)";
 Name: "screen"; Description: "Điểm chết màn hình (soi toàn màn hình bằng màu trơn)"; Types: full
 Name: "av"; Description: "Âm thanh - hình ảnh cho họp (camera/micro/loa)"; Types: full
 Name: "stress"; Description: "Kiểm tra tản nhiệt (nướng CPU/GPU/cả hai + theo dõi cảm biến, gồm tool prime95/FurMark)"; Types: full
+Name: "ports"; Description: "Cổng kết nối & Sạc (quét cổng WMI + test sạc 10 giây + tick tay cổng vật lý)"; Types: full
 Name: "disk"; Description: "Đo tốc độ ổ (tích hợp mã nguồn CrystalDiskMark, 4 bài SEQ1M/RND4K)"; Types: full
 
 ; 附加任务默认都勾选（用户可取消）：桌面快捷方式 / 开始菜单项 / PawnIO 驱动
@@ -81,6 +82,7 @@ Source: "..\publish\plugins\keyboard\*"; DestDir: "{app}\plugins\keyboard"; Comp
 Source: "..\publish\plugins\screen\*"; DestDir: "{app}\plugins\screen"; Components: screen; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "..\publish\plugins\av\*"; DestDir: "{app}\plugins\av"; Components: av; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "..\publish\plugins\stress\*"; DestDir: "{app}\plugins\stress"; Components: stress; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "..\publish\plugins\ports\*"; DestDir: "{app}\plugins\ports"; Components: ports; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "..\publish\plugins\disk\*"; DestDir: "{app}\plugins\disk"; Components: disk; Flags: ignoreversion recursesubdirs createallsubdirs
 ; 烤机工具负载只有散热测试用：随 stress 组件安装（不勾散热可省约 130MB）
 Source: "..\publish\Tools\*"; DestDir: "{app}\Tools"; Components: stress; Flags: ignoreversion recursesubdirs createallsubdirs

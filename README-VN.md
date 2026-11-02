@@ -13,8 +13,9 @@ Bản này đã dịch toàn bộ chữ hiện ra cho người dùng sang tiến
 
 - Khung chính: tiêu đề "An Tâm PC test", dòng thông tin Vi Tính An Tâm ở
   top bar, quản lý module, nút và thông báo.
-- 6 module: **Đối chiếu cấu hình**, **Test bàn phím**, **Test điểm chết màn
-  hình**, **Camera - Mic - Loa**, **Test tản nhiệt**, **Đo tốc độ ổ**.
+- 7 module: **Đối chiếu cấu hình**, **Test bàn phím**, **Test điểm chết màn
+  hình**, **Camera - Mic - Loa**, **Test tản nhiệt**, **Cổng kết nối & Sạc**,
+  **Đo tốc độ ổ**.
 - Trình cài đặt: tên app, nhà phát hành, thư mục cài đặt, mô tả các component
   và nhiệm vụ thêm, hộp thoại gỡ cài đặt đã sang tiếng Việt.
 
@@ -32,6 +33,41 @@ Còn sót lại, cố tình giữ nguyên hoặc chưa dịch được, xem kỹ
   dùng cuối không thấy.
 - Tên file kết quả đo ổ đã đổi sang tiếng Việt: `KetQuaDoO.json` và
   `LichSuDoO.csv` trong `%APPDATA%\YanJi\disk_result`.
+
+## Module Cổng kết nối & Sạc (mới — port từ Tanxe Studio, MIT)
+
+- Nguồn: laptop-diagnostic-tool của Tanxe Studio (giấy phép MIT), các hàm
+  Get-ChargerInfo / Test-AdapterHealth và phần phát hiện cổng trong
+  FinalDiagnostic_v15.ps1, port sang C# thành plugin `ports` (thứ tự 60,
+  giữa Test tản nhiệt và Đo tốc độ ổ). Ghi công hiển thị trong cửa sổ
+  Quản lý Module, theo đúng cơ chế Credits của app.
+- Cách dùng: vào trang, app tự quét cổng + ảnh chụp nhanh sạc. Cắm sạc rồi
+  bấm "Test sạc (10 giây)": app lấy mẫu điện áp + công suất mỗi giây trong
+  10 giây, tính điện áp trung bình / thấp / cao, độ ổn định, công suất trung
+  bình, dòng sạc, công suất định mức ước tính, mức pin đầu / cuối, rồi cho
+  điểm sức khỏe sạc theo đúng ngưỡng bản gốc (<3% dao động Xuất sắc,
+  <5% Tốt, <10% Trung bình, còn lại Kém; không sạc mà pin <99% trừ 50 điểm;
+  ≥85 Xuất sắc, ≥70 Tốt, ≥50 Trung bình, còn lại Kém).
+- Chưa test sạc (máy có pin) hoặc sạc đánh giá Kém thì nút cho qua không
+  cho qua — thay sạc rồi test lại. Máy bàn không có pin thì bỏ qua phần sạc.
+- Điện áp hiển thị là điện áp ở đầu pin, KHÔNG phải điện áp ra của củ sạc
+  (thường 19-20 V, hệ thống không đo trực tiếp được) — trang ghi rõ điều này.
+- Phần cổng tự động chỉ báo những gì hệ thống thật sự nhìn thấy: số USB
+  controller / root hub, thiết bị USB-C / Thunderbolt theo tên, dấu hiệu
+  USB-C PD, card mạng có dây, kết nối màn hình hiện tại. Cổng vật lý trên vỏ
+  (HDMI, VGA, RJ45, USB-A, USB-C, đầu sạc) thì kỹ thuật viên kiểm tra bằng
+  mắt và tick tay ở cuối trang.
+- Những chỗ đã sửa so với bản gốc, cố tình không copy nguyên (chi tiết trong
+  đầu file `Plugins/PortAdapter/PortAdapterService.cs`): bản gốc coi
+  Win32_Battery mã 2 là đã cắm sạc (thực ra 2 = Unknown) — bản này dùng
+  PowerOnline làm căn cứ chính; bản gốc tính mức pin từ thuộc tính
+  MaxCapacity không tồn tại nên luôn ra 0 — bản này lấy dung lượng sạc đầy
+  từ BatteryFullChargedCapacity; bản gốc ước tính công suất rơi về 65 W khi
+  vượt mức lớn nhất — bản này trả "330 W trở lên"; bản gốc ĐOÁN số cổng USB
+  từ số root hub và ĐOÁN có HDMI từ đời CPU / tên máy rồi mặc định luôn là
+  có — bản này không đoán, chuyển sang tick tay.
+- Chưa build / chạy thử trên Windows thật — phải chạy thử trên 1 máy
+  Windows có pin trước khi đưa cho kỹ thuật viên, giống mọi module khác.
 
 ## Vi Tính An Tâm
 

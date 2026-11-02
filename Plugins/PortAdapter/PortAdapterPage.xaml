@@ -1,0 +1,74 @@
+<UserControl x:Class="YanJi.Plugin.PortAdapter.PortAdapterPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="16">
+            <!-- Trạng thái: qua thì xanh lá (theo quy ước các module khác) -->
+            <StackPanel Orientation="Horizontal" Margin="0,4">
+                <TextBlock Text="Trạng thái test:" FontWeight="SemiBold"/>
+                <TextBlock x:Name="StatusText" Text="Chưa test" Margin="8,0,0,0"
+                           Foreground="{DynamicResource TextSecondaryBrush}"/>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Margin="0,8" VerticalAlignment="Center">
+                <Button x:Name="RescanButton" Content="Quét lại cổng" Click="RescanButton_Click"
+                        Padding="12,4" Margin="0,3,8,3"
+                        ToolTip="Quét lại cổng tự động + ảnh chụp nhanh sạc; quét lại sẽ hủy trạng thái đã cho qua"/>
+                <Button x:Name="AdapterTestButton" Content="Test sạc (10 giây)" Click="AdapterTestButton_Click"
+                        FontSize="14" FontWeight="SemiBold" Padding="16,7" Margin="0,3,8,3"
+                        ToolTip="Cắm sạc rồi bấm: app lấy mẫu điện áp + công suất mỗi giây trong 10 giây, giống bản gốc của Tanxe Studio"/>
+                <Button x:Name="PassButton" Content="Xác nhận không lỗi, cho qua" Click="PassButton_Click"
+                        Margin="0,3,2,3"
+                        ToolTip="Chỉ bấm khi sạc đã test và không có lỗi, và đã tick xong các cổng kiểm tra bằng mắt ở dưới"/>
+            </StackPanel>
+
+            <TextBlock x:Name="TestingHint" Text="" Foreground="{DynamicResource AccentBrush}" Margin="0,0,0,4"/>
+
+            <!-- ═══ Sạc / Adapter ═══ -->
+            <TextBlock Text="Sạc / Adapter" FontSize="13" FontWeight="SemiBold" Margin="0,8,0,4"/>
+            <TextBlock x:Name="AdapterStatusText" Text="Trạng thái sạc: chưa quét" TextWrapping="Wrap" Margin="0,2"/>
+            <TextBlock x:Name="AdapterInstantText" Text="Ảnh chụp nhanh: chưa quét" TextWrapping="Wrap" Margin="0,2"/>
+            <TextBlock x:Name="AdapterVoltageText" Text="Điện áp pin: chưa test 10 giây" TextWrapping="Wrap" Margin="0,2"/>
+            <TextBlock x:Name="AdapterPowerText" Text="Công suất sạc: chưa test 10 giây" TextWrapping="Wrap" Margin="0,2"/>
+            <TextBlock x:Name="AdapterBatteryText" Text="Mức pin: chưa test 10 giây" TextWrapping="Wrap" Margin="0,2"/>
+            <TextBlock x:Name="AdapterHealthText" Text="Đánh giá sạc: chưa test 10 giây" TextWrapping="Wrap" Margin="0,2"/>
+            <TextBlock x:Name="AdapterIssuesText" Text="" TextWrapping="Wrap" Margin="0,2"
+                       Foreground="{DynamicResource ErrorBrush}"/>
+            <TextBlock TextWrapping="Wrap" Foreground="{DynamicResource TextSecondaryBrush}" LineHeight="20" Margin="0,4">
+Lưu ý quan trọng: điện áp hiển thị ở đây là điện áp ở đầu pin, KHÔNG phải điện áp ra của củ sạc
+(thường 19-20 V, hệ thống không đo trực tiếp được). Đánh giá "Kém" thì không cho qua — thay sạc
+rồi test lại. Máy bàn không có pin thì bỏ qua phần sạc, chỉ test cổng.
+            </TextBlock>
+
+            <!-- ═══ Cổng phát hiện tự động ═══ -->
+            <TextBlock Text="Cổng kết nối — phát hiện tự động" FontSize="13" FontWeight="SemiBold" Margin="0,8,0,4"/>
+            <TextBlock x:Name="UsbControllersText" Text="USB controller: chưa quét" TextWrapping="Wrap" Margin="0,2"/>
+            <TextBlock x:Name="RootHubsText" Text="USB root hub: chưa quét" TextWrapping="Wrap" Margin="0,2"/>
+            <TextBlock x:Name="UsbCText" Text="Thiết bị USB-C / Thunderbolt: chưa quét" TextWrapping="Wrap" Margin="0,2"/>
+            <TextBlock x:Name="UsbPdText" Text="Dấu hiệu USB-C PD: chưa quét" TextWrapping="Wrap" Margin="0,2"/>
+            <TextBlock x:Name="EthernetText" Text="Card mạng có dây: chưa quét" TextWrapping="Wrap" Margin="0,2"/>
+            <TextBlock x:Name="MonitorText" Text="Kết nối màn hình hiện tại: chưa quét" TextWrapping="Wrap" Margin="0,2"/>
+            <TextBlock TextWrapping="Wrap" Foreground="{DynamicResource TextSecondaryBrush}" LineHeight="20" Margin="0,4">
+Phần tự động này chỉ báo những gì hệ thống thật sự nhìn thấy. Số cổng USB trên vỏ máy và việc
+máy có cổng HDMI / RJ45 hay không KHÔNG đo chính xác được từ hệ thống, nên không đoán —
+kỹ thuật viên kiểm tra bằng mắt ở phần dưới và tick tay.
+            </TextBlock>
+
+            <!-- ═══ Kiểm tra bằng mắt ═══ -->
+            <TextBlock Text="Cổng kết nối — kiểm tra bằng mắt (tick tay)" FontSize="13" FontWeight="SemiBold" Margin="0,8,0,4"/>
+            <CheckBox x:Name="ChkHdmi" Content="HDMI: có cổng, cắm thử lên màn hình nhận tín hiệu" Margin="0,2"/>
+            <CheckBox x:Name="ChkVga" Content="VGA: có cổng (máy đời cũ), cắm thử nhận tín hiệu — máy không có thì bỏ qua" Margin="0,2"/>
+            <CheckBox x:Name="ChkRj45" Content="RJ45 / LAN: có cổng, cắm dây mạng nhận kết nối" Margin="0,2"/>
+            <CheckBox x:Name="ChkUsbA" Content="USB-A: cắm thử 1 thiết bị (chuột / USB) nhận đủ các cổng" Margin="0,2"/>
+            <CheckBox x:Name="ChkUsbC" Content="USB-C: cắm thử nhận thiết bị / sạc qua USB-C (nếu máy hỗ trợ)" Margin="0,2"/>
+            <CheckBox x:Name="ChkChargerPlug" Content="Sạc: đầu cắm chắc, không lỏng, đèn sạc sáng" Margin="0,2"/>
+
+            <!-- Nhật ký -->
+            <TextBlock Text="Nhật ký" FontSize="13" FontWeight="SemiBold" Margin="0,12,0,4"/>
+            <Border CornerRadius="6" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+                <TextBox x:Name="LogBox" IsReadOnly="True" FontFamily="Consolas" FontSize="11"
+                         Height="120" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" AcceptsReturn="True"/>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

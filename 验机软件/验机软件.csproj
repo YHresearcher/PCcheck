@@ -52,6 +52,8 @@
              Properties="Configuration=$(Configuration)" RemoveProperties="RuntimeIdentifier;SelfContained" />
     <MSBuild Projects="..\Plugins\StressTest\YanJi.Plugin.StressTest.csproj" Targets="Build"
              Properties="Configuration=$(Configuration)" RemoveProperties="RuntimeIdentifier;SelfContained" />
+    <MSBuild Projects="..\Plugins\PortAdapter\YanJi.Plugin.PortAdapter.csproj" Targets="Build"
+             Properties="Configuration=$(Configuration)" RemoveProperties="RuntimeIdentifier;SelfContained" />
     <MSBuild Projects="..\Plugins\DiskMark\YanJi.Plugin.DiskMark.csproj" Targets="Build"
              Properties="Configuration=$(Configuration)" RemoveProperties="RuntimeIdentifier;SelfContained" />
   </Target>
@@ -64,6 +66,7 @@
       <_PluginScreenFiles Include="..\Plugins\ScreenDeadPixel\bin\$(Configuration)\net10.0-windows10.0.19041.0\**\*" />
       <_PluginAvFiles Include="..\Plugins\AvConference\bin\$(Configuration)\net10.0-windows10.0.19041.0\**\*" />
       <_PluginStressFiles Include="..\Plugins\StressTest\bin\$(Configuration)\net10.0-windows10.0.19041.0\**\*" />
+      <_PluginPortFiles Include="..\Plugins\PortAdapter\bin\$(Configuration)\net10.0-windows10.0.19041.0\**\*" />
       <_PluginDiskFiles Include="..\Plugins\DiskMark\bin\$(Configuration)\net10.0-windows10.0.19041.0\**\*" />
     </ItemGroup>
     <Copy SourceFiles="@(_PluginConfigFiles)" SkipUnchangedFiles="true"
@@ -76,6 +79,8 @@
           DestinationFiles="@(_PluginAvFiles->'$(OutDir)plugins\av\%(RecursiveDir)%(Filename)%(Extension)')" />
     <Copy SourceFiles="@(_PluginStressFiles)" SkipUnchangedFiles="true"
           DestinationFiles="@(_PluginStressFiles->'$(OutDir)plugins\stress\%(RecursiveDir)%(Filename)%(Extension)')" />
+    <Copy SourceFiles="@(_PluginPortFiles)" SkipUnchangedFiles="true"
+          DestinationFiles="@(_PluginPortFiles->'$(OutDir)plugins\ports\%(RecursiveDir)%(Filename)%(Extension)')" />
     <Copy SourceFiles="@(_PluginDiskFiles)" SkipUnchangedFiles="true"
           DestinationFiles="@(_PluginDiskFiles->'$(OutDir)plugins\disk\%(RecursiveDir)%(Filename)%(Extension)')" />
   </Target>
@@ -88,6 +93,7 @@
       <_PubScreen Include="..\Plugins\ScreenDeadPixel\bin\$(Configuration)\net10.0-windows10.0.19041.0\**\*" />
       <_PubAv Include="..\Plugins\AvConference\bin\$(Configuration)\net10.0-windows10.0.19041.0\**\*" />
       <_PubStress Include="..\Plugins\StressTest\bin\$(Configuration)\net10.0-windows10.0.19041.0\**\*" />
+      <_PubPorts Include="..\Plugins\PortAdapter\bin\$(Configuration)\net10.0-windows10.0.19041.0\**\*" />
       <_PubDisk Include="..\Plugins\DiskMark\bin\$(Configuration)\net10.0-windows10.0.19041.0\**\*" />
     </ItemGroup>
     <Copy SourceFiles="@(_PubConfig)" SkipUnchangedFiles="true"
@@ -100,6 +106,8 @@
           DestinationFiles="@(_PubAv->'$(PublishDir)plugins\av\%(RecursiveDir)%(Filename)%(Extension)')" />
     <Copy SourceFiles="@(_PubStress)" SkipUnchangedFiles="true"
           DestinationFiles="@(_PubStress->'$(PublishDir)plugins\stress\%(RecursiveDir)%(Filename)%(Extension)')" />
+    <Copy SourceFiles="@(_PubPorts)" SkipUnchangedFiles="true"
+          DestinationFiles="@(_PubPorts->'$(PublishDir)plugins\ports\%(RecursiveDir)%(Filename)%(Extension)')" />
     <Copy SourceFiles="@(_PubDisk)" SkipUnchangedFiles="true"
           DestinationFiles="@(_PubDisk->'$(PublishDir)plugins\disk\%(RecursiveDir)%(Filename)%(Extension)')" />
   </Target>
