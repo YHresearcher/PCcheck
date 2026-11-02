@@ -15,7 +15,11 @@
 # (8) kết luận ổ tự động (module Đối chiếu cấu hình, HardwareInfoService.DriveVerdict):
 # ≥90% ĐẠT, 70-89% CẢNH BÁO (cho qua được, ghi điều kiện), <70% hoặc NVMe 0E >0 CHẶN
 # (ConfigCheckPage chặn nút cho qua khi HardwareReport.DriveBlockReasons không rỗng),
-# SMART không đọc được = Không rõ (không tự cho là tốt, không chặn cứng).
+# SMART không đọc được = Không rõ (không tự cho là tốt, không chặn cứng);
+# (9) splash screen (Views/SplashWindow, 480x400, logo 120px + "An Tâm PC test" + Vi Tính An Tâm +
+# slogan bảo hành 6 tháng + địa chỉ/website + thanh tiến trình): App.xaml bỏ tự tạo MainWindow,
+# App.OnStartup hiện splash trước, tạo MainWindow (tải 7 module), đóng splash sau khi MainWindow
+# Loaded và đủ tối thiểu 1,5 giây, rồi Activate MainWindow; màu splash theo token theme, không màu trực tiếp.
 # Phần còn lại của file này vẫn là
 # tài liệu gốc bằng tiếng Trung, chưa dịch, dùng để tham khảo kỹ thuật.
 

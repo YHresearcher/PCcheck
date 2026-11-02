@@ -1,0 +1,40 @@
+<Window x:Class="YanJi.Views.SplashWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="An Tâm PC test" Width="480" Height="400"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        WindowStartupLocation="CenterScreen" ResizeMode="NoResize"
+        ShowInTaskbar="False" Topmost="True"
+        FontFamily="Segoe UI, Microsoft YaHei UI"
+        TextElement.Foreground="{DynamicResource TextBrush}">
+    <!-- Màn hình chờ khởi động: logo + thương hiệu An Tâm. Màu theo theme hiện tại
+         (tối = nền xám đậm, sáng = nền kem ấm) qua token, không viết màu trực tiếp;
+         logo cam #ED740C nổi trên cả hai nền. Cửa sổ tự đóng khi MainWindow đã tải
+         xong (xem App.xaml.cs), không cần bấm gì. -->
+    <Border Background="{DynamicResource SubtleBgBrush}"
+            BorderBrush="{DynamicResource AccentBrush}" BorderThickness="1"
+            CornerRadius="16" Padding="24">
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Image Source="pack://application:,,,/Assets/logo-antam.png"
+                   Width="120" Height="120" Margin="0,0,0,12"
+                   RenderOptions.BitmapScalingMode="HighQuality"/>
+            <TextBlock Text="An Tâm PC test" FontSize="28" FontWeight="Bold"
+                       HorizontalAlignment="Center"/>
+            <TextBlock Text="Vi Tính An Tâm" FontSize="15" FontWeight="SemiBold"
+                       Foreground="{DynamicResource AccentBrush}"
+                       HorizontalAlignment="Center" Margin="0,4,0,0"/>
+            <TextBlock Text="Máy bán ra đã kiểm tra toàn bộ, bảo hành 6 tháng"
+                       FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}"
+                       HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center"
+                       Margin="0,4,0,0"/>
+            <TextBlock Text="52 Nguyễn Cửu Vân, phường Long An, tỉnh Tây Ninh • vitinhantam.com"
+                       FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}"
+                       HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center"
+                       Margin="0,8,0,0"/>
+            <ProgressBar IsIndeterminate="True" Width="200" Height="6" Margin="0,16,0,0"/>
+            <TextBlock Text="Đang khởi động..." FontSize="11"
+                       Foreground="{DynamicResource TextSecondaryBrush}"
+                       HorizontalAlignment="Center" Margin="0,8,0,0"/>
+        </StackPanel>
+    </Border>
+</Window>

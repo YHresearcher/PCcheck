@@ -69,6 +69,19 @@ Còn sót lại, cố tình giữ nguyên hoặc chưa dịch được, xem kỹ
 - Chưa build / chạy thử trên Windows thật — phải chạy thử trên 1 máy
   Windows có pin trước khi đưa cho kỹ thuật viên, giống mọi module khác.
 
+## Splash screen (mới)
+
+- Mở app lên là thấy màn hình chờ 480×400 ở giữa màn hình, không có viền
+  cửa sổ, không hiện trên taskbar: logo An Tâm 120px, tên **"An Tâm PC test"**,
+  dòng **"Vi Tính An Tâm"** màu cam, slogan "Máy bán ra đã kiểm tra toàn bộ,
+  bảo hành 6 tháng", địa chỉ shop + vitinhantam.com, và thanh "Đang khởi động...".
+- Splash hiện trong lúc app tải 7 module, tự đóng khi cửa sổ chính đã tải
+  xong và đủ tối thiểu 1,5 giây (máy nhanh cũng không bị chớp tắt), rồi
+  chuyển focus sang cửa sổ chính. Không cần bấm gì để tắt.
+- Màu splash theo theme đang dùng (tối = nền xám đậm, sáng = nền kem ấm),
+  logo cam nổi trên cả hai nền. Khởi động lại app (sau khi nhập / xóa module)
+  cũng hiện lại splash này.
+
 ## Kết luận tự động cho ổ (mới — module Đối chiếu cấu hình)
 
 - Mỗi ổ trong nhóm "Ổ" giờ có thêm dòng **"Kết luận ổ"**, tính từ đúng số
