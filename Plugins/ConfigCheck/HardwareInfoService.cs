@@ -31,7 +31,7 @@ public static class HardwareInfoService
         progress?.Report(new(2, total, "RAM"));
         report.Groups.Add(SafeGroup("RAM", g => CollectMemory(g, lhm)));
         progress?.Report(new(3, total, "Ổ"));
-        report.Groups.Add(SafeGroup("Ổ", g => CollectDisks(g, lhm)));
+        report.Groups.Add(SafeGroup("Ổ", g => CollectDisks(g, lhm, report)));
         progress?.Report(new(4, total, "Card mạng"));
         report.Groups.Add(SafeGroup("Card mạng", CollectNics));
         progress?.Report(new(5, total, "Màn hình"));
@@ -252,10 +252,12 @@ public static class HardwareInfoService
 
     // ═══ 硬盘 ═══
 
-    static void CollectDisks(InfoGroup g, LhmService.Snapshot lhm)
+    static void CollectDisks(InfoGroup g, LhmService.Snapshot lhm, HardwareReport report)
     {
         // 每块盘四行：容量　(盘符)　型号（一行；盘符可多个，无盘符不显示括号）+ 健康度 + 通电时间
         // + 0E 介质与数据完整性错误（SMART，拿不到显示「未知」）；盘变多行后恢复盘间空行（与 GPU/屏幕一致）
+        // + 一行「Kết luận ổ」tự động（见 DriveVerdict：≥90% ĐẠT，70-89% CẢNH BÁO，
+        // &lt;70% 或 0E &gt;0 CHẶN，SMART không đọc được thì Không rõ — không tự cho là tốt）。
         if (lhm.Disks.Count > 0)
         {
             // 盘符按物理盘号关联：LHM StorageDeviceNumber = Windows 物理盘号 = Win32_DiskDrive.Index；
@@ -273,6 +275,7 @@ public static class HardwareInfoService
                 g.Add("Sức khỏe" + tag, d.HealthPercent is int hp ? $"{hp} %" : "Không rõ");
                 g.Add("Thời gian đã chạy" + tag, FormatHours(d.PowerOnHours));
                 g.Add("Lỗi toàn vẹn dữ liệu" + tag, d.MediaErrors is long me ? $"{me} lần" : "Không rõ");
+                g.Add("Kết luận ổ" + tag, DriveVerdict(d.HealthPercent, d.MediaErrors, report, tag));
             }
             return;
         }
@@ -294,7 +297,39 @@ public static class HardwareInfoService
             g.Add("Sức khỏe" + tag, "Không rõ");
             g.Add("Thời gian đã chạy" + tag, "Không rõ");
             g.Add("Lỗi toàn vẹn dữ liệu" + tag, "Không rõ");
+            g.Add("Kết luận ổ" + tag, DriveVerdict(null, null, report, tag));
         }
+    }
+
+    /// <summary>Kết luận tự động cho 1 ổ, theo ngưỡng shop đã chốt (2026-11-03):
+    /// sức khỏe ≥90% = ĐẠT (bán nguyên trạng); 70-89% = CẢNH BÁO (tối đa bán có
+    /// điều kiện); &lt;70% hoặc lỗi toàn vẹn dữ liệu NVMe 0E &gt;0 = CHẶN (thay ổ rồi
+    /// kiểm tra lại, trang Đối chiếu cấu hình chặn nút cho qua khi có ổ bị chặn);
+    /// SMART không đọc được = Không rõ (kiểm tra tay bằng CrystalDiskInfo, không
+    /// tự cho là tốt, cũng không chặn cứng vì có máy SMART vốn không đọc được qua
+    /// kênh này — nhưng tuyệt đối không được báo là ĐẠT). 0E chỉ có ý nghĩa với
+    /// NVMe (SATA truyền null vào đây, không bị chặn oan).</summary>
+    static string DriveVerdict(int? health, long? mediaErrors, HardwareReport report, string tag)
+    {
+        if (mediaErrors is > 0)
+        {
+            report.DriveBlockReasons.Add($"Ổ{tag} lỗi toàn vẹn dữ liệu {mediaErrors} lần (bình thường phải 0)");
+            return $"CHẶN — lỗi toàn vẹn dữ liệu {mediaErrors} lần, thay ổ rồi kiểm tra lại";
+        }
+        if (health is < 70)
+        {
+            report.DriveBlockReasons.Add($"Ổ{tag} sức khỏe {health}% (<70%)");
+            return $"CHẶN — sức khỏe {health}% (<70%), thay ổ rồi kiểm tra lại";
+        }
+        if (health is < 90)
+        {
+            report.HasDriveWarning = true;
+            return $"CẢNH BÁO — sức khỏe {health}% (<90%), tối đa bán có điều kiện";
+        }
+        if (health != null)
+            return $"ĐẠT — sức khỏe {health}% (≥90%), bán nguyên trạng";
+        report.HasDriveUnknown = true;
+        return "Không rõ — kiểm tra tay bằng CrystalDiskInfo, chưa đủ dữ liệu để kết luận (không tự cho là tốt)";
     }
 
     /// <summary>盘符列表 → 「　(C: D:)」片段；null 或空列表返回空串（不显示括号）。</summary>

@@ -19,4 +19,13 @@ public class HardwareReport
 {
     public DateTime CollectedAt { get; } = DateTime.Now;
     public List<InfoGroup> Groups { get; } = [];
+    /// <summary>Kết luận ổ tự động: ổ nào bị CHẶN (sức khỏe &lt;70% hoặc lỗi toàn vẹn
+    /// dữ liệu NVMe 0E &gt;0) thì liệt kê lý do ở đây; rỗng = không có ổ bị chặn.
+    /// Trang Đối chiếu cấu hình chặn nút cho qua khi danh sách này không rỗng.</summary>
+    public List<string> DriveBlockReasons { get; } = [];
+    /// <summary>Có ổ ở mức CẢNH BÁO (sức khỏe 70-89%): cho qua được nhưng tối đa bán có điều kiện.</summary>
+    public bool HasDriveWarning { get; set; }
+    /// <summary>Có ổ chưa rõ sức khỏe (SMART đọc không được): cho qua được nhưng phải
+    /// kiểm tra tay bằng CrystalDiskInfo trước khi bán, không tự cho là tốt.</summary>
+    public bool HasDriveUnknown { get; set; }
 }

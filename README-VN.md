@@ -69,6 +69,26 @@ Còn sót lại, cố tình giữ nguyên hoặc chưa dịch được, xem kỹ
 - Chưa build / chạy thử trên Windows thật — phải chạy thử trên 1 máy
   Windows có pin trước khi đưa cho kỹ thuật viên, giống mọi module khác.
 
+## Kết luận tự động cho ổ (mới — module Đối chiếu cấu hình)
+
+- Mỗi ổ trong nhóm "Ổ" giờ có thêm dòng **"Kết luận ổ"**, tính từ đúng số
+  SMART đã hiển thị sẵn (không cần đọc thêm gì):
+  - Sức khỏe ≥90%: **ĐẠT — bán nguyên trạng**.
+  - Sức khỏe 70-89%: **CẢNH BÁO — tối đa bán có điều kiện**. Vẫn cho qua
+    module Đối chiếu cấu hình được, nhưng dòng PhaseText ghi rõ điều kiện.
+  - Sức khỏe <70% hoặc lỗi toàn vẹn dữ liệu NVMe 0E > 0: **CHẶN — thay ổ
+    rồi kiểm tra lại**. Nút "Xác nhận đúng, cho qua" bị chặn, bấm vào chỉ
+    hiện lý do, không chuyển xanh. Thay ổ xong bấm "Kiểm tra lại" để quét
+    lại từ đầu. Máy có nhiều ổ thì chỉ cần 1 ổ bị chặn là cả module không
+    cho qua, vì bán máy kèm ổ hỏng là bán hàng lỗi.
+  - SMART không đọc được: **Không rõ — kiểm tra tay bằng CrystalDiskInfo,
+    chưa đủ dữ liệu để kết luận**. Không tự cho là tốt, nhưng cũng không
+    chặn cứng (có máy SMART vốn không đọc được qua kênh này) — kỹ thuật
+    viên phải kiểm tra tay trước khi bán.
+- Ngưỡng này là ngưỡng shop đã chốt ngày 2026-11-03 (không phải ngưỡng
+  nháp cũ chưa duyệt). Lỗi 0E chỉ áp dụng cho NVMe, ổ SATA không bị chặn
+  oan vì mục này.
+
 ## Vi Tính An Tâm
 
 - Địa chỉ: 52 Nguyễn Cửu Vân, phường Long An, tỉnh Tây Ninh

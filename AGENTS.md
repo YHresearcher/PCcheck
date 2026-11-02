@@ -11,7 +11,11 @@
 # (7) module mới "Cổng kết nối & Sạc" (Plugins/PortAdapter, id=ports, order=60): port từ Tanxe Studio
 # laptop-diagnostic-tool (MIT, ghi công trong Credits của plugin + README-VN), test sạc 10 giây + quét cổng WMI
 # + tick tay cổng vật lý; đã sửa 4 lỗi/đoán của bản gốc (BatteryStatus 2, MaxCapacity, ước tính 65 W,
-# đoán cổng USB/HDMI) — chi tiết ở đầu PortAdapterService.cs, không được "sửa lại cho giống gốc".
+# đoán cổng USB/HDMI) — chi tiết ở đầu PortAdapterService.cs, không được "sửa lại cho giống gốc";
+# (8) kết luận ổ tự động (module Đối chiếu cấu hình, HardwareInfoService.DriveVerdict):
+# ≥90% ĐẠT, 70-89% CẢNH BÁO (cho qua được, ghi điều kiện), <70% hoặc NVMe 0E >0 CHẶN
+# (ConfigCheckPage chặn nút cho qua khi HardwareReport.DriveBlockReasons không rỗng),
+# SMART không đọc được = Không rõ (không tự cho là tốt, không chặn cứng).
 # Phần còn lại của file này vẫn là
 # tài liệu gốc bằng tiếng Trung, chưa dịch, dùng để tham khảo kỹ thuật.
 
