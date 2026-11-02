@@ -1,0 +1,9 @@
+{
+  "id": "disk",
+  "name": "Đo tốc độ ổ",
+  "version": "1.0.1",
+  "order": 80,
+  "terminal": false,
+  "entryAssembly": "YanJi.Plugin.DiskMark.dll",
+  "entryType": "YanJi.Plugin.DiskMark.DiskMarkPlugin"
+}

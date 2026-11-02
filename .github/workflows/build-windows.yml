@@ -1,0 +1,43 @@
+# Build Test Máy An Tâm trên máy chủ Windows của GitHub, không cần máy Windows ở nhà.
+# Cách dùng: push repo này lên GitHub, vào tab Actions, chọn workflow này, bấm Run workflow,
+# chờ build xong, tải artifact "TestMayAnTam-portable" về, giải nén ra USB là chạy được trên máy Windows.
+# Chạy tự động mỗi lần push lên main (để push bằng deploy key cũng tự build được,
+# không cần gọi API workflow_dispatch), và vẫn bấm tay chạy lại được khi cần.
+name: Build Windows portable
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Lấy mã nguồn
+        uses: actions/checkout@v4
+
+      - name: Cài .NET SDK 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Publish FurMark trước (đúng thứ tự, không đổi)
+        run: dotnet publish FurMark/FurMark.csproj -p:PublishProfile=FolderProfile
+
+      - name: Publish app chính
+        # Thư mục 验机软件 giữ nguyên tên gốc, vì đổi tên sẽ làm hỏng đường dẫn trong solution và csproj.
+        run: dotnet publish "验机软件/验机软件.csproj" -p:PublishProfile=FolderProfile
+
+      - name: Liệt kê thư mục publish
+        run: Get-ChildItem publish | Select-Object Name, Length
+
+      - name: Đóng gói portable làm artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: TestMayAnTam-portable
+          path: publish/**
+          if-no-files-found: error

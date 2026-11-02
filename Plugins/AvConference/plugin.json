@@ -1,0 +1,9 @@
+{
+  "id": "av",
+  "name": "Camera - Mic - Loa",
+  "version": "1.0.0",
+  "order": 40,
+  "terminal": false,
+  "entryAssembly": "YanJi.Plugin.AvConference.dll",
+  "entryType": "YanJi.Plugin.AvConference.AvConferencePlugin"
+}

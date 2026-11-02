@@ -1,0 +1,9 @@
+{
+  "id": "config",
+  "name": "Đối chiếu cấu hình",
+  "version": "1.0.0",
+  "order": 10,
+  "terminal": false,
+  "entryAssembly": "YanJi.Plugin.ConfigCheck.dll",
+  "entryType": "YanJi.Plugin.ConfigCheck.ConfigCheckPlugin"
+}
