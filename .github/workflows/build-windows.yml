@@ -25,6 +25,9 @@ jobs:
         with:
           dotnet-version: "10.0.x"
 
+      - name: Restore toàn bộ solution (bao gồm các plugin build bằng MSBuild target)
+        run: dotnet restore "验机软件.slnx"
+
       - name: Publish FurMark trước (đúng thứ tự, không đổi)
         run: dotnet publish FurMark/FurMark.csproj -p:PublishProfile=FolderProfile
 
