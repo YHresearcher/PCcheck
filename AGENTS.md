@@ -705,3 +705,19 @@ public interface IHostContext                       // 宿主注入 CreatePage
 # không bin/obj/publish/.vs, không file untracked, git status sạch; 2 thư mục
 # nguồn lớn (集成开源项目代码 = LibreHardwareMonitor + Prime95 master) là mã nguồn
 # công cụ, không xóa khi chưa rõ còn cần build lại không.
+
+# (42) README VIẾT LẠI + THÊM HÌNH ẢNH (2026-11-03, chưa test Windows):
+# User muốn viết lại README và cho hình ảnh vào cho đẹp. README.md viết lại toàn
+# bộ theo hiện trạng app (không còn "7 module", không còn nút "Đổi cách nói", không
+# còn slogan cũ trên Splash, installer đổi thành v1.1.0): logo An Tâm căn giữa đầu
+# file (lấy từ 验机软件/Assets/logo-antam.png, đường dẫn tương đối trong repo),
+# 4 badge (build Actions, License MIT, Platform Windows, .NET 10), 2 sơ đồ Mermaid
+# (quy trình test Tổng quan → Wizard → Tổng kết → Lưu hồ sơ; logic kết luận mua
+# Chặn → Cảnh báo → Chưa xong → Đạt), bảng 12 mục menu theo đúng thứ tự (0/10/20/
+# 30/40/50/60/70/80/85/90/95), kết luận mua, kết luận ổ theo mức độ, cổng/sạc, thơ
+# 5 nhóm, lưu hồ sơ + S/N tự điền, splash khối mới, shop, theme, build, giới hạn
+# (thêm giới hạn 5: thay đổi mới nhất chưa kiểm chứng Windows thật), ghi công.
+# KHÔNG có ảnh chụp màn hình thật trong bản này vì không chụp được trên máy Linux
+# (app WPF chỉ chạy Windows) — ảnh thật phải chụp từ bản Windows rồi chèn sau,
+# không bịa ảnh chụp màn hình giả. Khi user gửi ảnh chụp từ bản Windows thì chèn
+# vào mục ảnh chụp màn hình (chưa có mục này trong file, thêm khi có ảnh thật).
