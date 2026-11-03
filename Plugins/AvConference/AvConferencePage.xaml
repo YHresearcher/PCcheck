@@ -77,7 +77,16 @@
             </Border>
 
             <!-- 通过按钮 -->
-            <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+            <!-- Tick tay những gì phần mềm không tự kết luận: loa rè (nghe mới biết),
+                 camera không lên hình (nhìn mới biết). Tick thì bấm cho qua vẫn ghi
+                 nhận lỗi vào kết luận, không phải là "không lỗi". -->
+            <StackPanel Margin="0,12,0,0">
+                <CheckBox x:Name="SpeakerCheck" Content="Loa rè" Margin="0,0,0,4"
+                          ToolTip="Tick khi nghe loa rè khi phát nhạc test — bấm cho qua vẫn ghi nhận lỗi vào kết luận"/>
+                <CheckBox x:Name="WebcamCheck" Content="Camera không hoạt động / không lên hình" Margin="0,0,0,8"
+                          ToolTip="Tick khi camera không lên hình dù đã chọn đúng thiết bị — bấm cho qua vẫn ghi nhận lỗi vào kết luận"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
                 <Button x:Name="PassButton" Content="Xác nhận không lỗi, cho qua" Click="PassButton_Click"
                         FontSize="14" FontWeight="SemiBold" Padding="16,7"
                         ToolTip="Khi camera lên hình, mic có mức âm và ghi/phát lại bình thường, loa kêu thì bấm nút này"/>

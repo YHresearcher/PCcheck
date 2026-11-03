@@ -23,6 +23,8 @@
                     ToolTip="Xóa hết các phím đã test, bắt đầu lại từ đầu"/>
             <Button x:Name="PassButton" Content="Xác nhận không lỗi, cho qua" Margin="8,3,2,3" Click="PassButton_Click"
                     ToolTip="Bấm đủ từng phím, chắc chắn không có phím liệt hay phím nhảy loạn rồi mới bấm. Phím nào laptop không có thì cứ để xám là bình thường."/>
+            <CheckBox x:Name="DeadKeyCheck" Content="Có phím liệt / không nhận" Margin="16,0,0,0" VerticalAlignment="Center"
+                      ToolTip="Tick khi phát hiện phím liệt — bấm cho qua vẫn ghi nhận lỗi vào kết luận (cảnh báo, tính chi phí thay bàn phím), không phải là 'không lỗi'"/>
         </StackPanel>
 
         <!-- 进度行 -->

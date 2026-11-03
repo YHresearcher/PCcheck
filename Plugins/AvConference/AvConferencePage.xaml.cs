@@ -32,8 +32,9 @@ public partial class AvConferencePage : UserControl, YanJi.PluginSdk.IModulePage
     /// <summary>当前是否已确认通过。</summary>
     public bool Passed { get; private set; }
 
-    public AvConferencePage()
+    public AvConferencePage(IHostContext? host = null)
     {
+        _host = host;
         InitializeComponent();
         _camera.FrameReady += OnCameraFrame;
         _levelTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(50) };
@@ -249,6 +250,13 @@ public partial class AvConferencePage : UserControl, YanJi.PluginSdk.IModulePage
 
     void PassButton_Click(object sender, RoutedEventArgs e)
     {
+        var signals = new List<string>();
+        if (SpeakerCheck.IsChecked == true) signals.Add("speakerDistorted");
+        if (WebcamCheck.IsChecked == true) signals.Add("webcamFail");
+        _host?.ReportSignals("av", signals);
+        _host?.ReportVerdict("av", signals.Count > 0
+            ? new(ModuleVerdictLevel.CanhBao, string.Join("; ", signals.Select(s => s == "speakerDistorted" ? "Loa rè — kiểm tra chi phí sửa" : "Camera không hoạt động — xử lý trước khi mua")))
+            : new(ModuleVerdictLevel.Dat, "Đã test camera / mic / loa, không lỗi"));
         SetPassed(true);
         PassButton.IsEnabled = false;
     }
@@ -259,8 +267,16 @@ public partial class AvConferencePage : UserControl, YanJi.PluginSdk.IModulePage
         Passed = passed;
         if (passed)
         {
-            StatusText.Text = "✓ Đã xác nhận không lỗi, cho qua";
-            StatusText.Foreground = Brushes.ForestGreen;
+            if (SpeakerCheck.IsChecked == true || WebcamCheck.IsChecked == true)
+            {
+                StatusText.Text = "✓ Đã ghi nhận lỗi, cho qua (có lỗi)";
+                StatusText.SetResourceReference(TextBlock.ForegroundProperty, "AccentBrush");
+            }
+            else
+            {
+                StatusText.Text = "✓ Đã xác nhận không lỗi, cho qua";
+                StatusText.Foreground = Brushes.ForestGreen;
+            }
         }
         else
         {

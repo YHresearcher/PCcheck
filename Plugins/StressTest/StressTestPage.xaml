@@ -44,6 +44,14 @@
                     <TextBlock x:Name="DurationHintText" Text="Thời lượng nướng khuyến nghị: 3 phút (đổi ở Cài đặt). Mặc định không tự dừng — kỹ thuật viên tự quyết dừng khi nào."
                                Margin="0,4,0,0" TextWrapping="Wrap" FontSize="11"
                                Foreground="{DynamicResource TextSecondaryBrush}"/>
+                    <!-- Tick tay những gì phần mềm không tự phát hiện: CPU lỗi/crash
+                         và lỗi hiển thị GPU (artifact) chỉ mắt người mới thấy khi nướng.
+                         Tick 1 trong 2 ô này thì nút cho qua sẽ bị chặn (giống ổ bị chặn),
+                         và Tổng kết ra câu lỗi nghiêm trọng tương ứng. -->
+                    <CheckBox x:Name="CpuFailCheck" Content="CPU gặp lỗi / crash khi nướng (prime95 báo lỗi hoặc tự thoát)"
+                              Margin="0,8,0,0" ToolTip="Chỉ tick khi tận mắt thấy prime95 báo lỗi hoặc tự thoát — phần mềm không tự đọc được lỗi prime95"/>
+                    <CheckBox x:Name="GpuArtifactCheck" Content="Phát hiện lỗi hiển thị GPU (artifact: sọc, đốm, hình vỡ) khi nướng FurMark"
+                              Margin="0,4,0,0" ToolTip="Chỉ tick khi tận mắt thấy lỗi hiển thị trong cửa sổ FurMark — phần mềm không tự phát hiện artifact"/>
                 </StackPanel>
             </Border>
 

@@ -19,6 +19,8 @@
                     ToolTip="Mở cửa sổ toàn màn hình với màu trơn trên màn hình đã chọn: trắng → đỏ → xanh lá → xanh dương → đen, xoay vòng"/>
             <Button x:Name="PassButton" Content="Xác nhận không lỗi, cho qua" Margin="8,3,2,3" Click="PassButton_Click"
                     ToolTip="Soi đủ các màu trơn, không thấy điểm chết, điểm sáng hay điểm tối rồi mới bấm"/>
+            <CheckBox x:Name="DeadPixelCheck" Content="Phát hiện điểm chết / điểm sáng" Margin="16,0,0,0" VerticalAlignment="Center"
+                      ToolTip="Tick khi soi thấy điểm chết, điểm sáng hay điểm tối — bấm cho qua vẫn ghi nhận lỗi vào kết luận (cảnh báo, thương lượng giá), không phải là 'không lỗi'"/>
         </StackPanel>
 
         <TextBlock x:Name="TestingHint" Text="" Foreground="{DynamicResource AccentBrush}" Margin="0,0,0,4"/>

@@ -127,6 +127,16 @@ cả hai nền.
   (`BaoCao.txt` + `KetQua.json` kèm `scenario` và `phrasingLocked: true`).
   Mở lại báo cáo đã lưu sẽ thấy đúng câu đó, không random lại. Nút "Đổi cách
   nói" chỉ đổi câu trong cùng 1 kịch bản, kết luận không đổi.
+- Tín hiệu chi tiết: pin chai tính từ % chai lớn nhất (dưới 20% khỏe, 20–dưới
+  40% chai vừa, từ 40% chai nặng — mốc là ví dụ, không phải tiêu chuẩn cứng);
+  CPU quá nhiệt khi nhiệt tối đa lúc nướng từ 95°C trở lên (mốc nháp, chưa phải
+  tiêu chuẩn chính thức); CPU lỗi và GPU artifact là tick tay ở trang Tản nhiệt
+  và chặn cho qua; phím liệt, điểm chết, loa rè, webcam là tick tay ở từng bài
+  test, vẫn cho qua được nhưng ghi nhận lỗi; bản lề lỏng và trầy nhẹ tick tay ở
+  module Ngoại quan mới (giữa Cổng & Sạc và Đo tốc độ ổ); sạc Kém ra câu rắc rối
+  nguồn điện; CPU tốt + ổ hao mòn + pin chai cùng lúc ra câu kết hợp B. Pin
+  không đọc được % hoặc máy không có pin thì không báo tín hiệu, không đoán.
+  Kết hợp C chưa tự chọn vì chưa có định nghĩa "cấu hình mạnh".
 - Dòng "An Tâm nhắn bạn" (vd "Máy tốt là một chuyện, mua đúng giá mới là
   chuyện đáng vui!") chỉ hiện khi máy đạt hoặc cảnh báo nhẹ, không hiện khi
   có lỗi nghiêm trọng, chưa đủ dữ liệu, hoặc đã đánh dấu không mua — để không

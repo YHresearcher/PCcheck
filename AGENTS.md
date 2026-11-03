@@ -341,3 +341,35 @@ public interface IHostContext                       // 宿主注入 CreatePage
 # không hiện khi serious / incomplete / notBuy; lưu vào BaoCao.txt + KetQua.json
 # cùng câu kết luận + scenario + phrasingLocked=true — mở lại file đã lưu sẽ thấy
 # đúng câu đã lưu, không random lại.
+
+# (20) TÍN HIỆU CHI TIẾT → CÂU CHUYÊN BIỆT (2026-11-03, chưa test Windows):
+# PluginSdk IHostContext thêm Signals (mỗi module 1 danh sách tín hiệu) + ReportSignals
+# (ghi đè lần báo trước của module đó) + SignalChanged; MainWindow.HostContext là
+# nơi duy nhất implement. Quy tắc: tín hiệu nào ảnh hưởng tiêu đề thì phải kèm
+# verdict cùng mức; tín hiệu tốt (pin khỏe, CPU tốt) chỉ thêm câu vào pool tốt,
+# không đổi tiêu đề. Tổng kết chọn kịch bản theo thứ tự ưu tiên: nghiêm trọng
+# (ổ media / ổ sector / CPU lỗi / GPU artifact / sạc Kém / Chặn chung) → chức năng
+# (phím liệt → điểm chết → loa rè → webcam → bản lề, theo thứ tự module) → cảnh báo
+# (kết hợp B → pin chai nặng → pin chai vừa → CPU quá nhiệt → ổ SMART chưa rõ →
+# ổ hao mòn → trầy nhẹ → cảnh báo chung) → thiếu dữ liệu → máy đạt (pool tốt =
+# câu tốt + kết hợp A + câu CPU tốt nếu đã nướng xong không lỗi + câu pin khỏe
+# nếu pin chai <20%). An Tâm nhắn bạn đi kèm đạt / cảnh báo / chức năng, không
+# kèm nghiêm trọng / thiếu dữ liệu / không mua.
+# Nguồn tín hiệu: pin từ % chai lớn nhất của nhóm Pin (Đối chiếu cấu hình, <20%
+# khỏe, 20–<40% chai vừa dùng câu 20–30%, ≥40% chai nặng; mốc là ví dụ của user,
+# không phải tiêu chuẩn cứng; pin không đọc được % hoặc máy không có pin thì
+# KHÔNG báo tín hiệu — không dùng câu "không đọc được pin" cho desktop vì app
+# chưa biết dạng máy); CPU quá nhiệt từ nhiệt tối đa khi nướng (≥95°C, mốc nháp
+# từ checklist cũ, chưa phải tiêu chuẩn chính thức; nhiệt GPU chỉ hiện biểu đồ,
+# không tự kết luận vì chưa có ngưỡng GPU); CPU lỗi / GPU artifact là tick tay
+# ở Tản nhiệt và CHẶN cho qua (giống ổ bị chặn); phím liệt / điểm chết / loa rè
+# / webcam / bản lề / trầy nhẹ là tick tay ở từng bài test, vẫn cho qua được
+# nhưng verdict Cảnh báo + tín hiệu; module Ngoại quan mới (id visual, order 70,
+# giữa Cổng & Sạc và Đo tốc độ ổ) chỉ có 2 ô bản lề / trầy nhẹ vì chỉ 2 lỗi này
+# đã có câu trong JSON; sạc Kém báo batteryNotCharging; kết hợp B chỉ khi CPU tốt
+# + ổ hao mòn đã đo được + pin chai cùng lúc (không tính "ổ chưa rõ" thành "ổ cũ").
+# Chưa tự chọn: pin không đọc được, kết hợp C (chưa có định nghĩa "cấu hình mạnh").
+# Khi 1 module test lại / đặt lại thì xóa tín hiệu cũ + verdict về Chưa test
+# (Tản nhiệt bắt đầu nướng, Bàn phím đặt lại, Ngoại quan đặt lại), để tín hiệu cũ
+# không dính sang lần test sau. Trang Sức khỏe hiện tín hiệu kèm mô tả tiếng Việt.
+# Wiring module mới: host csproj Build/Copy/Publish, .slnx, installer (như mọi plugin).

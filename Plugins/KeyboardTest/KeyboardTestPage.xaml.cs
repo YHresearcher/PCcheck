@@ -2,6 +2,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using YanJi.PluginSdk;
 
 namespace YanJi.Plugin.KeyboardTest;
 
@@ -23,6 +24,7 @@ public partial class KeyboardTestPage : UserControl, YanJi.PluginSdk.IModulePage
         public bool Tested { get; set; }
     }
 
+    readonly IHostContext? _host; // Để báo tín hiệu phím liệt cho Tổng kết (có thể null khi test riêng)
     readonly List<KeyVisual> _all = [];
     readonly Dictionary<Key, List<KeyVisual>> _keyMap = [];
     int _testedCount;
@@ -33,8 +35,9 @@ public partial class KeyboardTestPage : UserControl, YanJi.PluginSdk.IModulePage
     /// <summary>当前是否已确认通过。</summary>
     public bool Passed { get; private set; }
 
-    public KeyboardTestPage()
+    public KeyboardTestPage(IHostContext? host = null)
     {
+        _host = host;
         InitializeComponent();
         BuildKeyboard();
     }
@@ -230,12 +233,23 @@ public partial class KeyboardTestPage : UserControl, YanJi.PluginSdk.IModulePage
         _testedCount = 0;
         UpdateProgress();
         LogBox.Clear();
+        DeadKeyCheck.IsChecked = false;
+        _host?.ReportSignals("keyboard", []);
+        _host?.ReportVerdict("keyboard", new(ModuleVerdictLevel.ChuaTest, "Chưa test"));
         SetPassed(false);
         PassButton.IsEnabled = true;
     }
 
     void PassButton_Click(object sender, RoutedEventArgs e)
     {
+        // Tick phím liệt thì vẫn cho qua được (test đã xong, lỗi đã ghi nhận),
+        // nhưng verdict là Cảnh báo + tín hiệu keyboardDead, Tổng kết ra câu phím
+        // liệt — không phải "không lỗi". Không tick thì verdict Đạt như trước.
+        bool dead = DeadKeyCheck.IsChecked == true;
+        _host?.ReportSignals("keyboard", dead ? ["keyboardDead"] : []);
+        _host?.ReportVerdict("keyboard", dead
+            ? new(ModuleVerdictLevel.CanhBao, "Có phím liệt — tính chi phí thay bàn phím trước khi mua")
+            : new(ModuleVerdictLevel.Dat, "Đã test bàn phím, không lỗi"));
         SetPassed(true);
         PassButton.IsEnabled = false;
     }
@@ -246,8 +260,16 @@ public partial class KeyboardTestPage : UserControl, YanJi.PluginSdk.IModulePage
         Passed = passed;
         if (passed)
         {
-            StatusText.Text = "✓ Đã xác nhận không lỗi";
-            StatusText.Foreground = Brushes.ForestGreen;
+            if (DeadKeyCheck.IsChecked == true)
+            {
+                StatusText.Text = "✓ Đã ghi nhận lỗi, cho qua (có phím liệt)";
+                StatusText.SetResourceReference(TextBlock.ForegroundProperty, "AccentBrush");
+            }
+            else
+            {
+                StatusText.Text = "✓ Đã xác nhận không lỗi";
+                StatusText.Foreground = Brushes.ForestGreen;
+            }
         }
         else
         {

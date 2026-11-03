@@ -7,5 +7,5 @@ namespace YanJi.Plugin.ScreenDeadPixel;
 public class ScreenDeadPixelPlugin : IYanJiPlugin
 {
     public PluginInfo Info => new("screen", "Test điểm chết màn hình", "1.0.0", 30, false);
-    public UserControl CreatePage(IHostContext host) => new DeadPixelPage();
+    public UserControl CreatePage(IHostContext host) => new DeadPixelPage(host);
 }

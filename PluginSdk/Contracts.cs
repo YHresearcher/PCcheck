@@ -34,6 +34,20 @@ public interface IHostContext
     void ReportVerdict(string moduleId, ModuleVerdict verdict);
     /// <summary>任一模块结结论变化后触发（UI 线程），trang Tổng kết đăng ký để làm mới.</summary>
     event Action? VerdictChanged;
+    /// <summary>Tín hiệu chi tiết từng module đã báo (vd pin chai, CPU quá nhiệt,
+    /// phím liệt, loa rè) — khác với Verdicts ở chỗ: 1 module có thể báo nhiều
+    /// tín hiệu cùng lúc, và tín hiệu không thay thế mức verdict. Tổng kết dùng
+    /// tín hiệu để chọn câu chuyên biệt (vd câu pin chai, câu loa rè) thay vì
+    /// câu chung của mức. Module nào báo tín hiệu ảnh hưởng tới tiêu đề (nghiêm
+    /// trọng / chức năng / cảnh báo) thì phải kèm verdict cùng mức đó — tín hiệu
+    /// tốt (pin khỏe, CPU tốt) thì không đổi tiêu đề, chỉ thêm câu vào pool tốt.</summary>
+    IReadOnlyDictionary<string, IReadOnlyList<string>> Signals { get; }
+    /// <summary>Module báo cáo toàn bộ tín hiệu hiện tại của mình (ghi đè lần báo
+    /// trước của module đó, gọi trên UI thread; host kích SignalChanged). Gọi
+    /// với danh sách rỗng để xóa tín hiệu cũ (vd nướng lại sau khi sửa tản nhiệt).</summary>
+    void ReportSignals(string moduleId, IReadOnlyList<string> signals);
+    /// <summary>任一模块信号变化后触发（UI 线程），trang Tổng kết / Sức khỏe đăng ký để làm mới.</summary>
+    event Action? SignalChanged;
     /// <summary>Chuyển tới 1 module theo id (Dashboard dùng để nhảy tới bài test /
     /// thông tin phần cứng / sức khỏe / tổng kết). Trả về false nếu không có
     /// module đó. Chỉ đổi SelectedIndex của host, không tự vào wizard.</summary>

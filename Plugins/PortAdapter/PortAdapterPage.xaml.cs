@@ -225,6 +225,10 @@ public partial class PortAdapterPage : UserControl, YanJi.PluginSdk.IModulePage
     void ReportPortsVerdict()
     {
         if (_host == null) return;
+        // Sạc Kém thì kèm tín hiệu batteryNotCharging để Tổng kết ra câu rắc rối
+        // nguồn điện thay vì câu lỗi nghiêm trọng chung; các mức còn lại thì xóa
+        // tín hiệu này (vd thay sạc mới rồi test lại mà đạt thì không còn lỗi sạc).
+        _host.ReportSignals("ports", _adapterHealth == "Kém" ? ["batteryNotCharging"] : []);
         if (_adapterHealth == "Kém")
             _host.ReportVerdict("ports", new(ModuleVerdictLevel.Chan, $"Sạc Kém ({_adapterScore}/100) — thay sạc rồi test lại"));
         else if (_adapterHealth == "Trung bình")

@@ -38,12 +38,15 @@ public partial class SummaryPage : UserControl
     /// không viết cố định trong C#). Thứ tự ưu tiên khi chọn kịch bản:
     /// lỗi nghiêm trọng → lỗi chức năng → cảnh báo linh kiện → thiếu dữ liệu → máy đạt.
     /// Thiếu dữ liệu quan trọng thì không được xếp vào nhóm tốt chỉ vì không phát hiện
-    /// lỗi — nên bất kỳ module nào chưa test xong cũng về kịch bản "incomplete",
-    /// không về "good". Kịch bản nào có tín hiệu thì dùng câu chuyên biệt của nó
-    /// (ổ media / ổ sector / ổ hao mòn / ổ SMART chưa rõ); chưa có tín hiệu thì
-    /// dùng câu chung của mức đó (warning / serious / incomplete / good), không đoán.
-    /// Dòng "An Tâm nhắn bạn" chỉ đi kèm kịch bản good và warning, không đi kèm
-    /// serious / incomplete / notBuy — để không làm nhẹ cảnh báo nghiêm trọng.</summary>
+    /// lỗi — good chỉ khi tất cả module đều Đạt và không còn tín hiệu cảnh báo nào.
+    /// Kịch bản nào có tín hiệu thì dùng câu chuyên biệt của nó (ổ media / sector /
+    /// hao mòn / SMART chưa rõ, pin chai, CPU quá nhiệt / lỗi, GPU artifact, phím
+    /// liệt, điểm chết, loa rè, webcam, bản lề, trầy nhẹ, sạc Kém, kết hợp B);
+    /// chưa có tín hiệu thì dùng câu chung của mức đó (warning / serious /
+    /// incomplete / good), không đoán. Tín hiệu tốt (pin khỏe, CPU tốt) chỉ thêm
+    /// câu vào pool tốt, không đổi tiêu đề. Dòng "An Tâm nhắn bạn" chỉ đi kèm
+    /// kịch bản đạt / cảnh báo / chức năng, không đi kèm serious / incomplete /
+    /// notBuy — để không làm nhẹ cảnh báo nghiêm trọng.</summary>
     static readonly Dictionary<string, string> OverallTitles = new()
     {
         ["Dat"] = "CÓ THỂ MUA — MUA ĐƯỢC",
@@ -59,6 +62,7 @@ public partial class SummaryPage : UserControl
         InitializeComponent();
         _host.DoneChanged += Refresh;
         _host.VerdictChanged += Refresh;
+        _host.SignalChanged += Refresh;
         Loaded += (_, _) => Refresh();
     }
 
@@ -266,17 +270,54 @@ public partial class SummaryPage : UserControl
         return pool[idx];
     }
 
+    HashSet<string> AllSignals()
+    {
+        var set = new HashSet<string>();
+        foreach (var list in _host.Signals.Values)
+            foreach (var s in list) set.Add(s);
+        return set;
+    }
+
+    string[] GoodPool()
+    {
+        var pool = new List<string>();
+        pool.AddRange(_bank.Good);
+        pool.AddRange(_bank.CombinedA);
+        var signals = AllSignals();
+        if (signals.Contains("cpuGood") && _bank.CpuGpu.TryGetValue("cpuGood", out var cpuGood))
+            pool.AddRange(cpuGood);
+        if (signals.Contains("batteryHealthy") && _bank.Battery.TryGetValue("healthy", out var batGood))
+            pool.AddRange(batGood);
+        return [.. pool];
+    }
+
     /// <summary>Pool câu cho 1 kịch bản. good = câu tốt (5 mẫu) + kết hợp A (1 câu);
     /// incomplete = kết hợp E + 5 câu chưa xong chung; serious = kết hợp D (1 câu,
     /// cố tình không trộn câu "sửa rồi test lại" để không làm nhẹ cảnh báo);
     /// warning / drive* / notBuy lấy đúng pool trong JSON.</summary>
     string[] PoolForScenario(string scenario) => scenario switch
     {
-        "good" => [.. _bank.Good, .. _bank.CombinedA],
+        // Pool tốt: câu tốt chung + kết hợp A + câu chuyên biệt nếu có tín hiệu tốt
+        // (CPU đã nướng xong không lỗi, pin còn khỏe). Tín hiệu tốt không đổi tiêu
+        // đề, chỉ thêm câu vào pool để "Đổi cách nói" có thể ra câu chuyên biệt.
+        "good" => GoodPool(),
         "driveMediaError" => _bank.DriveMediaError,
         "driveBadSector" => _bank.DriveBadSector,
         "driveWear" => _bank.DriveWear,
         "driveSmartUnknown" => _bank.DriveSmartUnknown,
+        "cpuFail" => _bank.CpuGpu.TryGetValue("cpuFail", out var cpuFail) ? cpuFail : _bank.CombinedD,
+        "gpuArtifact" => _bank.CpuGpu.TryGetValue("gpuArtifact", out var gpuArt) ? gpuArt : _bank.CombinedD,
+        "batteryNotCharging" => _bank.Battery.TryGetValue("notCharging", out var batNc) ? batNc : _bank.CombinedD,
+        "keyboardDead" => _bank.Peripheral.TryGetValue("keyboard", out var kb) ? kb : _bank.Warning,
+        "screenDeadPixel" => _bank.Peripheral.TryGetValue("screen", out var sc) ? sc : _bank.Warning,
+        "speakerDistorted" => _bank.Peripheral.TryGetValue("speaker", out var sp) ? sp : _bank.Warning,
+        "webcamFail" => _bank.Peripheral.TryGetValue("webcam", out var wc) ? wc : _bank.Warning,
+        "hingeLoose" => _bank.Peripheral.TryGetValue("hinge", out var hg) ? hg : _bank.Warning,
+        "combinedB" => _bank.CombinedB,
+        "batteryWornOver40" => _bank.Battery.TryGetValue("wornOver40", out var bw40) ? bw40 : _bank.Warning,
+        "batteryWorn20_30" => _bank.Battery.TryGetValue("worn20_30", out var bw20) ? bw20 : _bank.Warning,
+        "cpuOverheat" => _bank.CpuGpu.TryGetValue("cpuOverheat", out var cpuHot) ? cpuHot : _bank.Warning,
+        "scratchesLight" => _bank.Peripheral.TryGetValue("scratches", out var scr) ? scr : _bank.Warning,
         "serious" => _bank.CombinedD,
         "warning" => _bank.Warning,
         "incomplete" => [.. _bank.CombinedE, .. _bank.Incomplete],
@@ -290,7 +331,13 @@ public partial class SummaryPage : UserControl
     /// nghiêm trọng rồi làm nhẹ cảnh báo khi mở lại).</summary>
     void RefreshAnTamNote(int exclude = -1)
     {
-        bool allowed = _currentScenario is "good" or "warning";
+        // An Tâm nhắn bạn đi kèm các kịch bản đạt / cảnh báo / chức năng (tiêu đề
+        // CÓ THỂ MUA hoặc CẦN KIỂM TRA THÊM), không đi kèm nghiêm trọng / thiếu
+        // dữ liệu / không mua — để không làm nhẹ cảnh báo nghiêm trọng.
+        bool allowed = _currentScenario is "good" or "warning" or "combinedB"
+            or "keyboardDead" or "screenDeadPixel" or "speakerDistorted" or "webcamFail" or "hingeLoose"
+            or "batteryWornOver40" or "batteryWorn20_30" or "cpuOverheat" or "scratchesLight"
+            or "driveWear" or "driveSmartUnknown";
         if (!allowed || _bank.AnTamNotes.Length == 0)
         {
             _lastAnTamNote = "";
@@ -338,42 +385,45 @@ public partial class SummaryPage : UserControl
         ModuleList.ItemsSource = rows;
         _lastRows = rows;
 
-        // Chọn kịch bản theo thứ tự ưu tiên: lỗi nghiêm trọng → lỗi chức năng →
-        // cảnh báo linh kiện → thiếu dữ liệu → máy đạt. Lỗi chức năng (loa rè, phím
-        // liệt, điểm chết...) đã có câu trong JSON nhưng CHƯA được chọn ở đây, vì
-        // các module đó hiện chỉ báo "cho qua / chưa cho qua", không báo "lỗi chức
-        // năng" — khi nào module báo được lỗi chức năng thì thêm 1 nhánh ở đây,
-        // trước nhánh cảnh báo, và không được đoán lỗi chức năng từ "chưa cho qua".
-        // Thiếu dữ liệu quan trọng thì không được xếp tốt: bất kỳ module nào chưa
-        // test xong cũng về "incomplete", không về "good", kể cả khi không có lỗi nào.
+        // Chọn kịch bản theo thứ tự ưu tiên (đúng thứ tự user chốt):
+        // 1. Lỗi nghiêm trọng → 2. Lỗi chức năng → 3. Cảnh báo linh kiện →
+        // 4. Thiếu dữ liệu → 5. Máy đạt. Trong mỗi nhóm, câu chuyên biệt (tín hiệu
+        // cụ thể) thắng câu chung: vd ổ media thắng câu nghiêm trọng chung, pin
+        // chai nặng thắng câu cảnh báo chung. Thiếu dữ liệu chỉ về "incomplete"
+        // khi không có lỗi/cảnh báo nào trước nó — nhưng không bao giờ về "good":
+        // good chỉ khi tất cả module đều Đạt và không còn tín hiệu cảnh báo nào.
+        // Tín hiệu tốt (cpuGood, batteryHealthy) không đổi tiêu đề, chỉ thêm câu
+        // vào pool tốt (xem GoodPool).
+        var signals = AllSignals();
         string configNote = _host.Verdicts.TryGetValue("config", out var cv) ? cv.Note : "";
         string autoTitleKey;
         string autoScenario;
-        if (grades.Any(g => g == ModuleVerdictLevel.Chan))
-        {
-            autoTitleKey = "Sua";
-            autoScenario = configNote.Contains("lỗi toàn vẹn dữ liệu") ? "driveMediaError"
-                : configNote.Contains("sector") ? "driveBadSector"
-                : "serious";
-        }
-        else if (grades.Any(g => g == ModuleVerdictLevel.CanhBao))
-        {
-            autoTitleKey = "CanhBao";
-            autoScenario = configNote.Contains("chưa rõ sức khỏe") || configNote.Contains("không đọc được lỗi nghiêm trọng")
-                ? "driveSmartUnknown"
-                : configNote.Contains("sức khỏe") ? "driveWear"
-                : "warning";
-        }
-        else if (modules.Count > 0 && grades.All(g => g == ModuleVerdictLevel.Dat))
-        {
-            autoTitleKey = "Dat";
-            autoScenario = "good";
-        }
-        else
-        {
-            autoTitleKey = "ChuaXong";
-            autoScenario = "incomplete";
-        }
+        if (configNote.Contains("lỗi toàn vẹn dữ liệu")) { autoTitleKey = "Sua"; autoScenario = "driveMediaError"; }
+        else if (configNote.Contains("sector")) { autoTitleKey = "Sua"; autoScenario = "driveBadSector"; }
+        else if (signals.Contains("cpuFail")) { autoTitleKey = "Sua"; autoScenario = "cpuFail"; }
+        else if (signals.Contains("gpuArtifact")) { autoTitleKey = "Sua"; autoScenario = "gpuArtifact"; }
+        else if (signals.Contains("batteryNotCharging")) { autoTitleKey = "Sua"; autoScenario = "batteryNotCharging"; }
+        else if (grades.Any(g => g == ModuleVerdictLevel.Chan)) { autoTitleKey = "Sua"; autoScenario = "serious"; }
+        else if (signals.Contains("keyboardDead")) { autoTitleKey = "CanhBao"; autoScenario = "keyboardDead"; }
+        else if (signals.Contains("screenDeadPixel")) { autoTitleKey = "CanhBao"; autoScenario = "screenDeadPixel"; }
+        else if (signals.Contains("speakerDistorted")) { autoTitleKey = "CanhBao"; autoScenario = "speakerDistorted"; }
+        else if (signals.Contains("webcamFail")) { autoTitleKey = "CanhBao"; autoScenario = "webcamFail"; }
+        else if (signals.Contains("hingeLoose")) { autoTitleKey = "CanhBao"; autoScenario = "hingeLoose"; }
+        // Kết hợp B (CPU tốt + ổ cũ + pin chai cùng lúc): câu tổng hợp hay hơn
+        // câu đơn lẻ, nên kiểm tra trước các câu cảnh báo đơn. Ổ cũ ở đây là
+        // driveWear (sức khỏe <90%) hoặc driveSmartUnknown không tính — chỉ
+        // tính hao mòn đã đo được, không tính "chưa rõ" thành "cũ".
+        else if (signals.Contains("cpuGood") && configNote.Contains("sức khỏe")
+            && (signals.Contains("batteryWornOver40") || signals.Contains("batteryWorn20_30"))) { autoTitleKey = "CanhBao"; autoScenario = "combinedB"; }
+        else if (signals.Contains("batteryWornOver40")) { autoTitleKey = "CanhBao"; autoScenario = "batteryWornOver40"; }
+        else if (signals.Contains("batteryWorn20_30")) { autoTitleKey = "CanhBao"; autoScenario = "batteryWorn20_30"; }
+        else if (signals.Contains("cpuOverheat")) { autoTitleKey = "CanhBao"; autoScenario = "cpuOverheat"; }
+        else if (configNote.Contains("chưa rõ sức khỏe") || configNote.Contains("không đọc được lỗi nghiêm trọng")) { autoTitleKey = "CanhBao"; autoScenario = "driveSmartUnknown"; }
+        else if (configNote.Contains("sức khỏe")) { autoTitleKey = "CanhBao"; autoScenario = "driveWear"; }
+        else if (signals.Contains("scratchesLight")) { autoTitleKey = "CanhBao"; autoScenario = "scratchesLight"; }
+        else if (grades.Any(g => g == ModuleVerdictLevel.CanhBao)) { autoTitleKey = "CanhBao"; autoScenario = "warning"; }
+        else if (modules.Count == 0 || grades.Any(g => g == ModuleVerdictLevel.ChuaTest)) { autoTitleKey = "ChuaXong"; autoScenario = "incomplete"; }
+        else { autoTitleKey = "Dat"; autoScenario = "good"; }
 
         string titleKey = _markedLoai ? "Loai" : autoTitleKey;
         string scenario = _markedLoai ? "notBuy" : autoScenario;

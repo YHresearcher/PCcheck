@@ -14,5 +14,5 @@ public class AvConferencePlugin : IYanJiPlugin
         new("试音曲「不死のバイオレット」", "Nhạc test loa", "Copyright© 幻月遠征隊，使用已经著作权人同意"),
     ];
 
-    public UserControl CreatePage(IHostContext host) => new AvConferencePage();
+    public UserControl CreatePage(IHostContext host) => new AvConferencePage(host);
 }

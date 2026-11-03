@@ -39,6 +39,7 @@ public partial class MainWindow : Window
         readonly MainWindow _owner;
         readonly List<PluginInfo> _modules = [];
         readonly Dictionary<string, ModuleVerdict> _verdicts = [];
+        readonly Dictionary<string, IReadOnlyList<string>> _signals = [];
         public HostContext(MainWindow owner, Func<string, bool> isDone)
         {
             _owner = owner;
@@ -60,6 +61,13 @@ public partial class MainWindow : Window
             VerdictChanged?.Invoke();
         }
         public event Action? VerdictChanged;
+        public IReadOnlyDictionary<string, IReadOnlyList<string>> Signals => _signals;
+        public void ReportSignals(string moduleId, IReadOnlyList<string> signals)
+        {
+            _signals[moduleId] = [.. signals.Distinct()];
+            SignalChanged?.Invoke();
+        }
+        public event Action? SignalChanged;
         /// <summary>启动时批量填入 / 运行时追加（导入即载），均保持按 Order 排序。</summary>
         public void AddModule(PluginInfo info)
         {

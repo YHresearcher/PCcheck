@@ -2,6 +2,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Threading;
+using YanJi.PluginSdk;
 
 namespace YanJi.Plugin.StressTest;
 
@@ -10,7 +11,9 @@ namespace YanJi.Plugin.StressTest;
 /// 程序退出还有 Job 对象兜底，绝不留下后台烤机进程。通过后状态行变绿并同步导航圆点。</summary>
 public partial class StressTestPage : UserControl, YanJi.PluginSdk.IModulePage
 {
+    readonly IHostContext? _host; // Để báo tín hiệu CPU/GPU cho Tổng kết (có thể null khi test riêng)
     readonly DispatcherTimer _tick = new() { Interval = TimeSpan.FromMilliseconds(500) };
+    double? _maxCpuTemp; // Nhiệt độ CPU tối đa trong lần nướng này (null = cảm biến không đọc được). Nhiệt GPU chỉ hiện trên biểu đồ, không tự kết luận quá nhiệt vì chưa có ngưỡng GPU — artifact GPU là tick tay.
     TimeSpan _lastRun = TimeSpan.Zero; // 最近一次烤了多久（未烤过为 0，状态行提示用）
     DateTime? _runStart;               // 本轮烤机起点（running→停止 的那一拍结算进 _lastRun）
     bool _autoStopAttempted;           // Đã thử tự dừng cho lần nướng này chưa (tránh gọi StopVerified mỗi 500ms nếu dừng không được)
@@ -22,8 +25,9 @@ public partial class StressTestPage : UserControl, YanJi.PluginSdk.IModulePage
     /// <summary>当前是否已核对通过。</summary>
     public bool Passed { get; private set; }
 
-    public StressTestPage()
+    public StressTestPage(IHostContext? host = null)
     {
+        _host = host;
         InitializeComponent();
 
         // 线程数下拉：1 .. 逻辑核心数，默认拉满
@@ -57,6 +61,9 @@ public partial class StressTestPage : UserControl, YanJi.PluginSdk.IModulePage
     {
         _autoStopAttempted = false;
         _autoStopped = false;
+        _maxCpuTemp = null;
+        _host?.ReportSignals("stress", []);
+        _host?.ReportVerdict("stress", new(YanJi.PluginSdk.ModuleVerdictLevel.ChuaTest, "Đang nướng lại"));
         SetPassed(false);
         var mode = ParseTag<StressTestService.StressMode>(ModeBox);
         var fft = ParseTag<StressTestService.FftPreset>(FftBox);
@@ -110,6 +117,36 @@ public partial class StressTestPage : UserControl, YanJi.PluginSdk.IModulePage
             RunStateText.Text = $"Chưa dừng được {string.Join(", ", survivors)} — chưa cho qua, kiểm tra Task Manager rồi bấm Dừng lại";
             return;
         }
+        // Lỗi do mắt người tick tay thì CHẶN cho qua (giống ổ bị chặn): báo verdict
+        // Chặn + tín hiệu, Tổng kết ra câu lỗi nghiêm trọng, không phải "cho qua rồi
+        // mà vẫn có lỗi". Throttling/quá nhiệt thì chỉ là cảnh báo, vẫn cho qua được.
+        bool cpuFail = CpuFailCheck.IsChecked == true;
+        bool gpuArtifact = GpuArtifactCheck.IsChecked == true;
+        if (cpuFail || gpuArtifact)
+        {
+            var failSignals = new List<string>();
+            if (cpuFail) failSignals.Add("cpuFail");
+            if (gpuArtifact) failSignals.Add("gpuArtifact");
+            _host?.ReportSignals("stress", failSignals);
+            _host?.ReportVerdict("stress", new(ModuleVerdictLevel.Chan,
+                cpuFail && gpuArtifact ? "CPU gặp lỗi khi nướng và GPU có artifact"
+                : cpuFail ? "CPU gặp lỗi khi nướng" : "GPU có artifact khi nướng"));
+            RunStateText.Text = "Đã ghi nhận lỗi nghiêm trọng — không cho qua, Tổng kết sẽ ra câu không khuyến nghị mua.";
+            return;
+        }
+        // Quá nhiệt: ngưỡng 95°C cho CPU là mốc nháp từ checklist cũ (chưa phải tiêu
+        // chuẩn chính thức của shop) — vượt thì cảnh báo, không chặn; chưa đọc được
+        // nhiệt thì không kết luận quá nhiệt, chỉ kết luận "đã nướng xong không lỗi"
+        // khi thực sự đã nướng (lastRun > 0 hoặc vừa dừng 1 lần nướng đang chạy).
+        bool overheat = _maxCpuTemp is >= 95;
+        bool runCompleted = _lastRun > TimeSpan.Zero || _runStart != null;
+        var signals = new List<string>();
+        if (overheat) signals.Add("cpuOverheat");
+        else if (runCompleted) signals.Add("cpuGood");
+        _host?.ReportSignals("stress", signals);
+        _host?.ReportVerdict("stress", overheat
+            ? new(ModuleVerdictLevel.CanhBao, $"CPU quá nhiệt khi nướng (tối đa {_maxCpuTemp:0}°C, ≥95°C) — kiểm tra tản nhiệt")
+            : new(ModuleVerdictLevel.Dat, runCompleted ? "Đã nướng máy, không phát hiện lỗi" : "Đã cho qua (chưa nướng máy lần nào)"));
         SetPassed(true);
     }
 
@@ -130,6 +167,10 @@ public partial class StressTestPage : UserControl, YanJi.PluginSdk.IModulePage
     void OnSensorSampled(SensorMonitorService.Reading r) =>
         Dispatcher.BeginInvoke(() =>
         {
+            if (StressTestService.IsRunning)
+            {
+                if (r.CpuTemp is double ct) _maxCpuTemp = Math.Max(_maxCpuTemp ?? ct, ct);
+            }
             UpdateChart(CpuTempChart, CpuTempOverlay, r.CpuTemp, ref _cpuTempDown);
             UpdateChart(CpuPowerChart, CpuPowerOverlay, r.CpuPower, ref _cpuPowerDown);
             UpdateChart(GpuTempChart, null, r.GpuTemp, ref _gpuTempDown);

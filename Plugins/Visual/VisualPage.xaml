@@ -1,0 +1,28 @@
+<UserControl x:Class="YanJi.Plugin.Visual.VisualPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <StackPanel Margin="16">
+        <StackPanel Orientation="Horizontal" Margin="0,4">
+            <TextBlock Text="Trạng thái test:" FontWeight="SemiBold"/>
+            <TextBlock x:Name="StatusText" Text="Chưa test" Margin="8,0,0,0"
+                       Foreground="{DynamicResource TextSecondaryBrush}"/>
+        </StackPanel>
+
+        <TextBlock Text="Kiểm tra bằng mắt: vỏ, bản lề, xước — những gì phần mềm không đo được. Chỉ tick những gì đã tận mắt kiểm tra. Không tick gì mà bấm cho qua nghĩa là ngoại quan không lỗi."
+                   TextWrapping="Wrap" Margin="0,8,0,12"
+                   Foreground="{DynamicResource TextSecondaryBrush}"/>
+
+        <CheckBox x:Name="HingeCheck" Content="Bản lề lỏng" Margin="0,0,0,8"
+                  ToolTip="Tick khi bản lề lỏng, đóng mở không chắc — bấm cho qua vẫn ghi nhận lỗi vào kết luận (cảnh báo)"/>
+        <CheckBox x:Name="ScratchesCheck" Content="Trầy xước nhẹ (không ảnh hưởng chức năng)" Margin="0,0,0,12"
+                  ToolTip="Tick khi máy có trầy nhẹ nhưng chức năng bình thường — bấm cho qua vẫn ghi nhận để thương lượng giá"/>
+
+        <StackPanel Orientation="Horizontal">
+            <Button x:Name="PassButton" Content="Xác nhận không lỗi, cho qua" Click="PassButton_Click"
+                    FontSize="14" FontWeight="SemiBold" Padding="16,7"
+                    ToolTip="Đã kiểm tra ngoại quan bằng mắt rồi mới bấm; có tick lỗi thì bấm cho qua vẫn ghi nhận lỗi, không phải là 'không lỗi'"/>
+            <Button x:Name="ResetButton" Content="Đặt lại" Margin="8,3,2,3" Click="ResetButton_Click"
+                    ToolTip="Bỏ hết tick và trạng thái cho qua, kiểm tra lại từ đầu"/>
+        </StackPanel>
+    </StackPanel>
+</UserControl>

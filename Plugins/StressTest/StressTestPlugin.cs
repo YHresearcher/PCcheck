@@ -19,7 +19,7 @@ public class StressTestPlugin : IYanJiPlugin, IPluginShutdown, IStopHeavyTests
         new("PawnIO（namazso）", "Driver nhân Ring0 cho cảm biến CPU/mainboard (trình cài đặt chính thức có chữ ký kèm trong Tools/pawnio/, chỉ cài khi người dùng bấm; driver cài trên từng máy test, không đi theo USB)", "GPL-2.0 (kèm ngoại lệ giao tiếp IOCTL)"),
     ];
 
-    public UserControl CreatePage(IHostContext host) => new StressTestPage();
+    public UserControl CreatePage(IHostContext host) => new StressTestPage(host);
     public void Shutdown() => StressTestService.Stop();
     public IReadOnlyList<string> StopHeavyTests() => StressTestService.StopVerified();
 }

@@ -14,6 +14,8 @@ public partial class ConfigCheckPage : UserControl, YanJi.PluginSdk.IModulePage
     bool _running;
     bool _autoStarted; // 页面常驻机制下 Loaded 可能重入（切走再切回），自动检测只触发一次
     HardwareReport? _lastReport; // Báo cáo lần thu thập gần nhất, để nút cho qua kiểm tra ổ bị chặn
+    string _batteryNote = ""; // Ghi chú pin từ lần thu thập gần nhất (vd "Pin chai 45%")
+    IReadOnlyList<string> _batterySignals = []; // Tín hiệu pin hiện tại (xem ComputeBatterySignals)
     readonly IHostContext? _host; // Để báo cáo kết luận module cho trang Tổng kết (có thể null khi test riêng)
 
     /// <summary>核对完成状态变化（true = 已通过，false = 重新检测回到待核对）；MainWindow 据此同步导航圆点。</summary>
@@ -57,6 +59,8 @@ public partial class ConfigCheckPage : UserControl, YanJi.PluginSdk.IModulePage
             });
             var report = await Task.Run(() => HardwareInfoService.Collect(progress));
             _lastReport = report;
+            (_batterySignals, _batteryNote) = ComputeBatterySignals(report);
+            _host?.ReportSignals("config", _batterySignals);
             ReportConfigVerdict();
             SetTabGroups(report);
             DetectProgress.Value = 100;
@@ -131,6 +135,32 @@ public partial class ConfigCheckPage : UserControl, YanJi.PluginSdk.IModulePage
             g.Title != "CPU" && g.Title != "RAM" && g.Title != "Ổ" && !g.Title.StartsWith("Card màn hình")).ToList();
     }
 
+    /// <summary>Tính tín hiệu pin từ nhóm Pin trong báo cáo: lấy % chai lớn nhất
+    /// qua các viên pin (mỗi viên 1 dòng "Độ chai X %"). Mốc theo câu mẫu của user
+    /// (20–30% và trên 40% là ví dụ, không phải tiêu chuẩn cứng cho mọi loại pin):
+    /// chai &lt;20% = pin khỏe, 20–&lt;40% = chai vừa (dùng câu 20–30%), ≥40% = chai
+    /// nặng. Pin không đọc được % hoặc máy không có pin (desktop) thì KHÔNG báo
+    /// tín hiệu — không đoán, và không dùng câu "không đọc được pin" cho desktop
+    /// (câu đó chỉ đúng khi biết chắc đây là laptop, mà app chưa biết dạng máy).</summary>
+    static (IReadOnlyList<string>, string) ComputeBatterySignals(HardwareReport report)
+    {
+        var pinGroup = report.Groups.FirstOrDefault(g => g.Title == "Pin");
+        if (pinGroup == null) return ([], "");
+        double worstWear = -1;
+        foreach (var e in pinGroup.Entries.Where(e => e.Name.StartsWith("Độ chai")))
+        {
+            // Giá trị dạng "25,5 % (sức khỏe 74,5 %)" hoặc "25.5 % ..." tùy culture
+            string num = e.Value.Split(' ')[0].Replace(',', '.');
+            if (double.TryParse(num, System.Globalization.NumberStyles.Float,
+                System.Globalization.CultureInfo.InvariantCulture, out double wear))
+                worstWear = Math.Max(worstWear, wear);
+        }
+        if (worstWear < 0) return ([], "");
+        if (worstWear < 20) return (["batteryHealthy"], $"Pin chai {worstWear:0.#}% — còn khỏe");
+        if (worstWear < 40) return (["batteryWorn20_30"], $"Pin chai {worstWear:0.#}% — tính thời lượng thực tế và chi phí thay pin");
+        return (["batteryWornOver40"], $"Pin chai {worstWear:0.#}% — tính chi phí thay pin trước khi mua");
+    }
+
     /// <summary>Báo cáo kết luận module cho trang Tổng kết. Quét xong mà chưa bấm cho qua
     /// thì chưa phải Đạt, kể cả khi ổ sạch (vì kỹ thuật viên chưa đối chiếu với đơn hàng);
     /// ổ cảnh báo / chưa rõ thì là Cảnh báo, ổ chặn thì là Chặn, cho qua rồi mà sạch mới là Đạt.</summary>
@@ -149,6 +179,8 @@ public partial class ConfigCheckPage : UserControl, YanJi.PluginSdk.IModulePage
                     : "Có ổ cảnh báo (<90%) — tối đa mua có điều kiện"));
         else if (r.HasDriveUnknown)
             _host.ReportVerdict("config", new(ModuleVerdictLevel.CanhBao, "Có ổ chưa rõ sức khỏe — kiểm tra tay bằng CrystalDiskInfo"));
+        else if (_batterySignals.Contains("batteryWorn20_30") || _batterySignals.Contains("batteryWornOver40"))
+            _host.ReportVerdict("config", new(ModuleVerdictLevel.CanhBao, _batteryNote));
         else if (Passed)
             _host.ReportVerdict("config", new(ModuleVerdictLevel.Dat, "Đã đối chiếu đúng với đơn hàng"));
         else

@@ -1,6 +1,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using YanJi.PluginSdk;
 using YanJi.PluginSdk.Services;
 
 namespace YanJi.Plugin.ScreenDeadPixel;
@@ -9,6 +10,7 @@ namespace YanJi.Plugin.ScreenDeadPixel;
 /// 通过约定同其它模块：确认无坏点 → PassChanged(true) → 导航圆点变绿 + 自动跳下一模块。</summary>
 public partial class DeadPixelPage : UserControl, YanJi.PluginSdk.IModulePage
 {
+    readonly IHostContext? _host; // Để báo tín hiệu điểm chết cho Tổng kết (có thể null khi test riêng)
     List<DisplayInfo> _monitors = [];
     ColorTestWindow? _testWindow;
 
@@ -18,8 +20,9 @@ public partial class DeadPixelPage : UserControl, YanJi.PluginSdk.IModulePage
     /// <summary>当前是否已确认通过。</summary>
     public bool Passed { get; private set; }
 
-    public DeadPixelPage()
+    public DeadPixelPage(IHostContext? host = null)
     {
+        _host = host;
         InitializeComponent();
         Loaded += (_, _) => RefreshMonitors();
     }
@@ -66,6 +69,11 @@ public partial class DeadPixelPage : UserControl, YanJi.PluginSdk.IModulePage
 
     void PassButton_Click(object sender, RoutedEventArgs e)
     {
+        bool dead = DeadPixelCheck.IsChecked == true;
+        _host?.ReportSignals("screen", dead ? ["screenDeadPixel"] : []);
+        _host?.ReportVerdict("screen", dead
+            ? new(ModuleVerdictLevel.CanhBao, "Màn hình có điểm chết / điểm sáng — cân nhắc vị trí và thương lượng giá")
+            : new(ModuleVerdictLevel.Dat, "Đã soi màn hình, không lỗi"));
         SetPassed(true);
         PassButton.IsEnabled = false;
     }
@@ -76,8 +84,16 @@ public partial class DeadPixelPage : UserControl, YanJi.PluginSdk.IModulePage
         Passed = passed;
         if (passed)
         {
-            StatusText.Text = "✓ Đã xác nhận không lỗi";
-            StatusText.Foreground = Brushes.ForestGreen;
+            if (DeadPixelCheck.IsChecked == true)
+            {
+                StatusText.Text = "✓ Đã ghi nhận lỗi, cho qua (có điểm chết)";
+                StatusText.SetResourceReference(TextBlock.ForegroundProperty, "AccentBrush");
+            }
+            else
+            {
+                StatusText.Text = "✓ Đã xác nhận không lỗi";
+                StatusText.Foreground = Brushes.ForestGreen;
+            }
         }
         else
         {

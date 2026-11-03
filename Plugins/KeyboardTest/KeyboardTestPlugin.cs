@@ -7,5 +7,5 @@ namespace YanJi.Plugin.KeyboardTest;
 public class KeyboardTestPlugin : IYanJiPlugin
 {
     public PluginInfo Info => new("keyboard", "Test bàn phím", "1.0.0", 20, false);
-    public UserControl CreatePage(IHostContext host) => new KeyboardTestPage();
+    public UserControl CreatePage(IHostContext host) => new KeyboardTestPage(host);
 }
