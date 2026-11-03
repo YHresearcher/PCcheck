@@ -555,3 +555,13 @@ public interface IHostContext                       // 宿主注入 CreatePage
 # mới mua" thành "hiểu rồi cho rõ mới thôi trả tiền" (câu cũ đảo thứ tự: trả
 # tiền rồi mới mua, trong khi gốc là hiểu rõ TRƯỚC KHI trả tiền). Cả 21 cặp sau
 # sửa vẫn qua script kiểm 6-8 chữ, thanh, vần, không ngoại lệ.
+
+# (33) "AN TÂM NHẮN BẠN" BỎ HẾT THƠ, VỀ LẠI CÂU VĂN (2026-11-03, chưa test Windows):
+# User chốt: dùng câu văn, thơ tui viết thấy gớm — bỏ hết thơ (cả thơ 2 vế (25)
+# lẫn lục bát (26)(27)(31)(32) đều chỉ còn là lịch sử). Pool anTamNotes khôi
+# phục nguyên văn 21 câu văn xuôi từ commit cc3b2f6 (1 câu gốc của user + 20
+# câu lời khuyên mua chung, mỗi câu 1 dòng, không còn ký tự xuống dòng):
+# Summary hiện lại 1 dòng, BaoCao.txt lại 1 dòng, không còn cặp 6-8. Fallback
+# trong PhrasingBank.cs về lại câu gốc của user ("Máy tốt là một chuyện, mua
+# đúng giá mới là chuyện đáng vui!"). Quy tắc hiện không đổi (chỉ đạt / cảnh
+# báo / chức năng, câu chỉ đổi khi kịch bản đổi, khóa vào báo cáo khi lưu).
