@@ -87,7 +87,7 @@ public static class HardwareInfoService
         var smb = SmbiosService.Read();
         if (smb == null)
         {
-            g.Add("SMBIOS thô", "Không đọc được (API firmware không hỗ trợ hoặc bị chặn)");
+            g.Add("SMBIOS thô", "Không đọc được — " + (SmbiosService.LastFailureReason ?? "API firmware không hỗ trợ hoặc bị chặn"));
             g.Add("Ghi chú", "Không xác thực được model máy/mainboard từ firmware — đối chiếu tem máy tay trước khi mua");
             return;
         }

@@ -49,29 +49,60 @@ public static class SmbiosService
         "parallels", "virtual machine", "hyper-v",
     ];
 
-    /// <summary>Đọc SMBIOS thô; thất bại (API không hỗ trợ, không đọc được) thì
-    /// trả về null — nhóm Máy &amp; Mainboard khi đó hiện "không đọc được", không bịa.</summary>
+    /// <summary>Lý do lần đọc SMBIOS gần nhất thất bại (chỉ để chẩn đoán, hiển
+    /// thị ở nhóm Máy &amp; Mainboard); đọc thành công thì về null. Không dùng
+    /// để suy ra model/serial — thất bại vẫn là không đọc được, không bịa.</summary>
+    public static string? LastFailureReason { get; private set; }
+
+    /// <summary>Đọc SMBIOS thô; thất bại thì trả về null và ghi lý do vào
+    /// LastFailureReason — nhóm Máy &amp; Mainboard khi đó hiện lý do thật thay
+    /// vì câu chung chung, vẫn không bịa số. Đường thành công, thứ tự chữ ký,
+    /// luật placeholder và mọi offset parse giữ nguyên.</summary>
     public static SmbiosInfo? Read()
     {
         try
         {
+            string? lastDetail = null;
             foreach (uint signature in new[] { RsmbMsvc, RsmbLittleEndian })
             {
                 uint size = GetSystemFirmwareTable(signature, 0, IntPtr.Zero, 0);
-                if (size == 0) continue;
+                // GetLastWin32Error phải gọi ngay sau API, trước mọi call khác.
+                int sizeError = Marshal.GetLastWin32Error();
+                if (size == 0)
+                {
+                    lastDetail = $"truy vấn kích thước bảng trả về 0 (mã lỗi {sizeError})";
+                    continue;
+                }
                 var buffer = Marshal.AllocHGlobal((int)size);
                 try
                 {
                     uint read = GetSystemFirmwareTable(signature, 0, buffer, size);
-                    if (read == 0 || read > size) continue;
+                    int readError = Marshal.GetLastWin32Error();
+                    if (read == 0 || read > size)
+                    {
+                        lastDetail = read == 0
+                            ? $"đọc bảng trả về 0 (mã lỗi {readError})"
+                            : $"đọc bảng trả về {read} byte, vượt kích thước {size} byte";
+                        continue;
+                    }
                     var bytes = new byte[read];
                     Marshal.Copy(buffer, bytes, 0, (int)read);
-                    return Parse(bytes);
+                    var parsed = Parse(bytes);
+                    if (parsed == null)
+                    {
+                        LastFailureReason = $"parse bảng {read} byte không thấy Type 0/1/2/3";
+                        return null;
+                    }
+                    LastFailureReason = null;
+                    return parsed;
                 }
                 finally { Marshal.FreeHGlobal(buffer); }
             }
+            LastFailureReason = lastDetail != null
+                ? $"API firmware thất bại: {lastDetail}"
+                : "API firmware thất bại (không rõ chi tiết)";
         }
-        catch { /* API lỗi → null, nhóm hiển thị không đọc được */ }
+        catch (Exception ex) { LastFailureReason = $"ngoại lệ khi đọc SMBIOS: {ex.GetType().Name}: {ex.Message}"; }
         return null;
     }
 
