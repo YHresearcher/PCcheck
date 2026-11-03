@@ -90,6 +90,20 @@ public partial class SummaryPage : UserControl
         Refresh();
     }
 
+    /// <summary>Nút "Tham quan shop": mở website chính của shop
+    /// (https://www.vitinhantam.com) trong trình duyệt mặc định của máy test,
+    /// bằng UseShellExecute (cùng cách Dashboard/Settings mở thư mục). Nút luôn
+    /// hiện trên trang Tổng kết, không phụ thuộc kịch bản kết luận — người mua
+    /// xem máy nào cũng có thể bấm qua shop xem máy khác.</summary>
+    void VisitShopButton_Click(object sender, RoutedEventArgs e)
+    {
+        System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+        {
+            FileName = "https://www.vitinhantam.com",
+            UseShellExecute = true
+        });
+    }
+
     /// <summary>Lưu hồ sơ phiên này: 1 máy = 1 thư mục riêng, không ghi đè.
     /// Thư mục gốc mặc định là thư mục app đang chạy (bản portable = USB), tên
     /// <S/N>_<yyyyMMdd_HHmmss>; cùng S/N test lại trong cùng giây thì thêm _2, _3...

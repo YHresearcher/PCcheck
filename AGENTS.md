@@ -502,3 +502,12 @@ public interface IHostContext                       // 宿主注入 CreatePage
 # 6-8 chữ, thanh, vần, không ngoại lệ. Bài học: luật thanh/vần lục bát nghiêm
 # ngặt ép ra chữ gượng trong câu nhắn ngắn của shop — ưu tiên câu tự nhiên
 # trước, giữ luật khi không phải trả giá bằng chữ gượng.
+
+# (28) NÚT "THAM QUAN SHOP" TRÊN TRANG TỔNG KẾT (2026-11-03, chưa test Windows):
+# Nút "Tham quan shop" đặt cạnh nút "Đánh dấu không mua máy này" trên trang
+# Tổng kết (phần người mua đọc), bấm thì mở https://www.vitinhantam.com trong
+# trình duyệt mặc định bằng Process.Start + UseShellExecute (cùng cách Dashboard
+# / Settings mở thư mục, không cần thêm using vì gọi tên đầy đủ
+# System.Diagnostics). Nút luôn hiện, không phụ thuộc kịch bản kết luận (kể cả
+# máy KHÔNG KHUYẾN NGHỊ MUA thì người mua vẫn có thể qua shop xem máy khác);
+# nút chỉ là link, không ghi gì vào BaoCao.txt / KetQua.json.
