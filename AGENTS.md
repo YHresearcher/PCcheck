@@ -757,3 +757,16 @@ public interface IHostContext                       // 宿主注入 CreatePage
 # parse XML + assert + đếm ngoặc, chưa biên dịch/chạy trên Windows thật. Nếu trên máy user thẻ
 # vẫn hiện "Không đọc được" thì SMBIOS thật sự không đọc được trên máy đó, cần xem tiếp (hỏi
 # user xem thẻ hiện gì + nhóm Máy & Mainboard hiện gì) chứ không phải do giấu trong tab nữa.
+
+# (45) SIDEBAR CHỈ CÒN 2 ĐỊA CHỈ, CÁCH NHAU 1 DÒNG TRỐNG, ĐỒNG BỘ VIẾT TẮT (2026-11-03, chưa test Windows):
+# User xem ảnh chụp sidebar và yêu cầu: 2 địa chỉ cách nhau 1 dòng enter, xóa dòng website,
+# xóa dòng bảo hành, và đồng bộ cấu trúc nội dung địa chỉ. Sửa: khối sidebar chỉ còn 2 TextBlock
+# địa chỉ (CN1 Margin dưới = 12, tương đương 1 dòng trống cỡ chữ 10); xóa TextBlock website và
+# TextBlock "Bảo hành 6 tháng nguyên máy" (nút "Tham quan shop" vẫn mở website nên không mất
+# đường vào web; thông tin bảo hành vẫn còn trong mục Vi Tính An Tâm của README và chính sách
+# shop, chỉ không hiện ở sidebar nữa). Đồng bộ: CN2 "phường Thủ Đức" đổi thành "P. Thủ Đức" cho
+# giống CN1, cả 2 cùng cấu trúc viết tắt "P." (phường) + "T." (tỉnh) / "Tp." (thành phố); CN1 giữ
+# nguyên. README đồng bộ theo (danh sách chi nhánh + đoạn mô tả sidebar); mục Website/Email
+# trong phần Vi Tính An Tâm của README vẫn giữ (đó là thông tin liên hệ chung của shop, không
+# phải dòng website trong khối sidebar mà user muốn xóa). Chỉ sửa XAML + README, kiểm chứng bằng
+# parse XML + assert, chưa biên dịch/chạy trên Windows thật.

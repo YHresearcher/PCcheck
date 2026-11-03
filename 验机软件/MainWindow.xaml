@@ -104,22 +104,20 @@
                     <Button DockPanel.Dock="Bottom" x:Name="VisitShopButton" Content="Tham quan shop"
                             Margin="12,4,12,4" Padding="8,6" Click="VisitShopButton_Click"
                             ToolTip="Mở website vitinhantam.com trong trình duyệt mặc định"/>
-                    <!-- Khối thông tin shop trong phần mềm chính (chuyển từ Splash sang đây
-                         để luôn nhìn thấy, không chỉ hiện 1,5 giây lúc khởi động).
+                    <!-- Khối địa chỉ shop trong phần mềm chính: chỉ 2 chi nhánh, cách nhau
+                         1 dòng trống (Margin dưới CN1 = 12, tương đương 1 dòng chữ cỡ 10);
+                         dòng website và dòng bảo hành đã xóa theo yêu cầu (nút "Tham quan shop"
+                         bên trên vẫn mở website nên không mất đường vào web).
+                         2 địa chỉ đồng bộ cấu trúc viết tắt: "P." cho phường, "T." cho tỉnh,
+                         "Tp." cho thành phố (CN2 "phường" đổi thành "P." cho giống CN1).
                          Sidebar rộng cố định 200 nên chữ tự xuống dòng, khung hẹp cũng không vỡ.
                          Thứ tự khai báo Bottom ngược với thứ tự nhìn thấy: khối này khai sau nút
                          nên khi hiển thị nó nằm TRÊN nút, dưới NavList. -->
                     <StackPanel DockPanel.Dock="Bottom" Margin="12,8,12,4">
                         <TextBlock Text="Chi nhánh 1: 52 Nguyễn Cửu Vân, P. Long An, T. Tây Ninh"
                                    Foreground="{DynamicResource TextSecondaryBrush}" FontSize="10"
-                                   TextWrapping="Wrap" Margin="0,0,0,2"/>
-                        <TextBlock Text="Chi nhánh 2: 218/3 đường số 11, phường Thủ Đức, Tp. HCM"
-                                   Foreground="{DynamicResource TextSecondaryBrush}" FontSize="10"
-                                   TextWrapping="Wrap" Margin="0,0,0,2"/>
-                        <TextBlock Text="vitinhantam.com"
-                                   Foreground="{DynamicResource TextSecondaryBrush}" FontSize="10"
-                                   Margin="0,0,0,2"/>
-                        <TextBlock Text="Bảo hành 6 tháng nguyên máy"
+                                   TextWrapping="Wrap" Margin="0,0,0,12"/>
+                        <TextBlock Text="Chi nhánh 2: 218/3 đường số 11, P. Thủ Đức, Tp. HCM"
                                    Foreground="{DynamicResource TextSecondaryBrush}" FontSize="10"
                                    TextWrapping="Wrap"/>
                     </StackPanel>
