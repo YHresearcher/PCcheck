@@ -20,11 +20,13 @@
                    RenderOptions.BitmapScalingMode="HighQuality"/>
             <TextBlock Text="An Tâm PC Test" FontSize="28" FontWeight="Bold"
                        HorizontalAlignment="Center"/>
-            <TextBlock Text="Vi Tính An Tâm" FontSize="15" FontWeight="SemiBold"
-                       Foreground="{DynamicResource AccentBrush}"
-                       HorizontalAlignment="Center" Margin="0,4,0,0"/>
-            <TextBlock Text="Máy bán ra đã kiểm tra toàn bộ, bảo hành 6 tháng"
+            <TextBlock Text="Công cụ kiểm tra PC/ Laptop cũ"
                        FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}"
+                       HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center"
+                       Margin="0,4,0,0"/>
+            <TextBlock Text="Vi tính An Tâm | Chuyên máy đã qua sử dụng, chuẩn doanh nghiệp"
+                       FontSize="13" FontWeight="SemiBold"
+                       Foreground="{DynamicResource AccentBrush}"
                        HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center"
                        Margin="0,4,0,0"/>
             <TextBlock Text="Chi nhánh 1: 52 Nguyễn Cửu Vân, P. Long An, T. Tây Ninh"

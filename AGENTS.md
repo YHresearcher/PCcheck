@@ -661,3 +661,19 @@ public interface IHostContext                       // 宿主注入 CreatePage
 # quá vội vàng, / An Tâm kiểm trước, nhẹ nhàng xuống tay.") vẫn CHƯA gắn nhóm
 # nào (không nằm trong 25 cặp trên) vì user chưa chốt trigger — còn chờ câu trả
 # lời ở (37), đừng tự gán vào nhóm tốt.
+
+# (39) KHỐI THÔNG TIN DƯỚI TÊN PHẦN MỀM TRÊN SPLASH (2026-11-03, chưa test Windows):
+# User muốn dưới tên phần mềm có: "Công cụ kiểm tra PC/ Laptop cũ" + "Vi tính An
+# Tâm | Chuyên máy đã qua sử dụng, chuẩn doanh nghiệp" + 2 địa chỉ. Đặt ở màn
+# hình chờ Splash (nơi tên phần mềm hiện to nhất), thứ tự đúng như user liệt kê:
+# tên "An Tâm PC Test" (28 Bold, giữ nguyên) → tagline "Công cụ kiểm tra PC/
+# Laptop cũ" (12, chữ phụ) → dòng shop "Vi tính An Tâm | Chuyên máy đã qua sử
+# dụng, chuẩn doanh nghiệp" (13, SemiBold, màu Accent — lấy nguyên văn chữ user
+# viết, kể cả "Vi tính" viết thường chữ t) → 2 dòng chi nhánh (giữ nguyên) →
+# vitinhantam.com (giữ nguyên). Dòng slogan cũ "Máy bán ra đã kiểm tra toàn bộ,
+# bảo hành 6 tháng" GỠ khỏi Splash để khối mới không chật (cửa sổ Splash cố định
+# 480x400, giữ slogan thì suýt tràn khi dòng shop xuống 2 dòng) và để khỏi trùng
+# định vị với dòng shop mới; slogan vẫn còn ở subtitle top bar của MainWindow
+# nên thông tin bảo hành không mất khỏi app. Top bar MainWindow KHÔNG đổi trong
+# lần này (thanh top hẹp, nhét thêm 4 dòng sẽ chật cửa sổ chính) — nếu user muốn
+# khối này cả ở top bar thì nói thêm.
