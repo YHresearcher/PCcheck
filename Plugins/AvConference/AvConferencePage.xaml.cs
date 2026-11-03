@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
+using YanJi.PluginSdk;
 
 namespace YanJi.Plugin.AvConference;
 
@@ -17,6 +18,7 @@ public partial class AvConferencePage : UserControl, YanJi.PluginSdk.IModulePage
 
     readonly CameraService _camera = new();
     readonly AudioService _audio = new();
+    readonly IHostContext? _host;
     readonly string _recordFile = Path.Combine(Path.GetTempPath(), "yanji_mic_test.wav");
     readonly DispatcherTimer _levelTimer;
     readonly DispatcherTimer _recordLimitTimer;
