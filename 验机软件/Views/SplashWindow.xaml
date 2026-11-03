@@ -27,10 +27,17 @@
                        FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}"
                        HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center"
                        Margin="0,4,0,0"/>
-            <TextBlock Text="52 Nguyễn Cửu Vân, phường Long An, tỉnh Tây Ninh • vitinhantam.com"
+            <TextBlock Text="Chi nhánh 1: 52 Nguyễn Cửu Vân, P. Long An, T. Tây Ninh"
                        FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}"
                        HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center"
                        Margin="0,8,0,0"/>
+            <TextBlock Text="Chi nhánh 2: 218/3 đường số 11, phường Thủ Đức, Tp. HCM"
+                       FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}"
+                       HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center"
+                       Margin="0,2,0,0"/>
+            <TextBlock Text="vitinhantam.com"
+                       FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}"
+                       HorizontalAlignment="Center" Margin="0,2,0,0"/>
             <ProgressBar IsIndeterminate="True" Width="200" Height="6" Margin="0,16,0,0"/>
             <TextBlock Text="Đang khởi động..." FontSize="11"
                        Foreground="{DynamicResource TextSecondaryBrush}"

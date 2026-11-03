@@ -268,7 +268,8 @@ màn hình đang cắm không phải danh sách cổng — trang ghi rõ từng 
 
 ## Vi Tính An Tâm
 
-- Địa chỉ: 52 Nguyễn Cửu Vân, phường Long An, tỉnh Tây Ninh
+- Chi nhánh 1: 52 Nguyễn Cửu Vân, P. Long An, T. Tây Ninh
+- Chi nhánh 2: 218/3 đường số 11, phường Thủ Đức, Tp. HCM
 - Website: vitinhantam.com
 - Email: hello@vitinhantam.com
 - Máy bán ra đã kiểm tra toàn bộ trước khi giao, bảo hành 6 tháng nguyên máy.
