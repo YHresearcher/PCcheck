@@ -575,3 +575,28 @@ public interface IHostContext                       // 宿主注入 CreatePage
 # "sướng tay", "hơn đứt". Vẫn là lời khuyên mua chung, không khẳng định về
 # chiếc máy cụ thể, nên hiện cả ở đạt / cảnh báo / chức năng đều an toàn.
 # Fallback trong PhrasingBank.cs đổi theo câu 1 mới. Quy tắc hiện không đổi.
+
+# (35) 21 CẶP LỤC BÁT DO CHÍNH USER VIẾT (2026-11-03, chưa test Windows):
+# User viết lại toàn bộ 21 câu "An Tâm nhắn bạn" thành lục bát của riêng mình
+# (1-1 theo đúng thứ tự và ý của 21 câu văn xuôi trước đó: máy ngon + vừa túi,
+# xem kỹ trước khi mua, giá rẻ + rõ nguồn gốc, vỏ bóng + phiền trong, rẻ + tiền
+# sửa, qua tay mấy người, giữ bản kiểm, máy bền + giá cao đôi chút, pin/ổ yếu
+# + trừ hao, hợp việc + cấu hình quá mạnh, kiểm kỹ hôm nay, so giá niêm yết +
+# tình trạng, văn phòng êm + học hành pin khỏe, sạc/pin/ổ + tiền bay, chạy tốt
+# + sửa mãi, bảo hành hỏi rõ, rõ nguồn hàng + ngỡ vàng hóa thau, mặc cả + nói
+# thẳng, bán giục + xem kỹ, hiểu tận tường + thương đồng tiền, ít tiền + nguồn
+# gốc + bền lâu). Lấy nguyên văn từng chữ của user (kể cả dấu phẩy cuối câu 6
+# và dấu chấm cuối câu 8), không sửa thơ của user nữa — thơ của trợ lý trước
+# đó bị chê gớm thì thơ của user là chuẩn. Pool về lại dạng cặp 6-8 có "\n"
+# giữa 2 dòng (Summary hiện 2 dòng, BaoCao.txt tách 2 dòng). Fallback đổi theo
+# cặp 1 của user. Quy tắc hiện không đổi.
+# 5 CẶP TÌNH HUỐNG user đề xuất thêm (dí dỏm, hơi cà khịa nhưng có duyên) CHƯA
+# đưa vào code, chờ user chọn cách dùng: đạt tốt ("Máy ngon chẳng ngại đem
+# soi, / Càng xem càng thích, càng coi càng mừng."), nhiều lỗi ("Nhìn ngoài
+# bóng bẩy như hoa, / Kiểm xong mới biết, hóa ra hơi buồn."), cân nhắc giá
+# ("Máy này chưa hẳn là tồi, / Giá mà bớt chút, thì ngồi tính sau."), nên bỏ
+# qua ("Thấy xinh chớ vội trao tiền, / Kẻo mai ôm máy, muộn phiền ôm theo."),
+# hoàn tất ("Mua máy chớ quá vội vàng, / An Tâm kiểm trước, nhẹ nhàng xuống
+# tay."). Cả 5 đều đủ 6-8 chữ. Chưa gắn theo kết quả vì 2 cặp (nhiều lỗi, nên
+# bỏ qua) ứng với trường hợp hiện đang ẩn dòng An Tâm (nghiêm trọng / không
+# mua) — cần user chốt có cho hiện ở đó không trước khi gắn.

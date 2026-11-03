@@ -147,7 +147,7 @@ cả hai nền.
   nguồn điện; CPU tốt + ổ hao mòn + pin chai cùng lúc ra câu kết hợp B. Pin
   không đọc được % hoặc máy không có pin thì không báo tín hiệu, không đoán.
   Kết hợp C chưa tự chọn vì chưa có định nghĩa "cấu hình mạnh".
-- Dòng "An Tâm nhắn bạn" là câu văn xuôi thân thiện (vd "Máy tốt là một chuyện, mua đúng giá mới là chuyện đáng ăn mừng nè bạn!") chỉ hiện khi máy đạt hoặc cảnh báo nhẹ, không hiện khi
+- Dòng "An Tâm nhắn bạn" là cặp lục bát do chính user viết (vd "Máy ngon mua được thật vui, / Giá mà vừa túi, niềm vui thêm đầy.") chỉ hiện khi máy đạt hoặc cảnh báo nhẹ, không hiện khi
   có lỗi nghiêm trọng, chưa đủ dữ liệu, hoặc đã đánh dấu không mua — để không
   làm nhẹ cảnh báo.
 
