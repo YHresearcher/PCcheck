@@ -433,3 +433,19 @@ public interface IHostContext                       // 宿主注入 CreatePage
 # giống ổ bị chặn và sạc Kém) vì nguy hiểm; Tổng kết khi đó về câu nghiêm trọng
 # chung (combinedD) vì chưa có câu riêng cho pin phồng. Trang Sức khỏe đã thêm
 # mô tả tiếng Việt cho 13 mã tín hiệu ngoại quan mới.
+
+# (23) "AN TÂM NHẮN BẠN" MỞ RỘNG LÊN 21 CÂU (2026-11-03, chưa test Windows):
+# Phrasings.json anTamNotes từ 3 câu lên 21 câu (1 câu của user + 2 câu trợ lý viết
+# trước đó + 18 câu mới, tất cả đều là lời khuyên mua chung, không phải khẳng định
+# về chiếc máy cụ thể — để dòng này an toàn khi hiện cả ở kịch bản cảnh báo/chức
+# năng, không chỉ máy đạt). Các câu mới xoay quanh: đừng mua vì đẹp vỏ, tính cả
+# chi phí sửa, hỏi nguồn gốc/số chủ, giữ báo cáo, đừng mua vì giảm giá, trừ giá
+# khi pin/ổ yếu, chọn đúng nhu cầu (văn phòng/học), kiểm tra kỹ hôm nay, so cả
+# tình trạng + sau bán chứ không so giá suông, 3 thứ tốn tiền nhất (sạc/pin/ổ),
+# mua về dùng ngay, bảo hành rõ ràng, lai lịch rõ hơn vẻ mới, quyền thương lượng,
+# đừng để người bán vội, hiểu rõ trước khi trả tiền, tiền ít mà rõ ràng hơn tiền
+# nhiều mà mập mờ. Quy tắc hiện vẫn giữ: chỉ hiện khi đạt / cảnh báo / chức năng,
+# không hiện khi nghiêm trọng / thiếu dữ liệu / không mua; câu chỉ đổi khi kịch
+# bản đổi (không còn nút đổi câu tay); câu đã hiện lúc lưu sẽ khóa vào báo cáo.
+# Fallback trong PhrasingBank.cs vẫn chỉ giữ 1 câu của user (khi JSON hỏng/thiếu)
+# — không nhân bản cả pool vào C#, vì JSON mới là nguồn câu duy nhất.
