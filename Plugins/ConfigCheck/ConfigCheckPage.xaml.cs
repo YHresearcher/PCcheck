@@ -45,7 +45,7 @@ public partial class ConfigCheckPage : UserControl, YanJi.PluginSdk.IModulePage
         RunButton.IsEnabled = false;
         PassButton.IsEnabled = false;
         DetectProgress.Value = 0;
-        ResultsHost.ItemsSource = null;
+        SetTabGroups(null);
         PhaseText.SetResourceReference(TextBlock.ForegroundProperty, "TextSecondaryBrush");
         try
         {
@@ -58,7 +58,7 @@ public partial class ConfigCheckPage : UserControl, YanJi.PluginSdk.IModulePage
             var report = await Task.Run(() => HardwareInfoService.Collect(progress));
             _lastReport = report;
             ReportConfigVerdict();
-            ResultsHost.ItemsSource = report.Groups;
+            SetTabGroups(report);
             DetectProgress.Value = 100;
             if (report.DriveBlockReasons.Count > 0)
             {
@@ -114,6 +114,21 @@ public partial class ConfigCheckPage : UserControl, YanJi.PluginSdk.IModulePage
                 : " Lưu ý: có ổ cảnh báo (<90%) — tối đa mua có điều kiện.";
         if (_lastReport?.HasDriveUnknown == true)
             PhaseText.Text += " Lưu ý: có ổ chưa rõ sức khỏe — kiểm tra tay bằng CrystalDiskInfo trước khi mua.";
+    }
+
+
+    /// <summary>Chia nhóm thu thập thành tab kiểu CPU-Z. Ánh xạ theo tiêu đề nhóm
+    /// (CPU / RAM / Ổ / Card màn hình), nhóm nào không khớp thì vào tab Khác —
+    /// để nhóm mới sau này không bị lọc mất. Tab trống thì hiện trống, không lỗi.</summary>
+    void SetTabGroups(HardwareReport? report)
+    {
+        var groups = report?.Groups ?? new List<InfoGroup>();
+        CpuHost.ItemsSource = groups.Where(g => g.Title == "CPU").ToList();
+        MemoryHost.ItemsSource = groups.Where(g => g.Title == "RAM").ToList();
+        StorageHost.ItemsSource = groups.Where(g => g.Title == "Ổ").ToList();
+        GraphicsHost.ItemsSource = groups.Where(g => g.Title.StartsWith("Card màn hình")).ToList();
+        OtherHost.ItemsSource = groups.Where(g =>
+            g.Title != "CPU" && g.Title != "RAM" && g.Title != "Ổ" && !g.Title.StartsWith("Card màn hình")).ToList();
     }
 
     /// <summary>Báo cáo kết luận module cho trang Tổng kết. Quét xong mà chưa bấm cho qua

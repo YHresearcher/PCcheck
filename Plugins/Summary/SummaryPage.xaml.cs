@@ -137,14 +137,15 @@ public partial class SummaryPage : UserControl
         string fallbackNote = "";
         try
         {
-            ketQuaDir = Path.Combine(AppContext.BaseDirectory, "KetQua");
+            // Đường dẫn hồ sơ theo Cài đặt (UsbPath nếu có, không thì thư mục app)
+            ketQuaDir = YanJi.PluginSdk.Services.AppSettings.GetKetQuaDir();
             Directory.CreateDirectory(ketQuaDir);
         }
         catch
         {
             ketQuaDir = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "YanJi", "KetQua");
-            fallbackNote = " (thư mục app ghi không được, đã lưu vào %APPDATA%\\YanJi\\KetQua\\)";
+            fallbackNote = " (đường dẫn hồ sơ trong Cài đặt ghi không được, đã lưu vào %APPDATA%\\YanJi\\KetQua\\)";
         }
 
         string folderName = $"{sn}_{timestamp}";

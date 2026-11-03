@@ -1,23 +1,78 @@
 <UserControl x:Class="YanJi.Plugin.ConfigCheck.ConfigCheckPage"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <UserControl.Resources>
+        <!-- Thẻ nhóm phần cứng dùng chung cho mọi tab (项目 = 值 两列；Details 非空时带「详细信息」折叠区).
+             Tab nào cũng dùng đúng 1 template này, để CPU / Memory / Storage / Graphics / Khác
+             hiển thị cùng 1 kiểu, không phải viết lại 5 lần. -->
+        <DataTemplate x:Key="GroupCardTemplate">
+            <Border Style="{StaticResource CardBorder}" Width="Auto" Margin="0,0,0,12" Padding="14,10">
+                <StackPanel>
+                    <TextBlock Text="{Binding Title}" FontWeight="SemiBold" FontSize="13"/>
+                    <ItemsControl ItemsSource="{Binding Entries}" Margin="0,6,0,0">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="0,2">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="180"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{Binding Name}"
+                                               Foreground="{DynamicResource TextSecondaryBrush}"/>
+                                    <TextBlock Grid.Column="1" Text="{Binding Value}"
+                                               TextWrapping="Wrap"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <Expander Header="Chi tiết" Style="{StaticResource DetailsExpander}">
+                        <ItemsControl ItemsSource="{Binding Details}" Margin="14,2,0,0">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="0,2">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="180"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="{Binding Name}"
+                                                   Foreground="{DynamicResource TextSecondaryBrush}"/>
+                                        <TextBlock Grid.Column="1" Text="{Binding Value}"
+                                                   TextWrapping="Wrap"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Expander>
+                </StackPanel>
+            </Border>
+        </DataTemplate>
+    </UserControl.Resources>
     <Grid Margin="16">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
+        <!-- Tiêu đề khu vực Thông tin phần cứng: số liệu thô kiểu CPU-Z, không phải kết luận.
+             Kết luận (Đạt / Cảnh báo / Chặn) ở trang Sức khỏe và Tổng kết, không ở đây. -->
+        <StackPanel Grid.Row="0">
+            <TextBlock Text="Thông tin phần cứng" FontSize="18" FontWeight="Bold"/>
+            <TextBlock Text="Số liệu thô kiểu CPU-Z — chỉ để xem và đối chiếu, không phải kết luận. Kết luận ổ / sạc ở trang Sức khỏe và Tổng kết."
+                       FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}"/>
+        </StackPanel>
+
         <!-- 状态行：通过后变绿 -->
-        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,4">
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,8">
             <TextBlock Text="Trạng thái đối chiếu:" FontWeight="SemiBold"/>
             <TextBlock x:Name="StatusText" Text="Chờ đối chiếu" Margin="8,0,0,0"
                        Foreground="{DynamicResource TextSecondaryBrush}"/>
         </StackPanel>
 
         <!-- 操作行（进入页面即自动检测，这里只保留手动重新检测） -->
-        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,8">
+        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,8">
             <Button x:Name="RunButton" Content="Kiểm tra lại"
                     FontSize="14" FontWeight="SemiBold" Padding="16,7" Click="RunButton_Click"
                     ToolTip="Thu thập lại thông tin CPU / Card màn hình / RAM / Ổ / Màn hình / Pin (sẽ xóa trạng thái đã cho qua)"/>
@@ -27,59 +82,42 @@
         </StackPanel>
 
         <!-- 进度行 -->
-        <StackPanel Grid.Row="2" Margin="0,0,0,8">
+        <StackPanel Grid.Row="3" Margin="0,0,0,8">
             <ProgressBar x:Name="DetectProgress" Height="10" Minimum="0" Maximum="100"/>
             <TextBlock x:Name="PhaseText" Text="Chưa đối chiếu" Margin="0,6,0,0"
                        Foreground="{DynamicResource TextSecondaryBrush}"/>
         </StackPanel>
 
-        <!-- 结果区：分组卡片（项目 = 值 两列；Details 非空时带「详细信息」折叠区） -->
-        <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto">
-            <ItemsControl x:Name="ResultsHost">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Border Style="{StaticResource CardBorder}" Width="Auto" Margin="0,0,0,12" Padding="14,10">
-                            <StackPanel>
-                                <TextBlock Text="{Binding Title}" FontWeight="SemiBold" FontSize="13"/>
-                                <ItemsControl ItemsSource="{Binding Entries}" Margin="0,6,0,0">
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate>
-                                            <Grid Margin="0,2">
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="180"/>
-                                                    <ColumnDefinition Width="*"/>
-                                                </Grid.ColumnDefinitions>
-                                                <TextBlock Text="{Binding Name}"
-                                                           Foreground="{DynamicResource TextSecondaryBrush}"/>
-                                                <TextBlock Grid.Column="1" Text="{Binding Value}"
-                                                           TextWrapping="Wrap"/>
-                                            </Grid>
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-                                </ItemsControl>
-                                <Expander Header="Chi tiết" Style="{StaticResource DetailsExpander}">
-                                    <ItemsControl ItemsSource="{Binding Details}" Margin="14,2,0,0">
-                                        <ItemsControl.ItemTemplate>
-                                            <DataTemplate>
-                                                <Grid Margin="0,2">
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="180"/>
-                                                        <ColumnDefinition Width="*"/>
-                                                    </Grid.ColumnDefinitions>
-                                                    <TextBlock Text="{Binding Name}"
-                                                               Foreground="{DynamicResource TextSecondaryBrush}"/>
-                                                    <TextBlock Grid.Column="1" Text="{Binding Value}"
-                                                               TextWrapping="Wrap"/>
-                                                </Grid>
-                                            </DataTemplate>
-                                        </ItemsControl.ItemTemplate>
-                                    </ItemsControl>
-                                </Expander>
-                            </StackPanel>
-                        </Border>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-        </ScrollViewer>
+        <!-- Kết quả: tab kiểu CPU-Z. Ánh xạ nhóm thu thập -> tab (xem SetTabGroups trong
+             code-behind): CPU -> CPU, RAM -> Memory, Ổ -> Storage, Card màn hình -> Graphics,
+             còn lại (Card mạng / Màn hình / Pin / nhóm mới sau này) -> Khác. Nhóm mới không
+             bị mất vì luôn rơi vào tab Khác, không bị lọc bỏ. -->
+        <TabControl Grid.Row="4">
+            <TabItem Header="CPU">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <ItemsControl x:Name="CpuHost" ItemTemplate="{StaticResource GroupCardTemplate}"/>
+                </ScrollViewer>
+            </TabItem>
+            <TabItem Header="Memory">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <ItemsControl x:Name="MemoryHost" ItemTemplate="{StaticResource GroupCardTemplate}"/>
+                </ScrollViewer>
+            </TabItem>
+            <TabItem Header="Storage">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <ItemsControl x:Name="StorageHost" ItemTemplate="{StaticResource GroupCardTemplate}"/>
+                </ScrollViewer>
+            </TabItem>
+            <TabItem Header="Graphics">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <ItemsControl x:Name="GraphicsHost" ItemTemplate="{StaticResource GroupCardTemplate}"/>
+                </ScrollViewer>
+            </TabItem>
+            <TabItem Header="Khác">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <ItemsControl x:Name="OtherHost" ItemTemplate="{StaticResource GroupCardTemplate}"/>
+                </ScrollViewer>
+            </TabItem>
+        </TabControl>
     </Grid>
 </UserControl>

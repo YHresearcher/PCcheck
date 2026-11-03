@@ -1,0 +1,55 @@
+<UserControl x:Class="YanJi.Plugin.Settings.SettingsPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0">
+            <TextBlock Text="Cài đặt" FontSize="18" FontWeight="Bold"/>
+            <TextBlock Text="Lưu ở %APPDATA%\YanJi\settings.json, theo app — hồ sơ từng máy mới theo đường dẫn USB bên dưới" FontSize="11"
+                       Foreground="{DynamicResource TextSecondaryBrush}"/>
+        </StackPanel>
+
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="0,12,0,0">
+            <StackPanel>
+                <TextBlock Text="Đường dẫn hồ sơ (USB)" FontWeight="SemiBold" FontSize="13"/>
+                <TextBlock Text="Để trống = tự động (thư mục app \ KetQua). Ghi đường dẫn khác nếu muốn hồ sơ lưu thẳng vào 1 USB / ổ riêng, ví dụ D:\KetQua. Lưu không được thì Tổng kết tự fallback về %APPDATA% và báo rõ, không im lặng lưu chỗ khác."
+                           TextWrapping="Wrap" FontSize="11" Margin="0,4,0,6"
+                           Foreground="{DynamicResource TextSecondaryBrush}"/>
+                <TextBox x:Name="UsbPathBox" Padding="6,4" TextWrapping="Wrap"/>
+                <TextBlock x:Name="EffectivePathText" FontSize="11" Margin="0,6,0,0" TextWrapping="Wrap"
+                           Foreground="{DynamicResource TextSecondaryBrush}"/>
+
+                <TextBlock Text="Thời lượng nướng (Tản nhiệt)" FontWeight="SemiBold" FontSize="13" Margin="0,16,0,0"/>
+                <TextBlock Text="Thời lượng khuyến nghị cho 1 lần nướng máy, tính bằng phút (1–60, mặc định 3). Trang Tản nhiệt hiện gợi ý này; khi đủ phút thì báo 'đã đủ thời lượng, có thể dừng'. Chỉ tự dừng khi bật ô dưới — mặc định không tự dừng, vì kỹ thuật viên có thể muốn nướng lâu hơn cho máy nghi ngờ."
+                           TextWrapping="Wrap" FontSize="11" Margin="0,4,0,6"
+                           Foreground="{DynamicResource TextSecondaryBrush}"/>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Nướng khuyến nghị:" VerticalAlignment="Center"/>
+                    <TextBox x:Name="StressMinutesBox" Width="60" Margin="8,0,0,0" Padding="6,4"/>
+                    <TextBlock Text="phút" VerticalAlignment="Center" Margin="8,0,0,0"/>
+                </StackPanel>
+                <CheckBox x:Name="AutoStopCheck" Content="Tự dừng nướng máy khi đủ thời lượng khuyến nghị" Margin="0,8,0,0"/>
+
+                <TextBlock Text="Công cụ và giao diện" FontWeight="SemiBold" FontSize="13" Margin="0,16,0,0"/>
+                <TextBlock Text="Giao diện sáng / tối đổi bằng công tắc ☀ / 🌙 ở góc phải trên của app (ThemeManager ở host, trang Cài đặt không đổi theme trực tiếp). Thư mục Tools (Prime95 / FurMark) chỉ xem, không đổi được — vì trang Tản nhiệt và Đo tốc độ ổ tìm tool theo đường dẫn cố định trong thư mục app."
+                           TextWrapping="Wrap" FontSize="11" Margin="0,4,0,6"
+                           Foreground="{DynamicResource TextSecondaryBrush}"/>
+                <TextBlock x:Name="ToolsPathText" FontSize="11" TextWrapping="Wrap"
+                           Foreground="{DynamicResource TextSecondaryBrush}"/>
+                <Button Content="Mở thư mục Tools" Padding="16,7" Margin="0,8,0,0" HorizontalAlignment="Left"
+                        Click="OpenToolsButton_Click"/>
+
+                <StackPanel Orientation="Horizontal" Margin="0,16,0,0">
+                    <Button Content="Lưu cài đặt" Padding="16,7" Click="SaveButton_Click"/>
+                    <Button Content="Khôi phục mặc định" Padding="16,7" Margin="8,0,0,0" Click="ResetButton_Click"/>
+                </StackPanel>
+                <TextBlock x:Name="SaveStatusText" FontSize="11" Margin="0,8,0,0" TextWrapping="Wrap"
+                           Foreground="{DynamicResource TextSecondaryBrush}"/>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

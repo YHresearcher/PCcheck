@@ -41,6 +41,9 @@
                     <TextBlock x:Name="RunStateText" Text="Chưa nướng máy lần nào; nướng máy làm phần cứng chạy hết công suất và nóng lên, chú ý nhiệt độ và quạt"
                                Margin="0,6,0,0" TextWrapping="Wrap"
                                Foreground="{DynamicResource TextSecondaryBrush}"/>
+                    <TextBlock x:Name="DurationHintText" Text="Thời lượng nướng khuyến nghị: 3 phút (đổi ở Cài đặt). Mặc định không tự dừng — kỹ thuật viên tự quyết dừng khi nào."
+                               Margin="0,4,0,0" TextWrapping="Wrap" FontSize="11"
+                               Foreground="{DynamicResource TextSecondaryBrush}"/>
                 </StackPanel>
             </Border>
 

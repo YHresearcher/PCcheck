@@ -13,6 +13,8 @@ public partial class StressTestPage : UserControl, YanJi.PluginSdk.IModulePage
     readonly DispatcherTimer _tick = new() { Interval = TimeSpan.FromMilliseconds(500) };
     TimeSpan _lastRun = TimeSpan.Zero; // 最近一次烤了多久（未烤过为 0，状态行提示用）
     DateTime? _runStart;               // 本轮烤机起点（running→停止 的那一拍结算进 _lastRun）
+    bool _autoStopAttempted;           // Đã thử tự dừng cho lần nướng này chưa (tránh gọi StopVerified mỗi 500ms nếu dừng không được)
+    bool _autoStopped;                 // Lần nướng vừa rồi là tự dừng theo Cài đặt (để ghi chú ở trạng thái sau khi dừng)
 
     /// <summary>核对完成状态变化（true = 已通过，false = 回到待核对）；MainWindow 据此同步导航圆点。</summary>
     public event Action<bool>? PassChanged;
@@ -53,6 +55,8 @@ public partial class StressTestPage : UserControl, YanJi.PluginSdk.IModulePage
 
     void StartButton_Click(object sender, RoutedEventArgs e)
     {
+        _autoStopAttempted = false;
+        _autoStopped = false;
         SetPassed(false);
         var mode = ParseTag<StressTestService.StressMode>(ModeBox);
         var fft = ParseTag<StressTestService.FftPreset>(FftBox);
@@ -249,7 +253,25 @@ public partial class StressTestPage : UserControl, YanJi.PluginSdk.IModulePage
         {
             _runStart = t0;
             var span = DateTime.Now - t0;
-            ElapsedText.Text = $"Đã nướng {FormatSpan(span)}";
+            int minutes = YanJi.PluginSdk.Services.AppSettings.StressMinutes;
+            bool autoStop = YanJi.PluginSdk.Services.AppSettings.AutoStopStress;
+            DurationHintText.Text = autoStop
+                ? $"Thời lượng nướng khuyến nghị: {minutes} phút, sẽ tự dừng khi đủ (theo Cài đặt)."
+                : $"Thời lượng nướng khuyến nghị: {minutes} phút (đổi ở Cài đặt). Mặc định không tự dừng — kỹ thuật viên tự quyết dừng khi nào.";
+            if (span >= TimeSpan.FromMinutes(minutes) && autoStop && !_autoStopAttempted)
+            {
+                // Tự dừng theo Cài đặt, dùng đúng đường dừng có kiểm chứng (không phải
+                // đường dừng mới): nếu dừng không được, StopVerified đã ghi log và
+                // IsRunning vẫn true, cờ _autoStopAttempted ngăn gọi lại mỗi 500ms.
+                _autoStopAttempted = true;
+                var survivors = StressTestService.StopVerified();
+                if (survivors.Count == 0) _autoStopped = true;
+                RefreshRunningState();
+                return;
+            }
+            ElapsedText.Text = span >= TimeSpan.FromMinutes(minutes)
+                ? $"Đã nướng {FormatSpan(span)} — đã đủ thời lượng khuyến nghị {minutes} phút, có thể dừng"
+                : $"Đã nướng {FormatSpan(span)}";
             RunStateText.Text = "Đang nướng máy… Chú ý nhiệt độ và quạt; rời khỏi trang này sẽ tự dừng nướng máy";
         }
         else
@@ -262,9 +284,13 @@ public partial class StressTestPage : UserControl, YanJi.PluginSdk.IModulePage
             }
             ElapsedText.Text = "Chưa nướng máy";
             if (_lastRun > TimeSpan.Zero)
-                RunStateText.Text = $"Lần này đã nướng {FormatSpan(_lastRun)}; có thể nướng lại hoặc đánh giá luôn tản nhiệt có đạt không";
+                RunStateText.Text = _autoStopped
+                    ? $"Đã tự dừng khi đủ thời lượng khuyến nghị ({FormatSpan(_lastRun)}); có thể nướng lại hoặc đánh giá luôn tản nhiệt có đạt không"
+                    : $"Lần này đã nướng {FormatSpan(_lastRun)}; có thể nướng lại hoặc đánh giá luôn tản nhiệt có đạt không";
             else if (!RunStateText.Text.StartsWith("Khởi động thất bại"))
                 RunStateText.Text = "Chưa nướng máy lần nào; nướng máy làm phần cứng chạy hết công suất và nóng lên, chú ý nhiệt độ và quạt";
+            // Không xóa _autoStopped ở đây: cờ này chỉ xóa khi bắt đầu lần nướng mới
+            // (StartButton_Click), để ghi chú "tự dừng" không bị mất ngay sau lần Refresh đầu tiên.
         }
 
         // 通过按钮旁的提示：未在烤 / 已烤时长，由用户自行判断（不做强限制）

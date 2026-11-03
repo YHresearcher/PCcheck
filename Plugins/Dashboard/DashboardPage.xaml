@@ -35,7 +35,10 @@
                     ToolTip="Tới trang Tổng kết: tiêu đề mua được hay không + câu nhận xét thân thiện + chi tiết từng module."/>
             <Button Content="Mở thư mục hồ sơ (KetQua)" Padding="16,7" Margin="0,8,0,0" HorizontalAlignment="Left"
                     Click="ReportsButton_Click"
-                    ToolTip="Mở thư mục chứa hồ sơ từng phiên test (mỗi máy 1 thư mục riêng, xem lại báo cáo cũ)."/>
+                    ToolTip="Mở thư mục chứa hồ sơ từng phiên test (mỗi máy 1 thư mục riêng, xem lại báo cáo cũ). Đường dẫn này đổi được ở Cài đặt."/>
+            <Button Content="Mở Cài đặt" Padding="16,7" Margin="0,8,0,0" HorizontalAlignment="Left"
+                    Click="SettingsButton_Click"
+                    ToolTip="Đổi đường dẫn hồ sơ (USB), thời lượng nướng khuyến nghị và tự dừng khi đủ thời lượng."/>
             <TextBlock Text="Ghi chú: Dashboard không tự chọn câu nhận xét riêng — câu nhận xét thân thiện chỉ hiện ở trang Tổng kết, để 2 nơi không hiện 2 câu khác nhau cho cùng 1 kết luận. Vào wizard thì menu bên trái bị khóa, mỗi lần chỉ 1 bài test; bấm Thoát wizard ở thanh trên để mở lại menu, trạng thái test không mất."
                        TextWrapping="Wrap" FontSize="11" Margin="0,12,0,0"
                        Foreground="{DynamicResource TextSecondaryBrush}"/>

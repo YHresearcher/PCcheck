@@ -97,9 +97,16 @@ cả hai nền.
   bài test): đánh giá theo mức độ nghiêm trọng từ kết quả đã test — Đạt / Cảnh báo /
   Chặn / Chưa test. Chưa test không được hiểu là khỏe; stress ngắn đạt không chứng
   minh ổn định lâu dài.
-- Chưa làm trong bản này: tab CPU-Z cho Thông tin phần cứng và trang Cài đặt
-  (đường dẫn USB, thời lượng test) — làm riêng sau, vì Cài đặt cần 1 settings
-  service chung để Tổng kết và Tản nhiệt cùng đọc.
+- Trang **Thông tin phần cứng** (Đối chiếu cấu hình) trình bày kiểu CPU-Z:
+  tab CPU / Memory / Storage / Graphics / Khác, số liệu thô, không phải kết luận.
+  Nhóm nào không thuộc 4 tab chính thì vào tab Khác, không bị mất.
+- Trang **Cài đặt** (cuối menu, từ Dashboard cũng vào được): đường dẫn hồ sơ
+  (để trống = thư mục app \ KetQua, ghi khác nếu muốn lưu thẳng vào USB / ổ
+  riêng), thời lượng nướng khuyến nghị (mặc định 3 phút, 1–60), tự dừng khi đủ
+  thời lượng (mặc định tắt — bật thì Tản nhiệt tự dừng bằng đường dừng đã kiểm
+  chứng, không tự dừng nếu chưa bật). Giao diện sáng/tối vẫn đổi bằng công tắc
+  ở góc phải trên, thư mục Tools chỉ xem. Cài đặt lưu ở %APPDATA%\YanJi\
+  settings.json, theo app, không theo USB.
 
 ## Kết luận mua máy (trang Tổng kết: mua được hay không, cho cả kỹ thuật viên và người mua)
 

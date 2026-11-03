@@ -297,3 +297,23 @@ public interface IHostContext                       // 宿主注入 CreatePage
 # (ConfigCheck vẫn là trang nhóm, chưa tách tab CPU/Memory/Storage/Graphics) và
 # Cài đặt (đường dẫn USB, thời lượng test — cần settings service chung trong
 # PluginSdk để Summary/Stress cùng đọc, làm riêng 1 commit, không nhét vào bản này).
+
+# (18) THÔNG TIN PHẦN CỨNG KIỂU CPU-Z + CÀI ĐẶT (2026-11-03, chưa test Windows):
+# ConfigCheckPage thành tab CPU / Memory / Storage / Graphics / Khác, 1 template
+# GroupCardTemplate dùng chung cho mọi tab (trong UserControl.Resources); ánh xạ
+# theo tiêu đề nhóm (CPU / RAM / Ổ / Card màn hình...), nhóm không khớp thì vào
+# tab Khác, không bị lọc mất. Trang vẫn là module cho qua (đối chiếu với đơn
+# hàng), chỉ đổi cách trình bày — kết luận vẫn ở Sức khỏe / Tổng kết, không ở đây.
+# PluginSdk/Services/AppSettings.cs: settings.json ở %APPDATA%\YanJi (theo app,
+# không theo USB), UsbPath trống = tự động (thư mục app \ KetQua), StressMinutes
+# 1-60 mặc định 3, AutoStopStress mặc định TẮT; file hỏng thì về mặc định, không
+# crash. Summary + Dashboard dùng AppSettings.GetKetQuaDir() (fallback %APPDATA%
+# nếu ghi không được, báo rõ). StressPage: hiện thời lượng khuyến nghị, đủ phút
+# thì báo có thể dừng, bật AutoStop thì tự dừng bằng StopVerified đã kiểm chứng
+# (cờ _autoStopAttempted ngăn gọi lại mỗi 500ms nếu dừng không được, cờ _autoStopped
+# giữ ghi chú cho tới lần nướng mới). Plugin Settings (id settings, order 95,
+# Terminal, cuối menu): ô đường dẫn hồ sơ (lưu thì thử tạo thư mục trước, không
+# lưu đường hỏng), ô số phút (sai thì báo, không lưu), checkbox tự dừng, Tools
+# chỉ xem + nút mở thư mục, theme chỉ ghi chú (đổi bằng công tắc top bar, vì
+# ThemeManager ở host). Wiring: host csproj Build/Copy/Publish, .slnx, installer.
+# Dashboard thêm nút Mở Cài đặt.

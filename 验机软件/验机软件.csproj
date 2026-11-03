@@ -62,6 +62,8 @@
              Properties="Configuration=$(Configuration)" RemoveProperties="RuntimeIdentifier;SelfContained" />
     <MSBuild Projects="..\Plugins\Health\YanJi.Plugin.Health.csproj" Targets="Build"
              Properties="Configuration=$(Configuration)" RemoveProperties="RuntimeIdentifier;SelfContained" />
+    <MSBuild Projects="..\Plugins\Settings\YanJi.Plugin.Settings.csproj" Targets="Build"
+             Properties="Configuration=$(Configuration)" RemoveProperties="RuntimeIdentifier;SelfContained" />
   </Target>
 
   <!-- %(RecursiveDir) 保留子目录结构；插件目录按 plugin.json 的 id 命名 -->
@@ -77,6 +79,7 @@
       <_PluginSummaryFiles Include="..\Plugins\Summary\bin\$(Configuration)\net10.0-windows10.0.19041.0\**\*" />
       <_PluginDashboardFiles Include="..\Plugins\Dashboard\bin\$(Configuration)\net10.0-windows10.0.19041.0\**\*" />
       <_PluginHealthFiles Include="..\Plugins\Health\bin\$(Configuration)\net10.0-windows10.0.19041.0\**\*" />
+      <_PluginSettingsFiles Include="..\Plugins\Settings\bin\$(Configuration)\net10.0-windows10.0.19041.0\**\*" />
     </ItemGroup>
     <Copy SourceFiles="@(_PluginConfigFiles)" SkipUnchangedFiles="true"
           DestinationFiles="@(_PluginConfigFiles->'$(OutDir)plugins\config\%(RecursiveDir)%(Filename)%(Extension)')" />
@@ -98,6 +101,8 @@
           DestinationFiles="@(_PluginDashboardFiles->'$(OutDir)plugins\dashboard\%(RecursiveDir)%(Filename)%(Extension)')" />
     <Copy SourceFiles="@(_PluginHealthFiles)" SkipUnchangedFiles="true"
           DestinationFiles="@(_PluginHealthFiles->'$(OutDir)plugins\health\%(RecursiveDir)%(Filename)%(Extension)')" />
+    <Copy SourceFiles="@(_PluginSettingsFiles)" SkipUnchangedFiles="true"
+          DestinationFiles="@(_PluginSettingsFiles->'$(OutDir)plugins\settings\%(RecursiveDir)%(Filename)%(Extension)')" />
   </Target>
 
   <!-- 发布时把插件负载同步到 publish 目录（publish 不扫 OutDir，需要单独拷一次） -->
@@ -113,6 +118,7 @@
       <_PubSummary Include="..\Plugins\Summary\bin\$(Configuration)\net10.0-windows10.0.19041.0\**\*" />
       <_PubDashboard Include="..\Plugins\Dashboard\bin\$(Configuration)\net10.0-windows10.0.19041.0\**\*" />
       <_PubHealth Include="..\Plugins\Health\bin\$(Configuration)\net10.0-windows10.0.19041.0\**\*" />
+      <_PubSettings Include="..\Plugins\Settings\bin\$(Configuration)\net10.0-windows10.0.19041.0\**\*" />
     </ItemGroup>
     <Copy SourceFiles="@(_PubConfig)" SkipUnchangedFiles="true"
           DestinationFiles="@(_PubConfig->'$(PublishDir)plugins\config\%(RecursiveDir)%(Filename)%(Extension)')" />
@@ -134,6 +140,8 @@
           DestinationFiles="@(_PubDashboard->'$(PublishDir)plugins\dashboard\%(RecursiveDir)%(Filename)%(Extension)')" />
     <Copy SourceFiles="@(_PubHealth)" SkipUnchangedFiles="true"
           DestinationFiles="@(_PubHealth->'$(PublishDir)plugins\health\%(RecursiveDir)%(Filename)%(Extension)')" />
+    <Copy SourceFiles="@(_PubSettings)" SkipUnchangedFiles="true"
+          DestinationFiles="@(_PubSettings->'$(PublishDir)plugins\settings\%(RecursiveDir)%(Filename)%(Extension)')" />
   </Target>
 
   <ItemGroup>

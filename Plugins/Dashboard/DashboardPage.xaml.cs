@@ -52,9 +52,11 @@ public partial class DashboardPage : UserControl
     void HealthButton_Click(object sender, RoutedEventArgs e) => _host.NavigateTo("health");
     void SummaryButton_Click(object sender, RoutedEventArgs e) => _host.NavigateTo("summary");
 
+    void SettingsButton_Click(object sender, RoutedEventArgs e) => _host.NavigateTo("settings");
+
     void ReportsButton_Click(object sender, RoutedEventArgs e)
     {
-        string dir = Path.Combine(AppContext.BaseDirectory, "KetQua");
+        string dir = YanJi.PluginSdk.Services.AppSettings.GetKetQuaDir();
         if (!Directory.Exists(dir))
             dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "YanJi", "KetQua");
         try
