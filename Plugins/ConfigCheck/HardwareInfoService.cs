@@ -378,7 +378,7 @@ public static class HardwareInfoService
                 string verdict = DriveVerdict(d, report, tag);
                 g.Add("Kết luận ổ" + tag, verdict);
                 List<string> diskLetters = [];
-                if (d.DeviceNumber is uint n && letters.GetValueOrDefault((int)n) is List<string> found)
+                if (d.DeviceNumber is uint deviceNumber && letters.GetValueOrDefault((int)deviceNumber) is List<string> found)
                     diskLetters = found;
                 report.Drives.Add(new YanJi.PluginSdk.DriveSummary(
                     diskLetters,
