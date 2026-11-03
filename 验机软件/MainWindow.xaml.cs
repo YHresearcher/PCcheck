@@ -399,6 +399,13 @@ public partial class MainWindow : Window
     void OnWizardStopClick(object sender, RoutedEventArgs e) => ShowStopAllResult();
     void OnWizardExitClick(object sender, RoutedEventArgs e) => ExitWizardMode();
 
+    /// <summary>Nút "Tham quan shop" ở sidebar (trên footer phiên bản): mở
+    /// website chính của shop (https://www.vitinhantam.com) trong trình duyệt
+    /// mặc định, bằng Process.Start + UseShellExecute. Nút ở sidebar nên luôn
+    /// hiện ở mọi trang, không phụ thuộc trang Tổng kết hay kịch bản kết luận.</summary>
+    void VisitShopButton_Click(object sender, RoutedEventArgs e) =>
+        Process.Start(new ProcessStartInfo { FileName = "https://www.vitinhantam.com", UseShellExecute = true });
+
     /// <summary>窗口图标取 exe 内嵌图标（Win32 提取，多尺寸 ico 在各 DPI 下都清晰）。</summary>
     void UpdateIcon()
     {

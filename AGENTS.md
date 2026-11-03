@@ -511,3 +511,19 @@ public interface IHostContext                       // 宿主注入 CreatePage
 # System.Diagnostics). Nút luôn hiện, không phụ thuộc kịch bản kết luận (kể cả
 # máy KHÔNG KHUYẾN NGHỊ MUA thì người mua vẫn có thể qua shop xem máy khác);
 # nút chỉ là link, không ghi gì vào BaoCao.txt / KetQua.json.
+
+# (29) ĐỊA CHỈ 2 CHI NHÁNH TRÊN APP (2026-11-03, chưa test Windows):
+# Splash (màn hình chờ) và README đổi từ 1 địa chỉ sang 2 chi nhánh, giữ nguyên
+# cách viết tắt của user từng chữ: "Chi nhánh 1: 52 Nguyễn Cửu Vân, P. Long An,
+# T. Tây Ninh" và "Chi nhánh 2: 218/3 đường số 11, phường Thủ Đức, Tp. HCM";
+# website vitinhantam.com thành dòng riêng dưới 2 chi nhánh trên Splash. Top bar
+# (slogan + website) và footer (tên + phiên bản) không có địa chỉ nên không đổi.
+
+# (30) NÚT "THAM QUAN SHOP" DỜI SANG SIDEBAR (2026-11-03, chưa test Windows):
+# Nút "Tham quan shop" dời khỏi trang Tổng kết (AGENTS (28) chỉ còn là lịch sử
+# vị trí cũ) sang sidebar trái của MainWindow: Button DockPanel.Dock="Bottom"
+# khai báo sau footer phiên bản nên hiện ngay trên footer, dưới NavList, luôn
+# hiện ở mọi trang. Handler dời sang MainWindow.xaml.cs (kiểu expression-bodied
+# như các nút wizard, dùng sẵn using System.Diagnostics của host, cùng URL
+# https://www.vitinhantam.com và UseShellExecute). Trang Tổng kết không còn nút
+# này (cả XAML lẫn handler đã xóa) để chỉ còn 1 nút duy nhất.

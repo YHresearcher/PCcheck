@@ -30,9 +30,6 @@
             <Button x:Name="MarkLoaiButton" Content="Đánh dấu không mua máy này" Padding="16,7"
                     Click="MarkLoaiButton_Click"
                     ToolTip="Máy hỏng nặng, không nên mua thì bấm đây để kết luận thành KHÔNG MUA. Bấm lại để bỏ đánh dấu."/>
-            <Button x:Name="VisitShopButton" Content="Tham quan shop" Margin="8,0,0,0" Padding="16,7"
-                    Click="VisitShopButton_Click"
-                    ToolTip="Mở website vitinhantam.com trong trình duyệt mặc định"/>
         </StackPanel>
 
         <!-- Lưu hồ sơ phiên: 1 máy = 1 thư mục riêng trên USB, không ghi đè.
