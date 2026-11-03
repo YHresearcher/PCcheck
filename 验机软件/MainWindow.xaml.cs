@@ -39,6 +39,7 @@ public partial class MainWindow : Window
         readonly List<PluginInfo> _modules = [];
         readonly Dictionary<string, ModuleVerdict> _verdicts = [];
         readonly Dictionary<string, IReadOnlyList<string>> _signals = [];
+        readonly List<DriveSummary> _driveSummaries = [];
         public HostContext(MainWindow owner, Func<string, bool> isDone)
         {
             _owner = owner;
@@ -67,6 +68,14 @@ public partial class MainWindow : Window
             SignalChanged?.Invoke();
         }
         public event Action? SignalChanged;
+        public IReadOnlyList<DriveSummary> DriveSummaries => _driveSummaries;
+        public void ReportDriveSummaries(IReadOnlyList<DriveSummary> summaries)
+        {
+            _driveSummaries.Clear();
+            _driveSummaries.AddRange(summaries);
+            DriveSummariesChanged?.Invoke();
+        }
+        public event Action? DriveSummariesChanged;
         /// <summary>启动时批量填入 / 运行时追加（导入即载），均保持按 Order 排序。</summary>
         public void AddModule(PluginInfo info)
         {

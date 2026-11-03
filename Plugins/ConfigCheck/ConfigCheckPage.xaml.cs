@@ -63,6 +63,7 @@ public partial class ConfigCheckPage : UserControl, YanJi.PluginSdk.IModulePage
             (_batterySignals, _batteryNote) = ComputeBatterySignals(report);
             _host?.ReportSignals("config", _batterySignals);
             ReportConfigVerdict();
+            _host?.ReportDriveSummaries(report.Drives);
             SetTabGroups(report);
             SetIdentity(report);
             DetectProgress.Value = 100;

@@ -16,7 +16,7 @@ public class DiskMarkPlugin : IYanJiPlugin, IPluginShutdown, IStopHeavyTests
         new("diskspd 2.0.20a (Microsoft, hiyohiyo fork tùy chỉnh)", "Tiến trình con đo tốc độ (do engine CDM gọi, đi kèm plugin)", "MIT"),
     ];
 
-    public UserControl CreatePage(IHostContext host) => new DiskMarkPage();
+    public UserControl CreatePage(IHostContext host) => new DiskMarkPage(host);
     public void Shutdown() => DiskMarkPage.CleanupStatic();
     public IReadOnlyList<string> StopHeavyTests() => CdmService.StopVerified();
 }

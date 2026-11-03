@@ -18,6 +18,16 @@ public enum ModuleVerdictLevel { ChuaTest, Dat, CanhBao, Chan }
 /// (ví dụ "Ổ sức khỏe 65% (&lt;70%)"). Ghi chú không chứa thông tin khách hàng.</summary>
 public record ModuleVerdict(ModuleVerdictLevel Level, string Note);
 
+/// <summary>Thông tin 1 ổ vật lý do Đối chiếu cấu hình thu thập, để Đo tốc độ ổ
+/// làm kết luận ổ (thông tin + sức khỏe + tốc độ). Letters = các ký tự ổ thuộc
+/// ổ vật lý này (vd ["C:", "D:"]); rỗng = không gắn được ký tự (DeviceNumber
+/// không đọc được). VerdictText = dòng "Kết luận ổ" nguyên văn; BlockReasons /
+/// WarningReasons = lý do chặn / cảnh báo của riêng ổ này (đã bỏ tiền tố "Ổ #i").
+/// HealthPercent = null khi SMART không đọc được (không được hiểu là khỏe).</summary>
+public record DriveSummary(IReadOnlyList<string> Letters, string Model, string Capacity,
+    int? HealthPercent, string VerdictText,
+    IReadOnlyList<string> BlockReasons, IReadOnlyList<string> WarningReasons);
+
 /// <summary>宿主提供给插件的上下文（目前主要给「验机结束」类插件读全模块清单与完成状态）。</summary>
 public interface IHostContext
 {
@@ -48,6 +58,15 @@ public interface IHostContext
     void ReportSignals(string moduleId, IReadOnlyList<string> signals);
     /// <summary>任一模块信号变化后触发（UI 线程），trang Tổng kết / Sức khỏe đăng ký để làm mới.</summary>
     event Action? SignalChanged;
+    /// <summary>Thông tin các ổ vật lý do Đối chiếu cấu hình báo cáo lần gần nhất
+    /// (rỗng = chưa thu thập). Đo tốc độ ổ đọc để làm kết luận ổ (thông tin +
+    /// sức khỏe + tốc độ); chỉ host ghi, plugin chỉ đọc + báo cáo.</summary>
+    IReadOnlyList<DriveSummary> DriveSummaries { get; }
+    /// <summary>Đối chiếu cấu hình báo cáo toàn bộ thông tin ổ hiện tại (ghi đè
+    /// lần báo trước, gọi trên UI thread; host kích DriveSummariesChanged).</summary>
+    void ReportDriveSummaries(IReadOnlyList<DriveSummary> summaries);
+    /// <summary>Thông tin ổ thay đổi sau khi Đối chiếu cấu hình thu thập lại.</summary>
+    event Action? DriveSummariesChanged;
     /// <summary>Chuyển tới 1 module theo id (Dashboard dùng để nhảy tới bài test /
     /// thông tin phần cứng / sức khỏe / tổng kết). Trả về false nếu không có
     /// module đó. Chỉ đổi SelectedIndex của host, không tự vào wizard.</summary>

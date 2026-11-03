@@ -30,6 +30,11 @@ public class HardwareReport
     /// báo là ĐẠT chỉ vì sức khỏe cao). Trang Tổng kết hiển thị danh sách này thay
     /// cho câu chung chung "sức khỏe &lt;90%" khi có.</summary>
     public List<string> DriveWarningReasons { get; } = [];
+    /// <summary>Thông tin từng ổ vật lý (model, dung lượng, ký tự ổ, sức khỏe,
+    /// kết luận ổ, lý do chặn/cảnh báo riêng từng ổ) để Đo tốc độ ổ làm kết luận
+    /// ổ — do CollectDisks điền cùng lúc với nhóm hiển thị, không parse lại chuỗi
+    /// hiển thị. Rỗng = chưa thu thập ổ nào (LHM + WMI đều không có).</summary>
+    public List<YanJi.PluginSdk.DriveSummary> Drives { get; } = [];
     /// <summary>Có ổ chưa rõ sức khỏe (SMART đọc không được): cho qua được nhưng phải
     /// kiểm tra tay bằng CrystalDiskInfo trước khi mua, không tự cho là tốt.</summary>
     public bool HasDriveUnknown { get; set; }

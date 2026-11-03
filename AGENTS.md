@@ -842,3 +842,34 @@ public interface IHostContext                       // 宿主注入 CreatePage
 # Cài đặt, Tản nhiệt, lưu hồ sơ, font, ghi công Be Vietnam Pro). File settings.json cũ
 # có trường UsbPath vẫn đọc được (JSON bỏ qua trường lạ), lần lưu sau sẽ xóa trường đó.
 # Chỉ kiểm chứng bằng parse XML + đếm ngoặc + assert, chưa biên dịch/chạy Windows thật.
+
+# (52) KẾT LUẬN Ổ CỨNG TRÊN TRANG ĐO TỐC ĐỘ (2026-11-03, chưa test Windows):
+# User: đo ổ xong chạy ok nhưng không biết đánh giá số như thế nào; kết luận phải
+# cho biết thông tin ổ, sức khỏe, rồi dựa vào kết quả test mà kết luận; kết luận
+# hiện ngay sau khi đo vì là phần kết luận của ổ cứng; chỉ đánh giá ổ tốt hay không.
+# Sửa: PluginSdk thêm record DriveSummary (ký tự ổ, model, dung lượng, sức khỏe %,
+# dòng kết luận ổ nguyên văn, lý do chặn/cảnh báo riêng từng ổ) + IHostContext
+# DriveSummaries / ReportDriveSummaries / DriveSummariesChanged; MainWindow.HostContext
+# implement theo mẫu Verdicts/Signals (Clear + AddRange + kích event). ConfigCheck:
+# HardwareReport thêm Drives, CollectDisks điền cùng lúc với nhóm hiển thị (cả kênh
+# LHM lẫn kênh WMI; lý do chặn/cảnh báo lấy bằng cách đếm trước/sau khi gọi
+# DriveVerdict rồi bỏ tiền tố "Ổ #i " cho gọn; ký tự ổ từ QueryDiskLetters theo
+# DeviceNumber = Win32_DiskDrive.Index); ConfigCheckPage publish Drives sau mỗi lần
+# thu thập. DiskMark: plugin truyền host vào page (trước đây page không nhận host);
+# page thêm thẻ "Kết luận ổ cứng" dưới thẻ 4 con số (thông tin ổ + sức khỏe +
+# tốc độ tham khảo + 1 câu kết luận, màu theo mức: tốt xanh lá, điều kiện/thấp
+# cam Accent, không tốt đỏ Error, chưa đủ dữ liệu chữ phụ); quay lại trang sau khi
+# Đối chiếu cấu hình chạy xong thì kết luận cập nhật theo (Loaded refresh).
+# Khớp ổ theo ký tự ổ đo; chỉ có đúng 1 ổ mà không gắn được ký tự thì lấy ổ đó;
+# nhiều ổ không khớp thì sức khỏe = Chưa rõ (không đoán). Thứ tự kết luận: sức khỏe
+# ưu tiên hơn tốc độ (chặn → không tốt bất kể tốc độ nhanh; cảnh báo → dùng có điều
+# kiện; khỏe + tốc độ ngang ổ cơ → khỏe nhưng chậm, cân nhắc SSD; khỏe + 4K <10 →
+# thấp bất thường, kiểm tra thêm; khỏe + tốc độ bình thường → tốt; chưa rõ sức khỏe
+# → không kết luận tốt, tốc độ chỉ tham khảo). Ngưỡng tốc độ chỉ là tham khảo chung
+# (tuần tự ≥1000 ngang NVMe, 250-999 ngang SSD SATA, <250 + 4K <5 ngang ổ cơ;
+# 4K ≥40 nhanh, 20-39 bình thường SSD, 10-19 hơi chậm, <10 thấp bất thường cho SSD;
+# ghi tuần tự <30% đọc thì cảnh báo), KHÔNG phải chuẩn shop, KHÔNG chặn nút cho qua,
+# KHÔNG đổi kết luận mua tổng (bảo vệ mức máy vẫn nằm ở ConfigCheck chặn + Tổng kết).
+# Gợi ý "tự đánh giá rồi bấm đạt" và tooltip nút cho qua đổi thành "xem kết luận ổ
+# ở trên rồi bấm đạt" vì app giờ đã đánh giá thay người dùng. Chỉ kiểm chứng bằng
+# parse XML + đếm ngoặc + assert + grep nhất quán, chưa biên dịch/chạy Windows thật.

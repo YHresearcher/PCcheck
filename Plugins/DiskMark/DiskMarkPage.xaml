@@ -81,6 +81,21 @@
                 </StackPanel>
             </Border>
 
+            <!-- 结论卡：硬盘结论（仅评价这块盘好不好，不是整机购买结论；不 chặn nút cho qua，不改结论总） -->
+            <Border Style="{StaticResource CardBorder}" Width="Auto" Margin="0,12,0,0" Padding="14,10">
+                <StackPanel>
+                    <TextBlock Text="Kết luận ổ cứng" FontWeight="SemiBold" FontSize="13"/>
+                    <TextBlock x:Name="DriveInfoText" Margin="0,6,0,0" TextWrapping="Wrap" FontSize="11"
+                               Foreground="{DynamicResource TextSecondaryBrush}"/>
+                    <TextBlock x:Name="DriveHealthText" Margin="0,2,0,0" TextWrapping="Wrap" FontSize="11"
+                               Foreground="{DynamicResource TextSecondaryBrush}"/>
+                    <TextBlock x:Name="DriveSpeedText" Margin="0,2,0,0" TextWrapping="Wrap" FontSize="11"
+                               Foreground="{DynamicResource TextSecondaryBrush}"/>
+                    <TextBlock x:Name="DriveConclusionText" Margin="0,6,0,0" TextWrapping="Wrap" FontSize="13"
+                               FontWeight="SemiBold"/>
+                </StackPanel>
+            </Border>
+
             <!-- 运行日志：Consolas（LogBox 惯例），自动滚底，上限 500 条；圆角 = 外套圆角 Border -->
             <Border Style="{StaticResource CardBorder}" Width="Auto" Margin="0,12,0,0" Padding="14,10">
                 <StackPanel>
@@ -101,7 +116,7 @@
             <StackPanel Orientation="Horizontal" Margin="0,14,0,4">
                 <Button x:Name="PassButton" Content="Xác nhận đã đo xong, đạt"
                         FontSize="14" FontWeight="SemiBold" Padding="16,7" Click="PassButton_Click"
-                        ToolTip="Bấm sau khi tự đánh giá kết quả đạt (nếu đang đo thì sẽ hủy đo rồi chuyển tiếp)"/>
+                        ToolTip="Bấm sau khi xem kết luận ổ ở trên thấy đạt (nếu đang đo thì sẽ hủy đo rồi chuyển tiếp)"/>
                 <TextBlock x:Name="PassHintText" Margin="10,0,0,0" VerticalAlignment="Center"
                            Foreground="{DynamicResource TextSecondaryBrush}"/>
             </StackPanel>

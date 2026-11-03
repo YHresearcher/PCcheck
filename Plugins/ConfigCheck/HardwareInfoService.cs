@@ -373,7 +373,21 @@ public static class HardwareInfoService
                 g.Add("Thời gian đã chạy" + tag, FormatHours(d.PowerOnHours));
                 g.Add("Lỗi toàn vẹn dữ liệu" + tag, d.MediaErrors is long me ? $"{me} lần" : "Không rõ");
                 g.Add("Lỗi nghiêm trọng" + tag, SeriousErrorsText(d));
-                g.Add("Kết luận ổ" + tag, DriveVerdict(d, report, tag));
+                int blockBefore = report.DriveBlockReasons.Count;
+                int warnBefore = report.DriveWarningReasons.Count;
+                string verdict = DriveVerdict(d, report, tag);
+                g.Add("Kết luận ổ" + tag, verdict);
+                List<string> diskLetters = [];
+                if (d.DeviceNumber is uint n && letters.GetValueOrDefault((int)n) is List<string> found)
+                    diskLetters = found;
+                report.Drives.Add(new YanJi.PluginSdk.DriveSummary(
+                    diskLetters,
+                    d.Name.Length > 0 ? d.Name : "Không rõ model",
+                    cap,
+                    d.HealthPercent,
+                    verdict,
+                    report.DriveBlockReasons.Skip(blockBefore).Select(r => StripDriveTag(r, tag)).ToList(),
+                    report.DriveWarningReasons.Skip(warnBefore).Select(r => StripDriveTag(r, tag)).ToList()));
             }
             return;
         }
@@ -395,7 +409,19 @@ public static class HardwareInfoService
             g.Add("Sức khỏe" + tag, "Không rõ");
             g.Add("Thời gian đã chạy" + tag, "Không rõ");
             g.Add("Lỗi toàn vẹn dữ liệu" + tag, "Không rõ");
-            g.Add("Kết luận ổ" + tag, DriveVerdict(null, null, report, tag));
+            int blockBefore = report.DriveBlockReasons.Count;
+            int warnBefore = report.DriveWarningReasons.Count;
+            string verdict = DriveVerdict(null, null, report, tag);
+            g.Add("Kết luận ổ" + tag, verdict);
+            List<string> diskLetters = [];
+            if (wmiLetters.GetValueOrDefault((int)GetU32(mo, "Index")) is List<string> found)
+                diskLetters = found;
+            report.Drives.Add(new YanJi.PluginSdk.DriveSummary(
+                diskLetters,
+                model.Length > 0 ? model : "Không rõ model",
+                cap, null, verdict,
+                report.DriveBlockReasons.Skip(blockBefore).Select(r => StripDriveTag(r, tag)).ToList(),
+                report.DriveWarningReasons.Skip(warnBefore).Select(r => StripDriveTag(r, tag)).ToList()));
         }
     }
 
@@ -502,6 +528,14 @@ public static class HardwareInfoService
     /// <summary>盘符列表 → 「　(C: D:)」片段；null 或空列表返回空串（不显示括号）。</summary>
     static string FormatLetters(List<string>? letters) =>
         letters is { Count: > 0 } ? $"　({string.Join(" ", letters)})" : "";
+
+    /// <summary>Bỏ tiền tố "Ổ #i " / "Ổ " khỏi lý do chặn/cảnh báo khi đưa vào
+    /// DriveSummary (lý do đã gắn với từng ổ, không cần tiền tố phân biệt ổ nữa).</summary>
+    static string StripDriveTag(string reason, string tag)
+    {
+        string prefix = $"Ổ{tag} ";
+        return reason.StartsWith(prefix) ? reason[prefix.Length..] : reason;
+    }
 
     /// <summary>物理盘 Index → 盘符列表（如 0 → [C:];同一盘多盘符都收）。关联链：
     /// Win32_DiskDrive → Win32_DiskDriveToDiskPartition → Win32_LogicalDiskToPartition → Win32_LogicalDisk；
