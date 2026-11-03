@@ -686,3 +686,22 @@ public interface IHostContext                       // 宿主注入 CreatePage
 # (tổng 3 dòng). TextBlock vốn đã TextWrapping="Wrap" nên ký tự xuống dòng hiện
 # đúng, không cần sửa XAML. KetQua.json không đổi (chỉ lưu cặp thơ, không lưu
 # nhãn nên không bị ảnh hưởng).
+
+# (41) PUBLISH KHÔNG CÒN THƯ MỤC NGÔN NGỮ fr/cs/de... (2026-11-03, chưa test Windows):
+# User thấy folder fr, cs, de... trong bản portable giải nén ra USB và hỏi xóa
+# được không. Kết luận: đó là thư mục vệ tinh ngôn ngữ của .NET runtime do publish
+# tự chứa (SelfContained win-x64) sinh ra, KHÔNG có trong repo (tìm khắp repo
+# không thấy folder locale nào) — nên không có gì để xóa trong repo. Xóa khỏi
+# USB thì an toàn vì app chỉ dùng tiếng Việt viết sẵn trong XAML/code, không dùng
+# các ngôn ngữ này; .NET fallback về tiếng Anh cho thông báo framework nếu cần,
+# không crash. Để khỏi phải xóa tay mỗi lần tải bản mới, workflow thêm bước xóa
+# sau "Publish app chính", trước khi đóng artifact/zip: xóa đúng 13 thư mục locale
+# chuẩn (cs, de, es, fr, it, ja, ko, pl, pt-BR, ru, tr, zh-Hans, zh-Hant) ở cả 2
+# chỗ (publish\ gốc + publish\Tools\furmark\ vì FurMark cũng publish tự chứa
+# và được copy nguyên vào Tools), có Test-Path nên thư mục không có cũng không
+# lỗi. Không đụng Tools/, plugins/ hay file khác. Bản USB hiện tại của user vẫn
+# phải xóa tay các folder đó (Muse không chạm được USB của user); bản Release
+# sau bước này mới sạch sẵn. Repo ngoài ra không còn file/folder dư rõ ràng:
+# không bin/obj/publish/.vs, không file untracked, git status sạch; 2 thư mục
+# nguồn lớn (集成开源项目代码 = LibreHardwareMonitor + Prime95 master) là mã nguồn
+# công cụ, không xóa khi chưa rõ còn cần build lại không.

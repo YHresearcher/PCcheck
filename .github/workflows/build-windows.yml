@@ -42,6 +42,24 @@ jobs:
         # Thư mục 验机软件 giữ nguyên tên gốc, vì đổi tên sẽ làm hỏng đường dẫn trong solution và csproj.
         run: dotnet publish "验机软件/验机软件.csproj" -p:PublishProfile=FolderProfile
 
+      - name: Xóa thư mục ngôn ngữ runtime không dùng (fr, cs, de...)
+        # Publish tự chứa (SelfContained) kèm theo thư mục vệ tinh ngôn ngữ của
+        # .NET runtime (cs, de, es, fr, ...). App chỉ dùng tiếng Việt viết sẵn
+        # trong XAML/code, không dùng các ngôn ngữ này, nên xóa để zip nhẹ hơn
+        # và USB khỏi chật. Xóa cũng không crash app (.NET fallback về tiếng Anh
+        # cho thông báo framework nếu cần). Chỉ xóa đúng danh sách này ở 2 chỗ
+        # (runtime app chính + runtime FurMark trong Tools), không đụng Tools/,
+        # plugins/ hay file nào khác. Thư mục không có thì Test-Path bỏ qua.
+        run: |
+          $locales = @('cs','de','es','fr','it','ja','ko','pl','pt-BR','ru','tr','zh-Hans','zh-Hant')
+          $roots = @('publish', 'publish\Tools\furmark')
+          foreach ($root in $roots) {
+            foreach ($loc in $locales) {
+              $dir = Join-Path $root $loc
+              if (Test-Path $dir) { Remove-Item $dir -Recurse -Force }
+            }
+          }
+
       - name: Liệt kê thư mục publish
         run: Get-ChildItem publish | Select-Object Name, Length
 
