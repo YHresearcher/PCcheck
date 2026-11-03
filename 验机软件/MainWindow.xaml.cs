@@ -6,11 +6,10 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 using YanJi.PluginSdk;
 using YanJi.Services;
-using YanJi.Views;
 
 namespace YanJi;
 
-/// <summary>主窗口外壳：顶栏（应用名 + 插件管理 + 主题开关）+ 左侧导航（验机项目，带完成状态圆点）+ 内容区。
+/// <summary>主窗口外壳：顶栏（应用名 + 停止全部测试 + 主题开关）+ 左侧导航（验机项目，带完成状态圆点）+ 内容区。
 /// 模块 = plugins/ 目录下的插件（见 AGENTS.md 插件开发文档）：启动时 PluginLoader 扫描加载，
 /// 导航项按插件 Order 动态生成；页面实现 IModulePage 并触发 PassChanged(true) → 圆点变绿并
 /// AdvanceToNextModule 自动跳到下一个未完成模块（全部完成时导航底部显示「全部验机项目已完成」，
@@ -201,7 +200,7 @@ public partial class MainWindow : Window
 
     static UIElement MakeEmptyPlaceholder() => new TextBlock
     {
-        Text = "Chưa cài module kiểm tra máy nào.\nBấm nút “Quản lý Module” ở góc phải trên để nhập gói module dạng zip, hoặc chạy lại trình cài đặt và chọn các module cần dùng.",
+        Text = "Chưa cài module kiểm tra máy nào.\nChạy lại trình cài đặt và chọn các module cần dùng.",
         TextWrapping = TextWrapping.Wrap,
         HorizontalAlignment = HorizontalAlignment.Center,
         VerticalAlignment = VerticalAlignment.Center,
@@ -288,11 +287,6 @@ public partial class MainWindow : Window
         Key key = e.Key == Key.System ? e.SystemKey : e.Key;
         if (key is Key.ImeProcessed or Key.None) return;
         if (kp.HandleKey(key, false)) e.Handled = true;
-    }
-
-    void OnPluginManagerClick(object sender, RoutedEventArgs e)
-    {
-        new PluginManagerWindow(_plugins, TryLoadPluginAtRuntime) { Owner = this }.ShowDialog();
     }
 
     /// <summary>Nút "Dừng tất cả test nặng": gọi IStopHeavyTests của mọi plugin có

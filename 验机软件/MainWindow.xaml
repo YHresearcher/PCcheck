@@ -17,7 +17,7 @@
         <!-- ═══ Dải cam thương hiệu An Tâm trên cùng ═══ -->
         <Border Grid.Row="0" Background="{DynamicResource AccentBrush}"/>
 
-        <!-- ═══ 顶栏：logo + 应用名 + 右侧 插件管理 + 主题开关 ═══ -->
+        <!-- ═══ Top bar: logo + tên app + bên phải nút Dừng tất cả test nặng + công tắc theme ═══ -->
         <Border Grid.Row="1" Background="{DynamicResource SubtleBgBrush}"
                 BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1"
                 Padding="14,8">
@@ -48,8 +48,6 @@
                 <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
                     <Button Content="Dừng tất cả test nặng" Click="OnStopAllHeavyTestsClick" Padding="12,4" Margin="0,0,12,0"
                             ToolTip="Dừng thật Prime95 / FurMark / đo tốc độ ổ (kill có kiểm chứng, không chỉ dừng giao diện). Nếu còn tiến trình sống sẽ báo rõ tên để kiểm tra Task Manager."/>
-                    <Button Content="Quản lý Module" Click="OnPluginManagerClick" Padding="12,4" Margin="0,0,12,0"
-                            ToolTip="Xem / xóa các module đã cài, hoặc nhập gói module dạng zip (module mới nhập là chạy ngay; xóa / ghi đè sẽ tự khởi động lại để hoàn tất)"/>
                     <TextBlock Text="☀" FontSize="14" Margin="0,0,4,0"/>
                     <ToggleButton x:Name="ThemeSwitch" Style="{StaticResource ThemeSwitch}"
                                   ToolTip="Đổi giao diện tối / sáng"
@@ -101,7 +99,11 @@
                     <TextBlock DockPanel.Dock="Bottom" Text="An Tâm PC Test v1.1.0"
                                Foreground="{DynamicResource TextSecondaryBrush}" FontSize="10"
                                TextWrapping="Wrap" Margin="12,4,12,10"/>
+                    <!-- Nút ghé shop màu cam thương hiệu (nền + viền Accent, chữ trắng, SemiBold)
+                         để nổi hơn nút mặc định; hover vẫn theo theme chung (NavHover + viền cam). -->
                     <Button DockPanel.Dock="Bottom" x:Name="VisitShopButton"
+                            Background="{DynamicResource AccentBrush}" BorderBrush="{DynamicResource AccentBrush}"
+                            Foreground="White" FontWeight="SemiBold"
                             Margin="12,4,12,4" Padding="8,6" Click="VisitShopButton_Click"
                             ToolTip="Mở website vitinhantam.com trong trình duyệt mặc định">
                         <StackPanel>

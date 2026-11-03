@@ -785,3 +785,20 @@ public interface IHostContext                       // 宿主注入 CreatePage
 # mà không dựa vào ký tự xuống dòng trong chuỗi. Tên handler VisitShopButton_Click và
 # chức năng mở vitinhantam.com giữ nguyên; comment code-behind + README đồng bộ theo.
 # Ghi chú (46) vẫn nhắc tên 1 dòng cũ vì đó là lịch sử lúc viết, không sửa lại.
+
+# (48) BỎ NÚT "Quản lý Module" KHỎI TOP BAR (2026-11-03, chưa test Windows):
+# User yêu cầu bỏ hạng mục quản lý module. Sửa: xóa Button "Quản lý Module" khỏi top bar
+# MainWindow + xóa handler OnPluginManagerClick + using YanJi.Views (chỉ dùng cho handler đó)
+# + sửa text trạng thái trống (không còn chỉ user bấm nút đã bỏ, chỉ còn "chạy lại trình cài
+# đặt") + sửa comment top bar + README (ghi công không còn "trong cửa sổ Quản lý Module").
+# PHẠM VI DỪNG Ở NÚT: cửa sổ PluginManagerWindow, PluginPackageService, App.ProcessPendingOps
+# và TryLoadPluginAtRuntime vẫn còn trong code nhưng không còn đường vào từ giao diện (không
+# còn nút nào mở chúng) — kỹ thuật viên không tự nhập/xóa module được nữa, module chỉ đổi qua
+# trình cài đặt. Xóa hẳn các file đó là bước lớn hơn (đụng PluginLoader/pending ops), chỉ làm
+# khi user yêu cầu rõ. TryLoadPluginAtRuntime giữ lại (public, không lỗi build khi thừa).
+# (49) NÚT GHÉ SHOP MÀU CAM NỔI HƠN (2026-11-03, chưa test Windows):
+# User muốn nút "Ghé qua shop xíu / ~_~" nổi hơn chút. Sửa: VisitShopButton thêm nền + viền
+# AccentBrush (cam thương hiệu), chữ trắng, SemiBold; 2 TextBlock con kế thừa Foreground +
+# FontWeight từ Button nên cả 2 dòng đều trắng đậm. Style Button dùng TemplateBinding nên
+# Background đặt ở nút có tác dụng ở trạng thái thường; hover vẫn theo theme chung (nền
+# NavHover + viền cam). Nếu thấy cam quá mạnh thì giảm xuống (vd chỉ viền + chữ cam).

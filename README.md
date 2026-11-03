@@ -112,7 +112,7 @@ Lỗi NVMe chỉ áp dụng cho NVMe, lỗi SATA chỉ áp dụng cho SATA, khô
 
 ## Module Cổng kết nối & Sạc — nguồn và những chỗ đã sửa
 
-Module này port từ laptop-diagnostic-tool của Tanxe Studio (giấy phép MIT), các hàm Get-ChargerInfo / Test-AdapterHealth và phần phát hiện cổng trong `FinalDiagnostic_v15.ps1`, port sang C# thành plugin `ports` (thứ tự 60, giữa Test tản nhiệt và Ngoại quan). Ghi công hiển thị trong cửa sổ Quản lý Module, theo đúng cơ chế Credits của app.
+Module này port từ laptop-diagnostic-tool của Tanxe Studio (giấy phép MIT), các hàm Get-ChargerInfo / Test-AdapterHealth và phần phát hiện cổng trong `FinalDiagnostic_v15.ps1`, port sang C# thành plugin `ports` (thứ tự 60, giữa Test tản nhiệt và Ngoại quan). Ghi công theo đúng cơ chế Credits của plugin.
 
 Ngưỡng sạc giữ nguyên bản gốc: điện áp dao động <3% Xuất sắc, <5% Tốt, <10% Trung bình, còn lại Kém; không sạc mà pin <99% trừ 50 điểm; điểm ≥85 Xuất sắc, ≥70 Tốt, ≥50 Trung bình, còn lại Kém. Chưa test sạc (máy có pin) hoặc sạc đánh giá Kém thì nút cho qua không cho qua — thay sạc rồi test lại. Máy bàn không có pin thì bỏ qua phần sạc.
 
@@ -189,7 +189,7 @@ Nếu đang xài Mac, đọc file `Huong_dan_build_tren_Mac.md` trong repo này 
 ## Ghi công và giấy phép
 
 - BibaYanji của Bibapcs — code chính, giấy phép MIT, file LICENSE gốc giữ nguyên. Các thành phần kèm theo giữ giấy phép riêng của chúng: LibreHardwareMonitor (MPL-2.0), Prime95 (GIMPS freeware), PawnIO (GPL-2.0 có ngoại lệ), CrystalDiskMark và diskspd (MIT), NAudio (Ms-PL), OpenTK (MIT), FurMark bản Python gốc (MIT). Khi copy hay phát lại thư mục này, giữ nguyên các file LICENSE kèm theo, đừng xóa.
-- Module Cổng kết nối & Sạc — port từ laptop-diagnostic-tool của Tanxe Studio, giấy phép MIT, ghi công trong cửa sổ Quản lý Module.
+- Module Cổng kết nối & Sạc — port từ laptop-diagnostic-tool của Tanxe Studio, giấy phép MIT, ghi công theo cơ chế Credits của plugin.
 - Bài nhạc test ở trang Camera - Mic - Loa: xem `AUDIO-LICENSE.md`.
 - App này không tích hợp phần mềm thương mại đóng nguồn nào (ví dụ HWiNFO) vào code, theo quy tắc của repo gốc. Thu thập phần cứng chỉ qua LibreHardwareMonitor và giao diện có sẵn của Windows (WMI, registry, Win32).
 
