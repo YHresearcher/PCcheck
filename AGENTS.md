@@ -2,7 +2,7 @@
 # Đây là bản fork dịch giao diện sang tiếng Việt từ BibaYanji gốc, giữ nguyên bản quyền MIT của Bibapcs.
 # Thay đổi so với bản gốc: (1) chữ hiện ra cho người dùng đã sang tiếng Việt, tên app thành "An Tâm PC test",
 # nhà phát hành thành "Vi Tính An Tâm"; (2) trình cài đặt ra file AnTamPCtestSetup-v0.0.4-VN.exe, cài vào
-# {autopf}\AnTamPCtest, nhưng tên file exe chính vẫn giữ nguyên 验机软件.exe; (3) tên file kết quả đo ổ đổi thành
+# {autopf}\AnTamPCtest, nhưng tên file exe chính là AnTamPCtest.exe; (3) tên file kết quả đo ổ đổi thành
 # KetQuaDoO.json và LichSuDoO.csv trong %APPDATA%\YanJi\disk_result; (4) KHÔNG tích hợp phần mềm thương mại
 # đóng nguồn nào (ví dụ HWiNFO) vào code này, theo quy tắc gốc; (5) dòng ghi công bài nhạc test ở trang
 # Camera - Mic - Loa giữ nguyên văn bản gốc, không được đổi, theo quy tắc gốc; (6) giao diện thương hiệu An Tâm:
@@ -25,6 +25,21 @@
 # (upload --clobber, chưa có thì create), link tải ổn định releases/latest/download/..., không cần đăng nhập;
 # workflow cần permissions contents: write, nếu để read thì bước Release lỗi 403; Release chỉ cập nhật
 # khi build thành công, bản lỗi không ghi đè bản tốt.
+# (11) kết luận từng module + kết luận tổng (Plugins/Summary, id=summary, order=90, Terminal):
+# PluginSdk thêm ModuleVerdictLevel (ChuaTest/Dat/CanhBao/Chan) + ModuleVerdict + IHostContext.Verdicts/
+# ReportVerdict/VerdictChanged, MainWindow.HostContext triển khai; ConfigCheck báo cáo theo kết luận ổ
+# (Chặn/Cảnh báo/Chưa test/Đạt sau khi cho qua), PortAdapter báo cáo theo kết luận sạc (Kém=Chặn,
+# Trung bình=Cảnh báo, còn lại theo đã cho qua/chưa); module khác chưa báo cáo thì Tổng kết suy từ
+# IsDone (cho qua=Đạt, chưa=Chưa test). Kết luận tổng tự động: có Chặn=SỬA, không Chặn mà có Cảnh báo=
+# BÁN CÓ ĐIỀU KIỆN, tất cả Đạt=ĐẠT, còn lại=CHƯA TEST XONG; LOẠI chỉ do kỹ thuật viên đánh dấu tay,
+# không tự sinh. Mỗi kết luận tổng có 5 cách nói thân thiện random, đổi bằng nút "Đổi cách nói",
+# kết luận không đổi khi đổi câu; chưa chấm điểm pin/nhiệt/tốc độ ổ vì chưa chốt ngưỡng;
+# (12) SỬA LỖI SPLASH TREO + ĐỔI TÊN EXE (2026-11-03): Loaded phải gắn TRƯỚC Show() (Loaded có thể
+# chạy ngay trong Show(), gắn sau sẽ bỏ lỡ, splash Topmost treo mãi) + kiểm tra IsLoaded sau Show()
+# + cờ chống đóng 2 lần; tên exe chính đổi từ 验机软件.exe sang AnTamPCtest.exe qua
+# <AssemblyName> trong host csproj (không code nào tham chiếu tên assembly host, RestartApp dùng
+# Environment.ProcessPath nên an toàn), shortcut trình cài đặt + tài liệu đổi theo; thư mục mã nguồn
+# vẫn giữ tên 验机软件, chỉ đổi tên file exe đầu ra.
 # Phần còn lại của file này vẫn là
 # tài liệu gốc bằng tiếng Trung, chưa dịch, dùng để tham khảo kỹ thuật.
 
@@ -101,7 +116,7 @@ publish 时另有 `CopyPluginsToPublish`（AfterTargets=Publish）同步到 `pub
 ### 运行时布局与加载
 
 ```
-验机软件.exe
+AnTamPCtest.exe
 ├── YanJi.PluginSdk.dll        # 契约（插件与宿主共享同一份类型）
 └── plugins/
     └── <id>/

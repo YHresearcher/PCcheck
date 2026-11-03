@@ -1,9 +1,9 @@
 ; 笔吧验机 安装向导脚本（Inno Setup 6，中文界面）
 ; 构建："%ProgramFiles(x86)%\Inno Setup 6\ISCC.exe" installer\setup.iss
-; 源 = publish\ 整目录（self-contained 便携包）；产物 = installer\AnTamPCtestSetup-v0.0.4-VN.exe (bản dịch tiếng Việt, tên file exe chính vẫn giữ nguyên 验机软件.exe)
+; 源 = publish\ 整目录（self-contained 便携包）；产物 = installer\AnTamPCtestSetup-v0.0.4-VN.exe (bản dịch tiếng Việt, tên file exe chính là AnTamPCtest.exe)
 ; 注意：OutputBaseFilename 不能含多余的点（"Setup-0.0.2" 的 ".0" 会被 Inno 当扩展名剥掉），用 v0.0.2 形式
 ;
-; 插件化结构：主程序 = 验机软件.exe + 运行时 + YanJi.PluginSdk.dll（组件 main，固定必装）；
+; 插件化结构：主程序 = AnTamPCtest.exe + 运行时 + YanJi.PluginSdk.dll（组件 main，固定必装）；
 ; 每个验机模块 = publish\plugins\<id>\ 目录（一个可选组件，默认全勾，自定义安装可取消）；
 ; Tools\（prime95 + FurMark 自包含 + PawnIO，约 130MB）只有散热测试用，随 stress 组件安装。
 ; 0.0.2：新增 disk 组件（硬盘跑分，开源）；附加任务新增「安装 PawnIO 驱动」（默认勾选，
@@ -55,7 +55,7 @@ Name: "chinesesimplified"; MessagesFile: "compiler:Languages\ChineseSimplified.i
 Name: "full"; Description: "Cài đặt đầy đủ"
 Name: "custom"; Description: "Cài đặt tùy chọn"; Flags: iscustom
 
-; 可选组件：主程序固定必装；七个验机模块插件逐项可选（默认全勾）
+; 可选组件：主程序固定必装；七个验机模块插件逐项可选（默认全勾）；trang Tổng kết là终点页，固定 theo chương trình chính
 [Components]
 Name: "main"; Description: "Chương trình chính (bắt buộc)"; Types: full custom; Flags: fixed
 Name: "config"; Description: "Đối chiếu cấu hình (CPU/card màn hình/RAM/ổ/card mạng/màn hình/pin)"; Types: full
@@ -65,6 +65,7 @@ Name: "av"; Description: "Âm thanh - hình ảnh cho họp (camera/micro/loa)";
 Name: "stress"; Description: "Kiểm tra tản nhiệt (nướng CPU/GPU/cả hai + theo dõi cảm biến, gồm tool prime95/FurMark)"; Types: full
 Name: "ports"; Description: "Cổng kết nối & Sạc (quét cổng WMI + test sạc 10 giây + tick tay cổng vật lý)"; Types: full
 Name: "disk"; Description: "Đo tốc độ ổ (tích hợp mã nguồn CrystalDiskMark, 4 bài SEQ1M/RND4K)"; Types: full
+Name: "summary"; Description: "Tổng kết (kết luận từng module + kết luận tổng, cách nói thân thiện random)"; Types: full
 
 ; 附加任务默认都勾选（用户可取消）：桌面快捷方式 / 开始菜单项 / PawnIO 驱动
 [Tasks]
@@ -84,13 +85,14 @@ Source: "..\publish\plugins\av\*"; DestDir: "{app}\plugins\av"; Components: av; 
 Source: "..\publish\plugins\stress\*"; DestDir: "{app}\plugins\stress"; Components: stress; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "..\publish\plugins\ports\*"; DestDir: "{app}\plugins\ports"; Components: ports; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "..\publish\plugins\disk\*"; DestDir: "{app}\plugins\disk"; Components: disk; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "..\publish\plugins\summary\*"; DestDir: "{app}\plugins\summary"; Components: summary; Flags: ignoreversion recursesubdirs createallsubdirs
 ; 烤机工具负载只有散热测试用：随 stress 组件安装（不勾散热可省约 130MB）
 Source: "..\publish\Tools\*"; DestDir: "{app}\Tools"; Components: stress; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
-Name: "{group}\An Tâm PC test"; Filename: "{app}\验机软件.exe"; Check: WizardIsTaskSelected('startmenu')
+Name: "{group}\An Tâm PC test"; Filename: "{app}\AnTamPCtest.exe"; Check: WizardIsTaskSelected('startmenu')
 Name: "{group}\Gỡ cài đặt An Tâm PC test"; Filename: "{uninstallexe}"; Check: WizardIsTaskSelected('startmenu')
-Name: "{commondesktop}\An Tâm PC test"; Filename: "{app}\验机软件.exe"; Check: WizardIsTaskSelected('desktopicon')
+Name: "{commondesktop}\An Tâm PC test"; Filename: "{app}\AnTamPCtest.exe"; Check: WizardIsTaskSelected('desktopicon')
 
 ; 安装末尾自动安装 PawnIO 内核驱动（默认勾选的附加任务）。
 ; 必须 -install -silent：只传 -install 时其安装器会弹版权确认窗（已实测）——

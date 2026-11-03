@@ -17,5 +17,5 @@ public class PortAdapterPlugin : IYanJiPlugin
             "MIT"),
     ];
 
-    public UserControl CreatePage(IHostContext host) => new PortAdapterPage();
+    public UserControl CreatePage(IHostContext host) => new PortAdapterPage(host);
 }

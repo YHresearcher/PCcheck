@@ -28,8 +28,7 @@ GitHub bắt đăng nhập tài khoản mới tải được, kể cả repo pub
 ## Chạy portable từ USB
 
 1. Cắm USB vào máy cần test, bấm đúp file exe chính trong thư mục gốc của
-   `publish` (tên file exe vẫn giữ nguyên tên gốc, chưa đổi tên — bấm đúp
-   file exe duy nhất nằm ở gốc thư mục publish là chạy).
+   `publish` (bấm đúp file AnTamPCtest.exe nằm ở gốc thư mục publish là chạy).
 2. Bấm Yes khi Windows hỏi quyền Admin, rồi test như bình thường.
 3. Test xong, copy kết quả ra USB trước khi xóa máy để bán (xem giới hạn
    số 4 bên dưới).
@@ -38,7 +37,7 @@ Yêu cầu máy test: Windows 10 bản 2004 trở lên hoặc Windows 11, bản 
 **cần quyền Admin** (để đọc SMART của ổ và một số cảm biến). Máy test
 không cần cài .NET, vì gói portable là tự chứa.
 
-## 7 module, theo đúng thứ tự trong app
+## 7 module + trang Tổng kết, theo đúng thứ tự trong app
 
 1. **Đối chiếu cấu hình** — vào trang là app tự quét CPU, card màn hình,
    RAM, ổ, card mạng, màn hình, pin, rồi đối chiếu từng mục với cấu hình
@@ -62,6 +61,8 @@ không cần cài .NET, vì gói portable là tự chứa.
 7. **Đo tốc độ ổ** — đo tốc độ đọc / ghi tuần tự và ngẫu nhiên, kết quả lưu
    thành `KetQuaDoO.json` và `LichSuDoO.csv` trong
    `%APPDATA%\YanJi\disk_result`.
+8. **Tổng kết** — trang cuối cùng (Terminal, không có nút cho qua riêng):
+   liệt kê kết luận từng module, rồi cho kết luận tổng, xem mục Tổng kết bên dưới.
 
 Mỗi module bấm cho qua xong là app tự nhảy sang module chưa xong tiếp theo.
 Bấm "Kiểm tra lại" hoặc "Đặt lại" là xóa trạng thái đã cho qua để test lại
@@ -74,11 +75,37 @@ cửa sổ, không hiện trên taskbar: logo An Tâm 120px, tên **"An Tâm PC 
 dòng **"Vi Tính An Tâm"** màu cam, slogan "Máy bán ra đã kiểm tra toàn bộ,
 bảo hành 6 tháng", địa chỉ shop + vitinhantam.com, và thanh "Đang khởi động...".
 
-Splash hiện trong lúc app tải 7 module, tự đóng khi cửa sổ chính đã tải
+Splash hiện trong lúc app tải các module, tự đóng khi cửa sổ chính đã tải
 xong và đủ tối thiểu 1,5 giây (máy nhanh cũng không bị chớp tắt), rồi
 chuyển focus sang cửa sổ chính. Không cần bấm gì để tắt. Màu splash theo
 theme đang dùng (tối = nền xám đậm, sáng = nền kem ấm), logo cam nổi trên
 cả hai nền.
+
+## Tổng kết (kết luận từng module + kết luận tổng, cách nói random thân thiện)
+
+- Trang Tổng kết nằm cuối thanh điều hướng, app tự nhảy tới đây khi cả 7 module
+  đã cho qua xong. Trang này không có nút cho qua riêng, vì nó chỉ tổng hợp.
+- Kết luận từng module: Đối chiếu cấu hình và Cổng kết nối & Sạc có mức riêng
+  (Đạt / Cảnh báo / Chặn / Chưa test xong, lấy từ kết luận ổ và kết luận sạc);
+  các module còn lại chỉ tính theo đã cho qua (Đạt) / chưa cho qua
+  (Chưa test xong). App chưa chấm điểm pin, nhiệt độ hay tốc độ ổ, vì shop
+  chưa chốt ngưỡng cho các mục đó — đừng đọc kết luận tổng như là đã chấm
+  hết mọi thứ.
+- Kết luận tổng tự động, tính từ kết luận từng module, không chấm điểm 100:
+  - Có module Chặn = **SỬA RỒI TEST LẠI**.
+  - Không Chặn nhưng có Cảnh báo = **BÁN CÓ ĐIỀU KIỆN**.
+  - Tất cả Đạt = **ĐẠT – BÁN ĐƯỢC NGAY**.
+  - Còn module chưa xong = **CHƯA TEST XONG** (chưa phải kết luận bán).
+- Mỗi kết luận tổng có 5 cách nói thân thiện khác nhau, app chọn ngẫu nhiên
+  1 câu khi kết luận đổi, và giữ nguyên câu đó cho tới khi kết luận đổi hoặc
+  kỹ thuật viên bấm "Đổi cách nói". Đổi cách nói chỉ đổi câu chữ, kết luận
+  không đổi. Các câu đều giọng shop thật, câu ngắn, không hứa thêm gì ngoài
+  kết luận (ví dụ câu ĐẠT không tự thêm bảo hành).
+- **LOẠI không tự sinh ra từ test**, vì test không biết chi phí sửa có đáng
+  hay không (ổ chặn + sạc kém vẫn sửa được bằng cách thay linh kiện, không
+  tự động thành loại). Kỹ thuật viên tự bấm "Đánh dấu loại máy này" khi máy
+  hỏng nặng không sửa để bán, kết luận tổng thành LOẠI với 5 cách nói riêng;
+  bấm lại để bỏ đánh dấu và về lại kết luận tự động.
 
 ## Kết luận tự động cho ổ (module Đối chiếu cấu hình)
 
@@ -164,7 +191,7 @@ màn hình đang cắm không phải danh sách cổng — trang ghi rõ từng 
     nền #111111, nền phụ #262626, cam đúng #ED740C, hover #F5861F,
     mục đang chọn #3D2A1A.
 - Vì toàn bộ control đều dùng DynamicResource trỏ vào token theme nên
-  đổi 2 file theme là toàn bộ app (khung chính + 7 module + cửa sổ quản
+  đổi 2 file theme là toàn bộ app (khung chính + 7 module + Tổng kết + cửa sổ quản
   lý module) đổi màu theo, không cần sửa từng trang. Màu đỏ lỗi giữ
   nguyên #C42B1C / #FF6B5E, không dùng cam cho lỗi để khỏi nhầm.
 - Font chính đổi thứ tự thành "Segoe UI, Microsoft YaHei UI" cho chữ
@@ -180,8 +207,8 @@ màn hình đang cắm không phải danh sách cổng — trang ghi rõ từng 
   đi kèm. Muốn hết hẳn thì cần thêm file `.isl` tiếng Việt cho Inno Setup.
 - Dòng ghi công bài nhạc test ở trang Camera - Mic - Loa giữ nguyên văn bản
   gốc, theo quy tắc của repo gốc là không được đổi dòng ghi công đó.
-- Tên file exe chính vẫn giữ nguyên tên gốc, và tên file nhạc test cũng giữ
-  nguyên, vì đổi tên sẽ làm app không tìm thấy file.
+- Tên file exe chính là AnTamPCtest.exe. Tên file nhạc test vẫn giữ nguyên,
+  vì đổi tên sẽ làm app không tìm thấy file nhạc.
 - Comment trong code vẫn tiếng Trung, chỉ người đọc code mới thấy, người
   dùng cuối không thấy.
 

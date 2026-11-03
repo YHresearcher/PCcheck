@@ -8,6 +8,16 @@ namespace YanJi.PluginSdk;
 /// Terminal = 终点页（无「确认通过」、不参与通过状态流、导航不配状态圆点）。</summary>
 public record PluginInfo(string Id, string Name, string Version, int Order, bool Terminal);
 
+/// <summary>Kết luận từng module, dùng cho trang Tổng kết: ChuaTest = chưa test xong,
+/// Dat = đạt, CanhBao = đạt nhưng có điều kiện (ví dụ ổ cảnh báo, sạc Trung bình),
+/// Chan = bị chặn, phải sửa rồi test lại (ví dụ ổ &lt;70% hoặc 0E &gt;0, sạc Kém).
+/// Module nào chưa báo cáo thì Tổng kết tự suy từ IsDone: đã cho qua = Dat, chưa = ChuaTest.</summary>
+public enum ModuleVerdictLevel { ChuaTest, Dat, CanhBao, Chan }
+
+/// <summary>Kết luận 1 module: mức + ghi chú ngắn hiển thị ở trang Tổng kết
+/// (ví dụ "Ổ sức khỏe 65% (&lt;70%)"). Ghi chú không chứa thông tin khách hàng.</summary>
+public record ModuleVerdict(ModuleVerdictLevel Level, string Note);
+
 /// <summary>宿主提供给插件的上下文（目前主要给「验机结束」类插件读全模块清单与完成状态）。</summary>
 public interface IHostContext
 {
@@ -17,6 +27,13 @@ public interface IHostContext
     bool IsDone(string moduleId);
     /// <summary>任一模块通过状态变化后触发（UI 线程）。</summary>
     event Action? DoneChanged;
+    /// <summary>Kết luận từng module đã báo cáo (module chưa báo cáo thì không có trong này;
+    /// trang Tổng kết tự suy từ IsDone). Chỉ host ghi, plugin chỉ đọc + báo cáo.</summary>
+    IReadOnlyDictionary<string, ModuleVerdict> Verdicts { get; }
+    /// <summary>Module báo cáo kết luận của mình (gọi trên UI thread; host kích VerdictChanged).</summary>
+    void ReportVerdict(string moduleId, ModuleVerdict verdict);
+    /// <summary>任一模块结结论变化后触发（UI 线程），trang Tổng kết đăng ký để làm mới.</summary>
+    event Action? VerdictChanged;
 }
 
 /// <summary>插件用到的开源组件/素材致谢（名称/用途/协议），在「插件管理」窗口随插件展示——

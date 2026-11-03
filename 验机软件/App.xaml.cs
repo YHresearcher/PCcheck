@@ -32,11 +32,16 @@ public partial class App : Application
             throw;
         }
         MainWindow = main;
-        main.Show();
-        // Loaded chỉ chạy khi UI thread rảnh lại sau OnStartup, nên gắn handler
-        // sau Show() vẫn bắt được; đừng chuyển thành tạo MainWindow sau khi đóng splash.
-        main.Loaded += (_, _) =>
+        // SỬA LỖI TREO SPLASH (2026-11-03): Loaded có thể chạy ngay trong Show(),
+        // nên phải gắn handler TRƯỚC Show() — gắn sau Show() sẽ bỏ lỡ Loaded,
+        // splash Topmost ở lại mãi trên cùng, nhìn như app treo ở splash.
+        // Hàm đóng dùng chung + cờ chống đóng 2 lần, và kiểm tra IsLoaded sau
+        // Show() để bắt luôn trường hợp cửa sổ đã load sẵn trong Show().
+        bool splashClosed = false;
+        void CloseSplash()
         {
+            if (splashClosed) return;
+            splashClosed = true;
             long remaining = 1500 - splashWatch.ElapsedMilliseconds;
             if (remaining <= 0)
             {
@@ -52,7 +57,10 @@ public partial class App : Application
                 main.Activate();
             };
             timer.Start();
-        };
+        }
+        main.Loaded += (_, _) => CloseSplash();
+        main.Show();
+        if (main.IsLoaded) CloseSplash();
         DispatcherUnhandledException += (_, args) =>
         {
             // 完整异常（含内部异常与堆栈）写入日志，便于诊断；弹窗只显示外层消息会丢失根因

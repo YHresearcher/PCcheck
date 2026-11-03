@@ -79,7 +79,7 @@ Máy chủ Windows của GitHub sẽ build giúp, ông chỉ cần tải file v�
 3. Trên GitHub, vào tab Actions của repo, chọn workflow "Build Windows
    portable", bấm Run workflow, chờ build xong (thường vài phút).
 4. Tải artifact tên `AnTamPCtest-portable` về, giải nén ra USB.
-5. Cắm USB vào máy Windows cần test, bấm đúp file exe chính ở gốc thư mục,
+5. Cắm USB vào máy Windows cần test, bấm đúp file AnTamPCtest.exe ở gốc thư mục,
    bấm Yes khi hỏi quyền Admin là chạy.
 
 Ưu điểm: không cần cài Windows, không cần bản quyền Windows, build trên máy
@@ -141,7 +141,7 @@ dùng được khi ông chỉ có mỗi Mac bên cạnh.
 
 Dù build bằng cách nào, bước sau đó giống nhau: copy cả thư mục `publish`
 sang USB, giữ nguyên cấu trúc bên trong, cắm USB vào máy Windows cần test,
-bấm đúp file exe chính, bấm Yes khi hỏi quyền Admin. Nhớ 4 giới hạn đã ghi
+bấm đúp file AnTamPCtest.exe, bấm Yes khi hỏi quyền Admin. Nhớ 4 giới hạn đã ghi
 trong `README.md.md`: cần Admin, máy test Windows 10 2004+/11 64-bit,
 driver PawnIO không đi theo USB, kết quả nằm trong `%APPDATA%\YanJi` trên
 máy test nên test xong phải copy ra USB trước khi xóa máy để bán.

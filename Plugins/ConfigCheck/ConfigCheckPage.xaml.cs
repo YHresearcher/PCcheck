@@ -1,6 +1,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using YanJi.PluginSdk;
 using YanJi.PluginSdk.Services;
 
 namespace YanJi.Plugin.ConfigCheck;
@@ -13,6 +14,7 @@ public partial class ConfigCheckPage : UserControl, YanJi.PluginSdk.IModulePage
     bool _running;
     bool _autoStarted; // 页面常驻机制下 Loaded 可能重入（切走再切回），自动检测只触发一次
     HardwareReport? _lastReport; // Báo cáo lần thu thập gần nhất, để nút cho qua kiểm tra ổ bị chặn
+    readonly IHostContext? _host; // Để báo cáo kết luận module cho trang Tổng kết (có thể null khi test riêng)
 
     /// <summary>核对完成状态变化（true = 已通过，false = 重新检测回到待核对）；MainWindow 据此同步导航圆点。</summary>
     public event Action<bool>? PassChanged;
@@ -20,8 +22,9 @@ public partial class ConfigCheckPage : UserControl, YanJi.PluginSdk.IModulePage
     /// <summary>当前是否已核对通过。</summary>
     public bool Passed { get; private set; }
 
-    public ConfigCheckPage()
+    public ConfigCheckPage(IHostContext? host = null)
     {
+        _host = host;
         InitializeComponent();
         // 进入页面即自动检测一次（手动再次采集走「重新检测」按钮）
         Loaded += (_, _) =>
@@ -54,6 +57,7 @@ public partial class ConfigCheckPage : UserControl, YanJi.PluginSdk.IModulePage
             });
             var report = await Task.Run(() => HardwareInfoService.Collect(progress));
             _lastReport = report;
+            ReportConfigVerdict();
             ResultsHost.ItemsSource = report.Groups;
             DetectProgress.Value = 100;
             if (report.DriveBlockReasons.Count > 0)
@@ -94,9 +98,11 @@ public partial class ConfigCheckPage : UserControl, YanJi.PluginSdk.IModulePage
             StatusText.SetResourceReference(TextBlock.ForegroundProperty, "ErrorBrush");
             PhaseText.Text = "Ổ bị chặn: " + string.Join("; ", _lastReport.DriveBlockReasons) + ".";
             PhaseText.SetResourceReference(TextBlock.ForegroundProperty, "ErrorBrush");
+            ReportConfigVerdict();
             return;
         }
         SetPassed(true);
+        ReportConfigVerdict();
         PassButton.IsEnabled = false;
         PhaseText.SetResourceReference(TextBlock.ForegroundProperty, "TextSecondaryBrush");
         PhaseText.Text = "Đã xác nhận cho qua; nếu thay linh kiện hoặc cần kiểm lại, bấm \"Kiểm tra lại\"";
@@ -104,6 +110,27 @@ public partial class ConfigCheckPage : UserControl, YanJi.PluginSdk.IModulePage
             PhaseText.Text += " Lưu ý: có ổ cảnh báo (<90%) — tối đa bán có điều kiện.";
         if (_lastReport?.HasDriveUnknown == true)
             PhaseText.Text += " Lưu ý: có ổ chưa rõ sức khỏe — kiểm tra tay bằng CrystalDiskInfo trước khi bán.";
+    }
+
+    /// <summary>Báo cáo kết luận module cho trang Tổng kết. Quét xong mà chưa bấm cho qua
+    /// thì chưa phải Đạt, kể cả khi ổ sạch (vì kỹ thuật viên chưa đối chiếu với đơn hàng);
+    /// ổ cảnh báo / chưa rõ thì là Cảnh báo, ổ chặn thì là Chặn, cho qua rồi mà sạch mới là Đạt.</summary>
+    void ReportConfigVerdict()
+    {
+        if (_host == null) return;
+        var r = _lastReport;
+        if (r == null)
+            _host.ReportVerdict("config", new(ModuleVerdictLevel.ChuaTest, "Chưa quét"));
+        else if (r.DriveBlockReasons.Count > 0)
+            _host.ReportVerdict("config", new(ModuleVerdictLevel.Chan, string.Join("; ", r.DriveBlockReasons)));
+        else if (r.HasDriveWarning)
+            _host.ReportVerdict("config", new(ModuleVerdictLevel.CanhBao, "Có ổ cảnh báo (<90%) — tối đa bán có điều kiện"));
+        else if (r.HasDriveUnknown)
+            _host.ReportVerdict("config", new(ModuleVerdictLevel.CanhBao, "Có ổ chưa rõ sức khỏe — kiểm tra tay bằng CrystalDiskInfo"));
+        else if (Passed)
+            _host.ReportVerdict("config", new(ModuleVerdictLevel.Dat, "Đã đối chiếu đúng với đơn hàng"));
+        else
+            _host.ReportVerdict("config", new(ModuleVerdictLevel.ChuaTest, "Đã quét, chờ đối chiếu với đơn hàng"));
     }
 
     /// <summary>更新核对状态行（通过 = 绿色「✓ 已核对通过」）并通知导航圆点。</summary>

@@ -1,6 +1,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using YanJi.PluginSdk;
 
 namespace YanJi.Plugin.PortAdapter;
 
@@ -16,6 +17,8 @@ public partial class PortAdapterPage : UserControl, YanJi.PluginSdk.IModulePage
     bool _noBattery;
     bool _adapterTested;
     string _adapterHealth = "";
+    int _adapterScore;
+    readonly IHostContext? _host;
 
     /// <summary>核对完成状态变化（true = 已通过，false = 重新测试回到待测试）；MainWindow 据此同步导航圆点。</summary>
     public event Action<bool>? PassChanged;
@@ -23,8 +26,9 @@ public partial class PortAdapterPage : UserControl, YanJi.PluginSdk.IModulePage
     /// <summary>当前是否已确认通过。</summary>
     public bool Passed { get; private set; }
 
-    public PortAdapterPage()
+    public PortAdapterPage(IHostContext? host = null)
     {
+        _host = host;
         InitializeComponent();
         Loaded += (_, _) =>
         {
@@ -43,6 +47,8 @@ public partial class PortAdapterPage : UserControl, YanJi.PluginSdk.IModulePage
         SetPassed(false);
         _adapterTested = false;
         _adapterHealth = "";
+        _adapterScore = 0;
+        ReportPortsVerdict();
         RescanButton.IsEnabled = false;
         AdapterTestButton.IsEnabled = false;
         PassButton.IsEnabled = false;
@@ -65,6 +71,7 @@ public partial class PortAdapterPage : UserControl, YanJi.PluginSdk.IModulePage
             TestingHint.Text = _noBattery
                 ? "Máy không có pin — bỏ qua phần sạc, chỉ test cổng."
                 : "Quét xong. Cắm sạc rồi bấm \"Test sạc (10 giây)\".";
+            ReportPortsVerdict();
             PassButton.IsEnabled = true;
         }
         catch (Exception ex)
@@ -86,6 +93,8 @@ public partial class PortAdapterPage : UserControl, YanJi.PluginSdk.IModulePage
         SetPassed(false);
         _adapterTested = false;
         _adapterHealth = "";
+        _adapterScore = 0;
+        ReportPortsVerdict();
         RescanButton.IsEnabled = false;
         AdapterTestButton.IsEnabled = false;
         PassButton.IsEnabled = false;
@@ -96,6 +105,8 @@ public partial class PortAdapterPage : UserControl, YanJi.PluginSdk.IModulePage
             var r = await PortAdapterService.RunAdapterTestAsync(progress);
             _adapterTested = r.Tested;
             _adapterHealth = r.Health;
+            _adapterScore = r.Tested ? r.HealthScore : 0;
+            ReportPortsVerdict();
             if (!r.Tested)
             {
                 AdapterHealthText.Text = $"Đánh giá sạc: {r.Health}";
@@ -141,6 +152,7 @@ public partial class PortAdapterPage : UserControl, YanJi.PluginSdk.IModulePage
             StatusText.Text = "Chưa test sạc — bấm \"Test sạc (10 giây)\" trước, rồi mới cho qua";
             StatusText.SetResourceReference(TextBlock.ForegroundProperty, "ErrorBrush");
             AppendLog("Chưa cho qua: máy có pin nhưng chưa test sạc 10 giây.");
+            ReportPortsVerdict();
             return;
         }
         if (_adapterHealth == "Kém")
@@ -148,9 +160,11 @@ public partial class PortAdapterPage : UserControl, YanJi.PluginSdk.IModulePage
             StatusText.Text = "Sạc đánh giá Kém — thay sạc rồi test lại, không cho qua";
             StatusText.SetResourceReference(TextBlock.ForegroundProperty, "ErrorBrush");
             AppendLog("Chưa cho qua: sạc đánh giá Kém.");
+            ReportPortsVerdict();
             return;
         }
         SetPassed(true);
+        ReportPortsVerdict();
         PassButton.IsEnabled = false;
         AppendLog($"Đã cho qua lúc {DateTime.Now:HH:mm:ss}. Tick tay: HDMI={ChkHdmi.IsChecked}, " +
             $"VGA={ChkVga.IsChecked}, RJ45={ChkRj45.IsChecked}, USB-A={ChkUsbA.IsChecked}, " +
@@ -202,6 +216,27 @@ public partial class PortAdapterPage : UserControl, YanJi.PluginSdk.IModulePage
     {
         LogBox.AppendText($"[{DateTime.Now:HH:mm:ss}] {msg}{Environment.NewLine}");
         LogBox.ScrollToEnd();
+    }
+
+    /// <summary>Báo cáo kết luận module cho trang Tổng kết. Sạc Kém = Chặn, sạc Trung bình
+    /// = Cảnh báo (cho qua được nhưng tối đa bán có điều kiện), sạc Tốt / Xuất sắc mà
+    /// đã cho qua = Đạt, còn lại (chưa test, chưa cho qua) = Chưa test xong.
+    /// Máy không pin thì không có phần sạc, cho qua cổng là Đạt.</summary>
+    void ReportPortsVerdict()
+    {
+        if (_host == null) return;
+        if (_adapterHealth == "Kém")
+            _host.ReportVerdict("ports", new(ModuleVerdictLevel.Chan, $"Sạc Kém ({_adapterScore}/100) — thay sạc rồi test lại"));
+        else if (_adapterHealth == "Trung bình")
+            _host.ReportVerdict("ports", new(ModuleVerdictLevel.CanhBao, $"Sạc Trung bình ({_adapterScore}/100) — tối đa bán có điều kiện"));
+        else if (Passed)
+            _host.ReportVerdict("ports", new(ModuleVerdictLevel.Dat, _noBattery ? "Máy không pin, đã cho qua cổng" : $"Sạc {_adapterHealth} ({_adapterScore}/100)"));
+        else if (!_adapterTested && !_noBattery)
+            _host.ReportVerdict("ports", new(ModuleVerdictLevel.ChuaTest, "Chưa test sạc 10 giây"));
+        else if (_adapterTested)
+            _host.ReportVerdict("ports", new(ModuleVerdictLevel.ChuaTest, $"Sạc {_adapterHealth} ({_adapterScore}/100), chờ tick cổng và cho qua"));
+        else
+            _host.ReportVerdict("ports", new(ModuleVerdictLevel.ChuaTest, "Máy không pin, chờ cho qua cổng"));
     }
 
     /// <summary>更新核对状态行（通过 = 绿色「✓ 已核对通过」）并通知导航圆点。</summary>

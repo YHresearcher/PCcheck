@@ -14,5 +14,5 @@ public class ConfigCheckPlugin : IYanJiPlugin
         new("CrystalDiskInfo", "Tham khảo cách thu thập thông tin ổ (đọc trực tiếp SMART)", "MIT"),
     ];
 
-    public UserControl CreatePage(IHostContext host) => new ConfigCheckPage();
+    public UserControl CreatePage(IHostContext host) => new ConfigCheckPage(host);
 }

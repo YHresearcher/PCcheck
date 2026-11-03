@@ -35,11 +35,19 @@ public partial class MainWindow : Window
     {
         readonly Func<string, bool> _isDone;
         readonly List<PluginInfo> _modules = [];
+        readonly Dictionary<string, ModuleVerdict> _verdicts = [];
         public HostContext(Func<string, bool> isDone) => _isDone = isDone;
         public IReadOnlyList<PluginInfo> Modules => _modules;
         public bool IsDone(string moduleId) => _isDone(moduleId);
         public event Action? DoneChanged;
         public void RaiseDoneChanged() => DoneChanged?.Invoke();
+        public IReadOnlyDictionary<string, ModuleVerdict> Verdicts => _verdicts;
+        public void ReportVerdict(string moduleId, ModuleVerdict verdict)
+        {
+            _verdicts[moduleId] = verdict;
+            VerdictChanged?.Invoke();
+        }
+        public event Action? VerdictChanged;
         /// <summary>启动时批量填入 / 运行时追加（导入即载），均保持按 Order 排序。</summary>
         public void AddModule(PluginInfo info)
         {
