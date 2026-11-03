@@ -72,3 +72,13 @@ public interface IPluginShutdown
 {
     void Shutdown();
 }
+
+/// <summary>Plugin có tiến trình tải cao (nướng máy, đo tốc độ ổ) thì implement thêm
+/// interface này để nút "Dừng tất cả test nặng" ở MainWindow dừng được thật.
+/// Trả về tên các tiến trình vẫn còn sống sau khi đã kill + quét lại; rỗng =
+/// đã dừng thật. Không được trả về rỗng khi tiến trình thực ra còn sống —
+/// đó chính là lỗi "chỉ dừng giao diện" mà bản này sửa.</summary>
+public interface IStopHeavyTests
+{
+    IReadOnlyList<string> StopHeavyTests();
+}

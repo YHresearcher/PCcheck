@@ -12,8 +12,17 @@ public static class LhmService
 
     /// <summary>硬盘：型号 + 容量（字节）+ 健康度（%，SMART，null=未知）+ 通电时间（小时，null=未知）
     /// + 物理盘号（StorageDeviceNumber，与 Win32_DiskDrive.Index 对应，用于关联盘符，null=未知）
-    /// + 0E 介质与数据完整性错误计数（NVMe SMART，null=未知/非 NVMe）。</summary>
-    public record LhmDisk(string Name, ulong? SizeBytes, int? HealthPercent, long? PowerOnHours, uint? DeviceNumber, long? MediaErrors);
+    /// + 0E 介质与数据完整性错误计数（NVMe SMART，null=未知/非 NVMe）
+    /// + 严重错误计数（null=该项读不到/不适用，绝不能当成 0）：
+    /// NVMe: CriticalWarning (0xE0 Raw), AvailableSpare (0xE2 Current), AvailableSpareThreshold (0xE3 Current)；
+    /// SATA: Reallocated (0x05 Raw), Pending (0xC5 Raw), Uncorrectable (0xC6 Raw),
+    /// ReportedUncorrectable (0xBB Raw), CrcErrors (0xC7 Raw)。
+    /// 这些字段是「按严重程度结结论」的基础：健康度只是磨损%，错误计数才是盘体故障信号，
+    /// 95% 健康度 + 错误计数 &gt;0 仍必须判严重，不能因为健康度高就报 ĐẠT。</summary>
+    public record LhmDisk(string Name, ulong? SizeBytes, int? HealthPercent, long? PowerOnHours, uint? DeviceNumber, long? MediaErrors,
+        long? CriticalWarning = null, int? AvailableSpare = null, int? AvailableSpareThreshold = null,
+        long? Reallocated = null, long? Pending = null, long? Uncorrectable = null,
+        long? ReportedUncorrectable = null, long? CrcErrors = null);
 
     /// <summary>内存条：SPD 名称（厂商 + 料号）+ 容量（GB）；仅 PawnIO 驱动可用时才有。</summary>
     public record LhmDimm(string Name, double? CapacityGB);
@@ -138,7 +147,15 @@ public static class LhmService
                 ComputeHealth(s),
                 ComputePowerOnHours(s),
                 s.StorageDeviceNumber,
-                ComputeMediaErrors(s)));
+                ComputeMediaErrors(s),
+                ComputeNvmeCriticalWarning(s),
+                ComputeNvmeAvailableSpare(s),
+                ComputeNvmeAvailableSpareThreshold(s),
+                ComputeSataError(s, 0x05),
+                ComputeSataError(s, 0xC5),
+                ComputeSataError(s, 0xC6),
+                ComputeSataError(s, 0xBB),
+                ComputeSataError(s, 0xC7)));
         }
         else
         {
@@ -194,6 +211,65 @@ public static class LhmService
         {
             if (s.TransportKind != DiskInfoToolkit.StorageTransportKind.Nvme) return null;
             var attr = s.SmartAttributes.FirstOrDefault(a => a.ID == 0xED);
+            if (attr != null) return (long)attr.RawValue;
+        }
+        catch { /* SMART 读取失败 → 未知 */ }
+        return null;
+    }
+
+    /// <summary>NVMe Critical Warning（SMART log 偏移 0，DiskInfoToolkit 编号 0xE0）：
+    /// 0 = 正常，&gt;0 = 有严重警告位（备用空间不足 / 过热 / 可靠性下降 / 只读 / 备份失败），
+    /// 任何位都不该出现在待售机器上。仅 NVMe 有此语义；读不到返回 null。</summary>
+    static long? ComputeNvmeCriticalWarning(DiskInfoToolkit.StorageDevice s)
+    {
+        try
+        {
+            if (s.TransportKind != DiskInfoToolkit.StorageTransportKind.Nvme) return null;
+            var attr = s.SmartAttributes.FirstOrDefault(a => a.ID == 0xE0);
+            if (attr != null) return (long)attr.RawValue;
+        }
+        catch { /* SMART 读取失败 → 未知 */ }
+        return null;
+    }
+
+    /// <summary>NVMe Available Spare（0xE2，CurrentValue = 剩余备用空间 %）与
+    /// Available Spare Threshold（0xE3，CurrentValue = 阈值 %）。
+    /// 剩余 &lt; 阈值 = 备用空间耗尽，盘按规范已属故障，即使健康度（Percentage Used）
+    /// 看起来还高。仅 NVMe；读不到返回 null。</summary>
+    static int? ComputeNvmeAvailableSpare(DiskInfoToolkit.StorageDevice s)
+    {
+        try
+        {
+            if (s.TransportKind != DiskInfoToolkit.StorageTransportKind.Nvme) return null;
+            var attr = s.SmartAttributes.FirstOrDefault(a => a.ID == 0xE2);
+            if (attr != null) return attr.CurrentValue;
+        }
+        catch { /* SMART 读取失败 → 未知 */ }
+        return null;
+    }
+
+    static int? ComputeNvmeAvailableSpareThreshold(DiskInfoToolkit.StorageDevice s)
+    {
+        try
+        {
+            if (s.TransportKind != DiskInfoToolkit.StorageTransportKind.Nvme) return null;
+            var attr = s.SmartAttributes.FirstOrDefault(a => a.ID == 0xE3);
+            if (attr != null) return attr.CurrentValue;
+        }
+        catch { /* SMART 读取失败 → 未知 */ }
+        return null;
+    }
+
+    /// <summary>SATA 严重错误计数（RawValue 就是次数，正常必须为 0）：
+    /// 0x05 已重映射扇区、0xC5 待重映射扇区、0xC6 无法纠正扇区、0xBB 已报告无法纠正错误、
+    /// 0xC7 UltraDMA CRC 错误。NVMe 不用这套编号，返回 null（不把 NVMe 的同号属性
+    /// 误读成 SATA 错误）。读不到返回 null，绝不能当成 0。</summary>
+    static long? ComputeSataError(DiskInfoToolkit.StorageDevice s, byte id)
+    {
+        try
+        {
+            if (s.TransportKind == DiskInfoToolkit.StorageTransportKind.Nvme) return null;
+            var attr = s.SmartAttributes.FirstOrDefault(a => a.ID == id);
             if (attr != null) return (long)attr.RawValue;
         }
         catch { /* SMART 读取失败 → 未知 */ }

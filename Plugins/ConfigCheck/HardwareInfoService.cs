@@ -275,7 +275,8 @@ public static class HardwareInfoService
                 g.Add("Sức khỏe" + tag, d.HealthPercent is int hp ? $"{hp} %" : "Không rõ");
                 g.Add("Thời gian đã chạy" + tag, FormatHours(d.PowerOnHours));
                 g.Add("Lỗi toàn vẹn dữ liệu" + tag, d.MediaErrors is long me ? $"{me} lần" : "Không rõ");
-                g.Add("Kết luận ổ" + tag, DriveVerdict(d.HealthPercent, d.MediaErrors, report, tag));
+                g.Add("Lỗi nghiêm trọng" + tag, SeriousErrorsText(d));
+                g.Add("Kết luận ổ" + tag, DriveVerdict(d, report, tag));
             }
             return;
         }
@@ -301,14 +302,83 @@ public static class HardwareInfoService
         }
     }
 
-    /// <summary>Kết luận tự động cho 1 ổ, theo ngưỡng shop đã chốt (2026-11-03):
-    /// sức khỏe ≥90% = ĐẠT (bán nguyên trạng); 70-89% = CẢNH BÁO (tối đa bán có
-    /// điều kiện); &lt;70% hoặc lỗi toàn vẹn dữ liệu NVMe 0E &gt;0 = CHẶN (thay ổ rồi
-    /// kiểm tra lại, trang Đối chiếu cấu hình chặn nút cho qua khi có ổ bị chặn);
-    /// SMART không đọc được = Không rõ (kiểm tra tay bằng CrystalDiskInfo, không
-    /// tự cho là tốt, cũng không chặn cứng vì có máy SMART vốn không đọc được qua
-    /// kênh này — nhưng tuyệt đối không được báo là ĐẠT). 0E chỉ có ý nghĩa với
-    /// NVMe (SATA truyền null vào đây, không bị chặn oan).</summary>
+    /// <summary>Dòng "Lỗi nghiêm trọng" cho 1 ổ: liệt kê mọi lỗi nghiêm trọng đã đọc
+    /// được (&gt;0), "Không có" khi các lỗi đã đọc đều = 0, "Không rõ" khi không đọc
+    /// được lỗi nghiêm trọng nào (không được hiểu là không có lỗi).</summary>
+    static string SeriousErrorsText(LhmService.LhmDisk d)
+    {
+        var found = new List<string>();
+        if (d.CriticalWarning is > 0) found.Add($"cảnh báo nghiêm trọng NVMe {d.CriticalWarning}");
+        if (d.MediaErrors is > 0) found.Add($"lỗi toàn vẹn dữ liệu {d.MediaErrors} lần");
+        if (d.AvailableSpare is int sp && d.AvailableSpareThreshold is int th && sp < th)
+            found.Add($"dự phòng còn {sp}% dưới ngưỡng {th}%");
+        if (d.Reallocated is > 0) found.Add($"sector đã thay thế {d.Reallocated}");
+        if (d.Pending is > 0) found.Add($"sector chờ thay thế {d.Pending}");
+        if (d.Uncorrectable is > 0) found.Add($"sector không sửa được {d.Uncorrectable}");
+        if (d.ReportedUncorrectable is > 0) found.Add($"lỗi không sửa được đã báo {d.ReportedUncorrectable}");
+        if (found.Count > 0) return string.Join("; ", found);
+        bool anyKnown = d.CriticalWarning != null || d.MediaErrors != null
+            || d.AvailableSpare != null || d.Reallocated != null || d.Pending != null
+            || d.Uncorrectable != null || d.ReportedUncorrectable != null;
+        return anyKnown ? "Không có" : "Không rõ";
+    }
+
+    /// <summary>Kết luận tự động cho 1 ổ, THEO MỨC ĐỘ NGHIÊM TRỌNG TRƯỚC, ngưỡng sức
+    /// khỏe chỉ xét sau (sửa theo yêu cầu 2026-11-03):
+    /// (1) Lỗi nghiêm trọng &gt;0 = CHẶN, bất kể sức khỏe cao bao nhiêu — ổ 95%
+    /// nhưng có lỗi media / cảnh báo NVMe / sector đã thay thế-chờ-không sửa được
+    /// vẫn CHẶN, không được về ĐẠT chỉ vì sức khỏe cao. Dự phòng NVMe dưới ngưỡng
+    /// cũng CHẶN. (2) Sức khỏe &lt;70% = CHẶN. (3) Cảnh báo: sức khỏe 70–89%,
+    /// hoặc lỗi CRC &gt;0 (thường do cáp/cổng, không chặn cứng ổ), hoặc không đọc
+    /// được lỗi nghiêm trọng nào dù sức khỏe còn cao (không được báo ĐẠT khi chưa
+    /// biết có lỗi hay không). (4) Sức khỏe ≥90% và đã đọc được ít nhất 1 lỗi
+    /// nghiêm trọng = 0, không có lỗi nào &gt;0 = ĐẠT. (5) Còn lại = Không rõ.
+    /// Lỗi CRC chỉ là cảnh báo vì nó thường do cáp, thay cáp test lại có thể hết;
+    /// các lỗi sector/media/cảnh báo NVMe thì không hết bằng cách thay cáp nên chặn.</summary>
+    static string DriveVerdict(LhmService.LhmDisk d, HardwareReport report, string tag)
+    {
+        int? health = d.HealthPercent;
+        var blocks = new List<string>();
+        if (d.CriticalWarning is > 0) blocks.Add($"cảnh báo nghiêm trọng NVMe {d.CriticalWarning} (bình thường phải 0)");
+        if (d.MediaErrors is > 0) blocks.Add($"lỗi toàn vẹn dữ liệu {d.MediaErrors} lần (bình thường phải 0)");
+        if (d.AvailableSpare is int sp && d.AvailableSpareThreshold is int th && sp < th)
+            blocks.Add($"dự phòng NVMe còn {sp}% dưới ngưỡng {th}%");
+        if (d.Reallocated is > 0) blocks.Add($"sector đã thay thế {d.Reallocated} (bình thường phải 0)");
+        if (d.Pending is > 0) blocks.Add($"sector chờ thay thế {d.Pending} (bình thường phải 0)");
+        if (d.Uncorrectable is > 0) blocks.Add($"sector không sửa được {d.Uncorrectable} (bình thường phải 0)");
+        if (d.ReportedUncorrectable is > 0) blocks.Add($"lỗi không sửa được đã báo {d.ReportedUncorrectable} (bình thường phải 0)");
+        if (blocks.Count > 0)
+        {
+            foreach (var b in blocks) report.DriveBlockReasons.Add($"Ổ{tag} {b}");
+            return $"CHẶN — {string.Join("; ", blocks)}, thay ổ rồi kiểm tra lại";
+        }
+        if (health is < 70)
+        {
+            report.DriveBlockReasons.Add($"Ổ{tag} sức khỏe {health}% (<70%)");
+            return $"CHẶN — sức khỏe {health}% (<70%), thay ổ rồi kiểm tra lại";
+        }
+        var warnings = new List<string>();
+        if (health is < 90) warnings.Add($"sức khỏe {health}% (<90%)");
+        if (d.CrcErrors is > 0) warnings.Add($"lỗi CRC {d.CrcErrors} lần (kiểm tra cáp/cổng rồi test lại)");
+        bool anySeriousKnown = d.CriticalWarning != null || d.MediaErrors != null
+            || d.AvailableSpare != null || d.Reallocated != null || d.Pending != null
+            || d.Uncorrectable != null || d.ReportedUncorrectable != null;
+        if (health != null && !anySeriousKnown)
+            warnings.Add("không đọc được lỗi nghiêm trọng (chưa biết có lỗi hay không, không được coi là khỏe)");
+        if (warnings.Count > 0)
+        {
+            report.HasDriveWarning = true;
+            foreach (var w in warnings) report.DriveWarningReasons.Add($"Ổ{tag} {w}");
+            return $"CẢNH BÁO — {string.Join("; ", warnings)}, tối đa bán có điều kiện";
+        }
+        if (health != null)
+            return $"ĐẠT — sức khỏe {health}% (≥90%), không có lỗi nghiêm trọng, bán nguyên trạng";
+        report.HasDriveUnknown = true;
+        return "Không rõ — kiểm tra tay bằng CrystalDiskInfo, chưa đủ dữ liệu để kết luận (không tự cho là tốt)";
+    }
+
+    /// <summary>Bản cũ cho kênh WMI (không có SMART): chỉ có sức khỏe/media = null
+    /// nên luôn về Không rõ, giữ lại để kênh WMI không bị chặn oan.</summary>
     static string DriveVerdict(int? health, long? mediaErrors, HardwareReport report, string tag)
     {
         if (mediaErrors is > 0)

@@ -153,41 +153,103 @@ public static class StressTestService
 
     static string MsaaName(int msaa) => msaa > 0 ? $"{msaa}x MSAA" : "Không có MSAA";
 
-    /// <summary>停止全部烤机进程（杀进程树，等退出）。任何时刻调用都安全。</summary>
-    public static void Stop()
+    /// <summary>停止全部烤机进程（杀进程树，等退出）。任何时刻调用都安全。
+    /// 注意：旧版 Stop 在 Kill 失败时仍把字段置 null，导致界面以为已停、实际进程
+    /// 还在跑（"chỉ dừng giao diện"）。新版 Stop 只在确认已死后才清状态；
+    /// 仍活着的进程会留在字段里，IsRunning 仍为 true，界面 không được báo "Đã dừng"。</summary>
+    public static void Stop() => StopVerified();
+
+    /// <summary>Dừng có kiểm chứng: kill tiến trình đã theo dõi, rồi quét lại theo
+    /// đường dẫn Tools để bắt tiến trình mồ côi (ví dụ app từng sập, Exited handler
+    /// đã xóa trường trước khi kill). Trả về tên các tiến trình vẫn còn sống sau 2 lần
+    /// kill + quét; rỗng = đã dừng thật. Dùng cho nút Dừng, chuyển trang, đóng app
+    /// và nút "Dừng tất cả test nặng" ở MainWindow.</summary>
+    public static IReadOnlyList<string> StopVerified()
     {
+        List<string> survivors;
         lock (_gate)
         {
-            StopLocked();
-            StartedAt = null;
+            survivors = StopLockedVerified();
         }
         StateChanged?.Invoke();
+        return survivors;
     }
 
-    static void StopLocked()
+    /// <summary>Phần việc của StopVerified khi đã giữ lock (Start cũng dùng hàm này
+    /// để dừng lần chạy trước, tránh lock lồng + StateChanged kép).</summary>
+    static List<string> StopLockedVerified()
     {
         _stopping = true; // 主动停止：Exited 事件不再记「意外退出」
         try
         {
-            KillTree(ref _prime95, "Prime95", _prime95Started);
-            KillTree(ref _furmark, "FurMark", _furmarkStarted);
-            _prime95Started = _furmarkStarted = null;
+            bool p95Dead = KillTree(ref _prime95, "Prime95", _prime95Started);
+            bool fmDead = KillTree(ref _furmark, "FurMark", _furmarkStarted);
+            if (p95Dead) _prime95Started = null;
+            if (fmDead) _furmarkStarted = null;
+            // Quét mồ côi theo đường dẫn (không giết nhầm chương trình cùng tên của người dùng)
+            KillStaleByPath("prime95", Prime95Exe);
+            KillStaleByPath("FurMark", FurMarkExe);
+            var survivors = new List<string>();
+            if (!p95Dead || StaleAlive("prime95", Prime95Exe)) survivors.Add("Prime95");
+            if (!fmDead || StaleAlive("FurMark", FurMarkExe)) survivors.Add("FurMark");
+            if (survivors.Count == 0) StartedAt = null;
+            else Log($"CẢNH BÁO: chưa dừng được: {string.Join(", ", survivors)} — kiểm tra Task Manager, đừng tưởng máy đã hết tải");
+            return survivors;
         }
         finally { _stopping = false; }
     }
 
-    static void KillTree(ref Process? proc, string name, DateTime? started)
+    static void StopLocked() => StopLockedVerified();
+
+    /// <summary>Kill 1 tiến trình + cây con, có kiểm chứng. Trả về true khi đã chết
+    /// thật (hoặc vốn đã chết); false khi sau 2 lần kill vẫn còn sống — lúc đó
+    /// KHÔNG xóa trường, không dispose đối tượng đang sống, để IsRunning vẫn báo đúng.</summary>
+    static bool KillTree(ref Process? proc, string name, DateTime? started)
     {
         var p = proc;
-        proc = null;
-        if (p == null) return;
+        if (p == null) return true;
         bool wasAlive = false;
         try { wasAlive = !p.HasExited; } catch { /* 状态不明按已退出处理 */ }
-        try { if (wasAlive) p.Kill(entireProcessTree: true); } catch { /* 已退出/权限问题忽略 */ }
-        try { p.WaitForExit(5000); } catch { /* 超时不等 */ }
-        p.Dispose();
-        if (wasAlive && started is DateTime t0)
+        if (!wasAlive)
+        {
+            proc = null;
+            try { p.Dispose(); } catch { }
+            return true;
+        }
+        for (int attempt = 0; attempt < 2; attempt++)
+        {
+            try { p.Kill(entireProcessTree: true); } catch { /* 已退出/权限问题，检查下面 */ }
+            try { p.WaitForExit(attempt == 0 ? 5000 : 3000); } catch { /* 超时不等 */ }
+            try { if (p.HasExited) break; } catch { break; }
+        }
+        bool dead;
+        try { dead = p.HasExited; } catch { dead = true; }
+        if (!dead) return false; // Giữ nguyên trường, IsRunning vẫn true, không báo dừng giả
+        proc = null;
+        try { p.Dispose(); } catch { }
+        if (started is DateTime t0)
             Log($"{name} đã dừng (đã chạy {FormatDuration(DateTime.Now - t0)})");
+        return true;
+    }
+
+    /// <summary>Còn tiến trình nào cùng tên + cùng đường dẫn Tools đang sống không?
+    /// MainModule đọc không được (quyền) thì bỏ qua tiến trình đó, không giết nhầm,
+    /// cũng không tính là còn sống — trường hợp này tiến trình đã theo dõi ở trên
+    /// đã báo survivor riêng nếu nó còn sống.</summary>
+    static bool StaleAlive(string exeName, string expectPath)
+    {
+        foreach (var p in Process.GetProcessesByName(exeName))
+        {
+            try
+            {
+                bool samePath = string.Equals(p.MainModule?.FileName, expectPath, StringComparison.OrdinalIgnoreCase);
+                bool alive = !p.HasExited;
+                if (samePath && alive) return true;
+            }
+            catch { /* 访问被拒/已退出：跳过 */ }
+            finally { p.Dispose(); }
+        }
+        return false;
     }
 
     /// <summary>挂 Exited 事件：非预期退出（崩溃/被外部杀）记日志并刷新状态；我们主动 Kill 的不记。</summary>
@@ -361,7 +423,14 @@ public static class StressTestService
     static void AssignToJob(Process p)
     {
         if (_job == IntPtr.Zero) return;
-        try { AssignProcessToJobObject(_job, p.Handle); } catch { /* 加入失败仍靠 Kill/钩子兜底 */ }
+        try { AssignProcessToJobObject(_job, p.Handle); }
+        catch
+        {
+            // Trước đây nuốt lỗi im lặng: nếu app đã nằm trong 1 Job khác thì gắn
+            // thất bại, và lớp兜底 "app sập thì hệ thống giết luôn烤机进程" sẽ không
+            // còn — phải ghi log để kỹ thuật viên biết chỉ còn trông vào nút Dừng.
+            Log("Cảnh báo: không gắn được tiến trình nướng máy vào Job (app có thể đã nằm trong Job khác); nếu app sập bất ngờ, tiến trình nướng máy có thể còn sống, phải kiểm tra Task Manager");
+        }
     }
 
     // ═══ Job Object P/Invoke ═══

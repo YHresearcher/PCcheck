@@ -7,6 +7,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
@@ -23,7 +24,23 @@
                     ToolTip="Máy hỏng nặng, không sửa để bán thì bấm đây để kết luận tổng thành LOẠI. Bấm lại để bỏ đánh dấu."/>
         </StackPanel>
 
-        <ScrollViewer Grid.Row="4" VerticalScrollBarVisibility="Auto">
+        <!-- Lưu hồ sơ phiên: 1 máy = 1 thư mục riêng trên USB, không ghi đè.
+             Thư mục: <thư mục app>\KetQua\<S/N>_<yyyyMMdd_HHmmss>\ (xem SummaryPage.SaveSessionButton_Click).
+             S/N để trống vẫn lưu được, tên thư mục dùng KhongCoSN, để máy mất tem vẫn có hồ sơ. -->
+        <StackPanel Grid.Row="4" Margin="0,0,0,8">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="S/N máy:" VerticalAlignment="Center" FontWeight="SemiBold"/>
+                <TextBox x:Name="SerialBox" Width="220" Margin="8,0,0,0" Padding="6,4"
+                         ToolTip="Số serial / service_tag của máy đang test, dùng để đặt tên thư mục hồ sơ. Để trống vẫn lưu được."/>
+                <Button x:Name="SaveSessionButton" Content="Lưu hồ sơ phiên này" Margin="8,0,0,0" Padding="16,7"
+                        Click="SaveSessionButton_Click"
+                        ToolTip="Lưu kết luận + nhận xét + kết quả từng module + kết quả đo ổ (nếu có) vào 1 thư mục riêng trên USB, không ghi đè hồ sơ máy trước"/>
+            </StackPanel>
+            <TextBlock x:Name="SaveStatusText" TextWrapping="Wrap" FontSize="11" Margin="0,6,0,0"
+                       Foreground="{DynamicResource TextSecondaryBrush}"/>
+        </StackPanel>
+
+        <ScrollViewer Grid.Row="5" VerticalScrollBarVisibility="Auto">
             <StackPanel>
                 <TextBlock Text="Kết luận từng module" FontWeight="SemiBold" FontSize="13" Margin="0,0,0,6"/>
                 <ItemsControl x:Name="ModuleList">
@@ -42,7 +59,7 @@
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
-                <TextBlock Text="Ghi chú: kết luận tổng tự động chỉ tính từ kết luận từng module đã có. Hiện tại chỉ module Đối chiếu cấu hình (kết luận ổ) và Cổng kết nối &amp; Sạc (kết luận sạc) có mức Cảnh báo / Chặn riêng; các module còn lại chỉ tính theo đã cho qua / chưa cho qua, chưa chấm điểm pin, nhiệt độ hay tốc độ ổ vì shop chưa chốt ngưỡng cho các mục đó. LOẠI không tự sinh ra từ test — kỹ thuật viên tự đánh dấu khi máy hỏng nặng không sửa để bán."
+                <TextBlock Text="Ghi chú: kết luận tổng tự động chỉ tính từ kết luận từng module đã có. Hiện tại chỉ module Đối chiếu cấu hình (kết luận ổ, theo mức độ nghiêm trọng của lỗi trước rồi mới xét sức khỏe) và Cổng kết nối &amp; Sạc (kết luận sạc) có mức Cảnh báo / Chặn riêng; các module còn lại chỉ tính theo đã cho qua / chưa cho qua, chưa chấm điểm pin, nhiệt độ hay tốc độ ổ vì shop chưa chốt ngưỡng cho các mục đó. LOẠI không tự sinh ra từ test — kỹ thuật viên tự đánh dấu khi máy hỏng nặng không sửa để bán. Hai quy tắc không nói quá: số liệu SMART không đọc được thì hiện Không rõ, không được biến thành ổ khỏe; một bài stress ngắn đạt chỉ chứng minh máy chạy được chừng đó phút ở tải cao, không chứng minh ổn định lâu dài."
                            TextWrapping="Wrap" FontSize="11"
                            Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,4,0,0"/>
             </StackPanel>

@@ -106,30 +106,59 @@ cả hai nền.
   tự động thành loại). Kỹ thuật viên tự bấm "Đánh dấu loại máy này" khi máy
   hỏng nặng không sửa để bán, kết luận tổng thành LOẠI với 5 cách nói riêng;
   bấm lại để bỏ đánh dấu và về lại kết luận tự động.
+- **Lưu hồ sơ phiên này** (trang Tổng kết, ô S/N + nút lưu): mỗi máy 1
+  thư mục riêng `<thư mục app>\KetQua\<S/N>_<yyyyMMdd_HHmmss>\`, gồm
+  `BaoCao.txt` (kết luận + nhận xét + kết quả từng module + bằng chứng),
+  `KetQua.json` (máy đọc được) và bản sao `KetQuaDoO.json` mới nhất (vì
+  file gốc trong %APPDATA% sẽ bị máy sau ghi đè). Cùng S/N test lại cũng
+  không đè lên nhau nhờ timestamp (+ _2, _3 nếu trùng giây). Chỉ mục
+  `KetQua\DanhSach.csv` thêm 1 dòng/phiên. S/N để trống vẫn lưu được
+  (tên thư mục dùng KhongCoSN). Lưu xong mới test máy tiếp theo. Nếu
+  thư mục app ghi không được thì lưu vào %APPDATA%\YanJi\KetQua\ và báo
+  rõ, không im lặng lưu chỗ khác.
+- **Dừng tất cả test nặng** (nút trên thanh đầu app, và nút Dừng / cho qua
+  ở trang Tản nhiệt): dừng thật Prime95 / FurMark / đo tốc độ ổ, có kiểm
+  chứng — kill xong phải xác nhận tiến trình đã chết, chưa chết thì quét
+  lại theo đường dẫn Tools và báo rõ tên tiến trình còn sống, không hiện
+  "Đã dừng" giả. Trang Tản nhiệt không cho qua khi chưa dừng được thật.
+  Hai quy tắc không nói quá cũng ghi ở trang Tổng kết: SMART không đọc
+  được thì không thành ổ khỏe; stress ngắn đạt không chứng minh ổn định
+  lâu dài.
 
 ## Kết luận tự động cho ổ (module Đối chiếu cấu hình)
 
-Mỗi ổ trong nhóm "Ổ" có thêm dòng **"Kết luận ổ"**, tính từ đúng số SMART
-đã hiển thị sẵn, không cần đọc thêm gì:
+Mỗi ổ trong nhóm "Ổ" có thêm dòng **"Lỗi nghiêm trọng"** và dòng
+**"Kết luận ổ"**. Kết luận xét **mức độ nghiêm trọng của lỗi trước,
+ngưỡng sức khỏe chỉ xét sau** (sửa ngày 2026-11-03, theo yêu cầu không
+chỉ dựa vào sức khỏe SSD):
 
-- Sức khỏe ≥90%: **ĐẠT — bán nguyên trạng**.
-- Sức khỏe 70-89%: **CẢNH BÁO — tối đa bán có điều kiện**. Vẫn cho qua
-  module được, nhưng dòng dưới cùng của trang ghi rõ điều kiện.
-- Sức khỏe <70% hoặc lỗi toàn vẹn dữ liệu NVMe 0E > 0: **CHẶN — thay ổ
-  rồi kiểm tra lại**. Nút "Xác nhận đúng, cho qua" bị chặn, bấm vào chỉ
-  hiện lý do, không chuyển xanh. Thay ổ xong bấm "Kiểm tra lại" để quét
-  lại từ đầu. Máy có nhiều ổ thì chỉ cần 1 ổ bị chặn là cả module không
-  cho qua, vì bán máy kèm ổ hỏng là bán hàng lỗi.
+- Lỗi nghiêm trọng > 0: **CHẶN — thay ổ rồi kiểm tra lại**, bất kể sức
+  khỏe cao bao nhiêu. Ổ 95% nhưng có lỗi vẫn CHẶN, không được về ĐẠT
+  chỉ vì sức khỏe cao. Lỗi nghiêm trọng gồm: NVMe cảnh báo nghiêm trọng
+  (Critical Warning) > 0, lỗi toàn vẹn dữ liệu NVMe 0E > 0, dự phòng
+  NVMe còn dưới ngưỡng, SATA sector đã thay thế (05) / chờ thay thế
+  (C5) / không sửa được (C6) / lỗi không sửa được đã báo (BB) > 0.
+- Sức khỏe <70%: **CHẶN** (không có lỗi nghiêm trọng thì vẫn chặn vì
+  mòn quá nhiều).
+- Cảnh báo: sức khỏe 70-89%, hoặc lỗi CRC (C7) > 0 (thường do cáp/cổng,
+  kiểm tra cáp rồi test lại, không chặn cứng ổ), hoặc không đọc được
+  lỗi nghiêm trọng nào dù sức khỏe còn cao (chưa biết có lỗi hay không
+  thì không được coi là khỏe). Vẫn cho qua module được, nhưng dòng dưới
+  cùng của trang ghi rõ điều kiện.
+- Sức khỏe ≥90% và đã đọc được lỗi nghiêm trọng = 0, không có lỗi nào
+  > 0: **ĐẠT — bán nguyên trạng**.
 - SMART không đọc được: **Không rõ — kiểm tra tay bằng CrystalDiskInfo,
   chưa đủ dữ liệu để kết luận**. Không tự cho là tốt, nhưng cũng không
   chặn cứng (có máy SMART vốn không đọc được qua kênh này) — kỹ thuật
   viên phải kiểm tra tay trước khi bán.
 
-Ngưỡng này là ngưỡng shop đã chốt ngày 2026-11-03. Lỗi 0E chỉ áp dụng cho
-NVMe, ổ SATA không bị chặn oan vì mục này. Sức khỏe % lấy từ SMART qua
-LibreHardwareMonitor: NVMe = 100 trừ "Percentage Used", SATA = "SSD Life
-Left" hoặc "Wear Leveling". SMART đọc không được thì các dòng sức khỏe,
-thời gian đã chạy và lỗi 0E đều hiện "Không rõ", không bịa số.
+Ngưỡng này là ngưỡng shop đã chốt ngày 2026-11-03, sửa lại theo mức độ
+nghiêm trọng ngày 2026-11-03. Lỗi NVMe chỉ áp dụng cho NVMe, lỗi SATA
+chỉ áp dụng cho SATA, không bị chặn oan vì nhầm loại ổ. Sức khỏe % lấy
+từ SMART qua LibreHardwareMonitor: NVMe = 100 trừ "Percentage Used",
+SATA = "SSD Life Left" hoặc "Wear Leveling". SMART đọc không được thì
+các dòng sức khỏe, thời gian đã chạy và lỗi đều hiện "Không rõ",
+không bịa số.
 
 ## Module Cổng kết nối & Sạc — nguồn và những chỗ đã sửa
 

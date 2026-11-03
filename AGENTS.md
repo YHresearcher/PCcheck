@@ -40,6 +40,24 @@
 # <AssemblyName> trong host csproj (không code nào tham chiếu tên assembly host, RestartApp dùng
 # Environment.ProcessPath nên an toàn), shortcut trình cài đặt + tài liệu đổi theo; thư mục mã nguồn
 # vẫn giữ tên 验机软件, chỉ đổi tên file exe đầu ra.
+# (13) KẾT LUẬN Ổ THEO MỨC ĐỘ NGHIÊM TRỌNG (2026-11-03): LhmDisk thêm CriticalWarning
+# (NVMe 0xE0), AvailableSpare/Threshold (0xE2/0xE3), SATA Reallocated 0x05 / Pending 0xC5 /
+# Uncorrectable 0xC6 / Reported 0xBB / CRC 0xC7 (RawValue, null = đọc không được, không phải 0);
+# DriveVerdict xét lỗi nghiêm trọng >0 = CHẶN trước, rồi mới sức khỏe <70% = CHẶN, rồi cảnh báo
+# (70-89%, CRC, hoặc không đọc được lỗi nghiêm trọng nào dù sức khỏe cao thì không được ĐẠT),
+# rồi mới ĐẠT; HardwareReport thêm DriveWarningReasons để Tổng kết hiển thị đúng lý do.
+# (14) STOP ALL CÓ KIỂM CHỨNG (2026-11-03): PluginSdk thêm IStopHeavyTests (trả về tên tiến
+# trình còn sống, rỗng = dừng thật); StressTestService.StopVerified kill 2 lần + quét mồ côi
+# theo đường dẫn Tools, KHÔNG xóa trường khi chưa chết thật (lỗi cũ: xóa trường trước nên giao
+# diện báo dừng giả trong khi Prime95/FurMark còn chạy); MainWindow thêm nút "Dừng tất cả test
+# nặng", trang Tản nhiệt không cho qua khi chưa dừng được; DiskMark StopVerified quét CdmHost/diskspd.
+# (15) HỒ SƠ PHIÊN TRÊN USB (2026-11-03): trang Tổng kết thêm ô S/N + nút "Lưu hồ sơ phiên này",
+# thư mục <app>\KetQua\<S/N>_<yyyyMMdd_HHmmss>\ (timestamp nên không ghi đè, trùng giây thêm _2),
+# gồm BaoCao.txt + KetQua.json + bản sao KetQuaDoO.json, chỉ mục KetQua\DanhSach.csv 1 dòng/phiên;
+# S/N trống vẫn lưu (KhongCoSN); thư mục app ghi không được thì fallback %APPDATA%\YanJi\KetQua\
+# và báo rõ. Thiết kế mới (wizard 1 bài/lần, Hardware Info kiểu CPU-Z, kết luận mua 2 phần) đã
+# chốt thành file thiết kế ở ~/workspace/your_files/ThietKeMoi_TestMayAnTam_Wizard_Dashboard.md,
+# CHƯA sửa MainWindow theo thiết kế đó — còn chờ chốt kết luận mua thay hẳn hay song song kết luận bán.
 # Phần còn lại của file này vẫn là
 # tài liệu gốc bằng tiếng Trung, chưa dịch, dùng để tham khảo kỹ thuật.
 

@@ -5,7 +5,7 @@ namespace YanJi.Plugin.StressTest;
 
 /// <summary>「散热测试」插件入口：CPU 单烤 prime95 / GPU 单烤 FurMark / 双烤 + 四路传感器监控。
 /// 实现 IPluginShutdown：程序关闭时兜底停掉烤机进程。</summary>
-public class StressTestPlugin : IYanJiPlugin, IPluginShutdown
+public class StressTestPlugin : IYanJiPlugin, IPluginShutdown, IStopHeavyTests
 {
     public PluginInfo Info => new("stress", "Test tản nhiệt", "1.0.0", 50, false);
 
@@ -21,4 +21,5 @@ public class StressTestPlugin : IYanJiPlugin, IPluginShutdown
 
     public UserControl CreatePage(IHostContext host) => new StressTestPage();
     public void Shutdown() => StressTestService.Stop();
+    public IReadOnlyList<string> StopHeavyTests() => StressTestService.StopVerified();
 }

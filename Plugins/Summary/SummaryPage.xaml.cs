@@ -1,3 +1,6 @@
+using System.IO;
+using System.Text;
+using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -19,6 +22,8 @@ public partial class SummaryPage : UserControl
     bool _markedLoai;
     string _currentLevel = "";
     int _currentPhrasingIndex = -1;
+    List<ModuleRow> _lastRows = [];
+    string _lastOverallTitle = "";
 
     /// <summary>1 dòng kết luận từng module hiển thị trong danh sách.</summary>
     public record ModuleRow(string Name, string Grade, string Note);
@@ -101,6 +106,170 @@ public partial class SummaryPage : UserControl
         Refresh();
     }
 
+    /// <summary>Lưu hồ sơ phiên này: 1 máy = 1 thư mục riêng, không ghi đè.
+    /// Thư mục gốc mặc định là thư mục app đang chạy (bản portable = USB), tên
+    /// <S/N>_<yyyyMMdd_HHmmss>; cùng S/N test lại trong cùng giây thì thêm _2, _3...
+    /// Nếu thư mục app ghi không được (USB chỉ đọc, Program Files không quyền) thì
+    /// chuyển sang %APPDATA%\YanJi\KetQua\ và báo rõ trong SaveStatusText, không
+    /// im lặng lưu chỗ khác. File trong thư mục: BaoCao.txt (nhận xét + bằng chứng),
+    /// KetQua.json (máy đọc được), KetQuaDoO.json (bản sao kết quả đo ổ mới nhất,
+    /// nếu có — vì file gốc trong %APPDATA% sẽ bị máy sau ghi đè). Chỉ mục chung
+    /// KetQua\DanhSach.csv thêm 1 dòng/phiên để Báo cáo &amp; Lịch sử mở lại được.
+    /// Mỗi phiên chỉ gồm chữ + số nên &lt; 100 KB, USB 8 GB không phải giới hạn.</summary>
+    void SaveSessionButton_Click(object sender, RoutedEventArgs e)
+    {
+        Refresh();
+        string snRaw = SerialBox.Text.Trim();
+        string sn = SanitizeFileName(snRaw);
+        if (sn.Length == 0) sn = "KhongCoSN";
+        string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+        string savedAt = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+        string phrasing = PhrasingText.Text;
+        string overall = _lastOverallTitle.Length > 0 ? _lastOverallTitle : "CHƯA TEST XONG";
+
+        string ketQuaDir;
+        string fallbackNote = "";
+        try
+        {
+            ketQuaDir = Path.Combine(AppContext.BaseDirectory, "KetQua");
+            Directory.CreateDirectory(ketQuaDir);
+        }
+        catch
+        {
+            ketQuaDir = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "YanJi", "KetQua");
+            fallbackNote = " (thư mục app ghi không được, đã lưu vào %APPDATA%\\YanJi\\KetQua\\)";
+        }
+
+        string folderName = $"{sn}_{timestamp}";
+        string folder = Path.Combine(ketQuaDir, folderName);
+        for (int i = 2; Directory.Exists(folder); i++)
+        {
+            folderName = $"{sn}_{timestamp}_{i}";
+            folder = Path.Combine(ketQuaDir, folderName);
+        }
+
+        try
+        {
+            Directory.CreateDirectory(folder);
+            string diskJson = ReadDiskJson(out string diskLine);
+            var txt = new StringBuilder();
+            txt.AppendLine("BÁO CÁO KIỂM TRA MÁY — Vi Tính An Tâm");
+            txt.AppendLine($"S/N: {(snRaw.Length > 0 ? snRaw : "Chưa nhập")}");
+            txt.AppendLine($"Thời gian lưu: {savedAt}");
+            txt.AppendLine($"Kết luận: {overall}" + (_markedLoai ? " (kỹ thuật viên đánh dấu loại)" : ""));
+            txt.AppendLine($"Nhận xét: {phrasing}");
+            txt.AppendLine();
+            txt.AppendLine("Kết luận từng module:");
+            foreach (var r in _lastRows)
+                txt.AppendLine($"- {r.Name}: {r.Grade} — {r.Note}");
+            txt.AppendLine();
+            txt.AppendLine("Bằng chứng kỹ thuật:");
+            txt.AppendLine(diskLine);
+            txt.AppendLine("Lưu ý: số liệu SMART không đọc được thì hiện Không rõ, không được hiểu là ổ khỏe. " +
+                "Bài stress ngắn đạt chỉ chứng minh máy chạy được chừng đó phút ở tải cao, không chứng minh ổn định lâu dài.");
+            File.WriteAllText(Path.Combine(folder, "BaoCao.txt"), txt.ToString(), new UTF8Encoding(false));
+
+            var json = new StringBuilder();
+            json.AppendLine("{");
+            json.AppendLine($"  \"sn\": {JsonSerializer.Serialize(snRaw)},");
+            json.AppendLine($"  \"savedAt\": {JsonSerializer.Serialize(savedAt)},");
+            json.AppendLine($"  \"overall\": {JsonSerializer.Serialize(overall)},");
+            json.AppendLine($"  \"phrasing\": {JsonSerializer.Serialize(phrasing)},");
+            json.AppendLine($"  \"markedLoai\": {(_markedLoai ? "true" : "false")},");
+            json.AppendLine("  \"modules\": [");
+            for (int i = 0; i < _lastRows.Count; i++)
+            {
+                var r = _lastRows[i];
+                json.Append($"    {{\"name\": {JsonSerializer.Serialize(r.Name)}, \"grade\": {JsonSerializer.Serialize(r.Grade)}, \"note\": {JsonSerializer.Serialize(r.Note)}}}");
+                json.AppendLine(i < _lastRows.Count - 1 ? "," : "");
+            }
+            json.AppendLine("  ],");
+            json.AppendLine($"  \"disk\": {(diskJson.Length > 0 ? diskJson : "null")}");
+            json.AppendLine("}");
+            File.WriteAllText(Path.Combine(folder, "KetQua.json"), json.ToString(), new UTF8Encoding(false));
+
+            string diskSrc = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "YanJi", "disk_result", "KetQuaDoO.json");
+            if (File.Exists(diskSrc))
+                File.Copy(diskSrc, Path.Combine(folder, "KetQuaDoO.json"), overwrite: true);
+
+            AppendIndex(ketQuaDir, savedAt, snRaw.Length > 0 ? snRaw : "KhongCoSN", overall, folderName);
+            string freeNote = FreeSpaceNote(ketQuaDir);
+            SaveStatusText.Text = $"Đã lưu hồ sơ vào {folder}{fallbackNote}.{freeNote} Lưu xong mới test máy tiếp theo, vì kết quả đo ổ của máy sau sẽ ghi đè file gốc.";
+            SaveStatusText.SetResourceReference(TextBlock.ForegroundProperty, "TextSecondaryBrush");
+        }
+        catch (Exception ex)
+        {
+            SaveStatusText.Text = $"Lưu hồ sơ thất bại: {ex.Message}. Thử kiểm tra USB còn ghi được không, rồi bấm Lưu lại.";
+            SaveStatusText.SetResourceReference(TextBlock.ForegroundProperty, "ErrorBrush");
+        }
+    }
+
+    static string SanitizeFileName(string s)
+    {
+        var sb = new StringBuilder();
+        foreach (char c in s)
+        {
+            if (char.IsLetterOrDigit(c) || c is '-' or '_') sb.Append(c);
+            else if (c is ' ') sb.Append('_');
+        }
+        string out_ = sb.ToString().Trim('_');
+        return out_.Length > 60 ? out_[..60] : out_;
+    }
+
+    /// <summary>Đọc kết quả đo ổ mới nhất trong %APPDATA% (file này bị máy sau ghi đè
+    /// nên phiên phải sao chép ngay). Trả về JSON gốc để ghi vào KetQua.json và
+    /// 1 dòng tóm tắt cho BaoCao.txt; không có file thì trả về rỗng + dòng "Chưa đo".</summary>
+    static string ReadDiskJson(out string line)
+    {
+        line = "Đo tốc độ ổ: chưa có kết quả (chưa đo, hoặc file gốc đã bị ghi đè bởi máy khác — lưu hồ sơ ngay sau khi đo xong).";
+        try
+        {
+            string path = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "YanJi", "disk_result", "KetQuaDoO.json");
+            if (!File.Exists(path)) return "";
+            string json = File.ReadAllText(path).Trim();
+            using var doc = JsonDocument.Parse(json);
+            var r = doc.RootElement;
+            double seqR = r.GetProperty("seq_read").GetDouble();
+            double seqW = r.GetProperty("seq_write").GetDouble();
+            double r4R = r.GetProperty("rnd4k_read").GetDouble();
+            double r4W = r.GetProperty("rnd4k_write").GetDouble();
+            line = $"Đo tốc độ ổ: đọc tuần tự {seqR:0.0} MB/s, ghi tuần tự {seqW:0.0} MB/s, " +
+                $"đọc ngẫu nhiên 4K {r4R:0.0} MB/s, ghi ngẫu nhiên 4K {r4W:0.0} MB/s.";
+            return json;
+        }
+        catch { return ""; }
+    }
+
+    static void AppendIndex(string ketQuaDir, string savedAt, string sn, string overall, string folderName)
+    {
+        try
+        {
+            string indexPath = Path.Combine(ketQuaDir, "DanhSach.csv");
+            bool newFile = !File.Exists(indexPath);
+            using var w = new StreamWriter(indexPath, append: true, new UTF8Encoding(encoderShouldEmitUTF8Identifier: true));
+            if (newFile) w.WriteLine("Thời gian,S/N,Kết luận,Thư mục");
+            string Cell(string s) => s.Replace(',', ';').Replace('\r', ' ').Replace('\n', ' ');
+            w.WriteLine(string.Join(',', Cell(savedAt), Cell(sn), Cell(overall), Cell(folderName)));
+        }
+        catch { /* Chỉ mục lỗi không được làm mất hồ sơ phiên vừa lưu */ }
+    }
+
+    static string FreeSpaceNote(string dir)
+    {
+        try
+        {
+            string root = Path.GetPathRoot(Path.GetFullPath(dir)) ?? "";
+            if (root.Length == 0) return "";
+            var drive = new DriveInfo(root);
+            double freeMB = drive.AvailableFreeSpace / 1048576.0;
+            return freeMB < 100 ? $" Cảnh báo: ổ chứa hồ sơ còn {freeMB:0} MB trống." : "";
+        }
+        catch { return ""; }
+    }
+
     string PickPhrasing(string level, int excludeIndex)
     {
         var pool = Phrasings[level];
@@ -140,6 +309,7 @@ public partial class SummaryPage : UserControl
             rows.Add(new(m.Name, GradeText(grade), note));
         }
         ModuleList.ItemsSource = rows;
+        _lastRows = rows;
 
         if (grades.Any(g => g == ModuleVerdictLevel.Chan)) autoLevel = ModuleVerdictLevel.Chan;
         else if (grades.Any(g => g == ModuleVerdictLevel.CanhBao)) autoLevel = ModuleVerdictLevel.CanhBao;
@@ -152,7 +322,8 @@ public partial class SummaryPage : UserControl
             : autoLevel == ModuleVerdictLevel.Dat ? "Dat"
             : "ChuaXong";
 
-        OverallText.Text = OverallTitles[level]
+        _lastOverallTitle = OverallTitles[level];
+        OverallText.Text = _lastOverallTitle
             + (_markedLoai ? $" (kỹ thuật viên đánh dấu; kết luận tự động là {OverallTitles[LevelKey(autoLevel)]})" : "");
         if (level == "Dat") OverallText.Foreground = Brushes.ForestGreen;
         else if (level == "Sua" || level == "Loai") OverallText.SetResourceReference(TextBlock.ForegroundProperty, "ErrorBrush");

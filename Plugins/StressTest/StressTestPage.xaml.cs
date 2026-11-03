@@ -86,12 +86,26 @@ public partial class StressTestPage : UserControl, YanJi.PluginSdk.IModulePage
             LogBox.ScrollToEnd();
         });
 
-    void StopButton_Click(object sender, RoutedEventArgs e) => StressTestService.Stop();
+    void StopButton_Click(object sender, RoutedEventArgs e)
+    {
+        // Dừng có kiểm chứng: nếu tiến trình vẫn còn sống thì StopVerified đã ghi
+        // cảnh báo vào LogBox và IsRunning vẫn true, giao diện không được báo dừng giả.
+        // Xem StressTestService.StopVerified.
+        StressTestService.StopVerified();
+        RefreshRunningState();
+    }
 
     void PassButton_Click(object sender, RoutedEventArgs e)
     {
         // 通过即停烤（随后自动跳转切页，Unloaded 也会再兜一次）
-        StressTestService.Stop();
+        // Nếu chưa dừng được thật thì KHÔNG cho qua: cho qua trong khi Prime95/FurMark
+        // vẫn chạy sẽ khiến máy tiếp tục tải cao ở trang khác mà kỹ thuật viên tưởng đã xong.
+        var survivors = StressTestService.StopVerified();
+        if (survivors.Count > 0)
+        {
+            RunStateText.Text = $"Chưa dừng được {string.Join(", ", survivors)} — chưa cho qua, kiểm tra Task Manager rồi bấm Dừng lại";
+            return;
+        }
         SetPassed(true);
     }
 

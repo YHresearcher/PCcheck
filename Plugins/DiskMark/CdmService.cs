@@ -215,8 +215,37 @@ public class CdmService
     static string Tail(string s, int n) => s.Length <= n ? s : s[^n..];
 
     /// <summary>兜底杀掉当前跑分进程树（页面切走/程序关闭时调用；无进程则空操作）。</summary>
-    public static void KillCurrent()
+    public static void KillCurrent() => StopVerified();
+
+    /// <summary>Dừng đo tốc độ ổ có kiểm chứng, dùng cho nút "Dừng tất cả test nặng":
+    /// kill CdmHost + cây diskspd, rồi quét lại theo đường dẫn plugin để bắt tiến
+    /// trình mồ côi. Trả về tên tiến trình vẫn còn sống; rỗng = đã dừng thật.
+    /// Không giữ _current sau khi kill thất bại — _current đã bị RunAsync finally
+    /// xóa nên quét theo đường dẫn là cách duy nhất để xác nhận.</summary>
+    public static IReadOnlyList<string> StopVerified()
     {
         try { _current?.Kill(entireProcessTree: true); } catch { /* 已退出 */ }
+        try { _current?.WaitForExit(5000); } catch { }
+        var survivors = new List<string>();
+        string cdmHost = Path.Combine(PluginDir, "CdmHost", "CdmHost.exe");
+        string diskspd = Path.Combine(PluginDir, "CdmHost", "CdmResource", "diskspd", "diskspd64.exe");
+        if (StaleAlive("CdmHost", cdmHost)) survivors.Add("CdmHost (đo tốc độ ổ)");
+        if (StaleAlive("diskspd64", diskspd)) survivors.Add("diskspd (đo tốc độ ổ)");
+        return survivors;
+    }
+
+    static bool StaleAlive(string exeName, string expectPath)
+    {
+        foreach (var p in Process.GetProcessesByName(exeName))
+        {
+            try
+            {
+                bool samePath = string.Equals(p.MainModule?.FileName, expectPath, StringComparison.OrdinalIgnoreCase);
+                if (samePath && !p.HasExited) return true;
+            }
+            catch { /* 访问被拒/已退出：跳过 */ }
+            finally { p.Dispose(); }
+        }
+        return false;
     }
 }

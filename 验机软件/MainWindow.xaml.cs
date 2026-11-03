@@ -274,6 +274,29 @@ public partial class MainWindow : Window
         new PluginManagerWindow(_plugins, TryLoadPluginAtRuntime) { Owner = this }.ShowDialog();
     }
 
+    /// <summary>Nút "Dừng tất cả test nặng": gọi IStopHeavyTests của mọi plugin có
+    /// tiến trình tải cao (hiện tại: nướng máy Prime95/FurMark + đo tốc độ ổ).
+    /// Chỉ báo "đã dừng" khi mọi plugin trả về rỗng; còn sống thì báo rõ tên,
+    /// không bao giờ báo dừng giả.</summary>
+    void OnStopAllHeavyTestsClick(object sender, RoutedEventArgs e)
+    {
+        var survivors = new List<string>();
+        foreach (var lp in _plugins)
+        {
+            if (lp.Plugin is IStopHeavyTests stopper)
+            {
+                try { survivors.AddRange(stopper.StopHeavyTests()); }
+                catch { /* 1 plugin lỗi không chặn plugin khác */ }
+            }
+        }
+        if (survivors.Count == 0)
+            MessageBox.Show("Đã dừng tất cả test nặng (Prime95 / FurMark / đo tốc độ ổ).",
+                "Dừng tất cả test nặng", MessageBoxButton.OK, MessageBoxImage.Information);
+        else
+            MessageBox.Show($"Chưa dừng được: {string.Join(", ", survivors)}.\n\nMáy vẫn đang tải cao. Mở Task Manager kiểm tra tiến trình trên rồi bấm Dừng tất cả lại, đừng tưởng máy đã hết tải.",
+                "Dừng tất cả test nặng — còn tiến trình sống", MessageBoxButton.OK, MessageBoxImage.Warning);
+    }
+
     /// <summary>窗口图标取 exe 内嵌图标（Win32 提取，多尺寸 ico 在各 DPI 下都清晰）。</summary>
     void UpdateIcon()
     {
