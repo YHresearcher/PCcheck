@@ -18,13 +18,13 @@
                        Foreground="{DynamicResource TextSecondaryBrush}"/>
         </StackPanel>
         <TextBlock x:Name="OverallText" Grid.Row="1" FontSize="16" FontWeight="SemiBold" Margin="0,8,0,0"/>
-        <TextBlock x:Name="PhrasingText" Grid.Row="2" FontSize="13" TextWrapping="Wrap" Margin="0,6,0,0"
+        <TextBlock x:Name="PhrasingText" Grid.Row="2" FontSize="13" FontWeight="Bold" TextWrapping="Wrap" Margin="0,6,0,0"
                    Foreground="{DynamicResource TextSecondaryBrush}"/>
         <!-- Dòng "An Tâm nhắn bạn": chỉ hiện khi kết quả cho phép (máy đạt hoặc
              cảnh báo nhẹ), không hiện khi có lỗi nghiêm trọng, chưa đủ dữ liệu,
              hoặc kỹ thuật viên đánh dấu không mua — để không làm nhẹ cảnh báo.
              Code-behind đặt Visibility = Collapsed khi không được hiện. -->
-        <TextBlock x:Name="AnTamNoteText" Grid.Row="3" FontSize="12" FontStyle="Italic" TextWrapping="Wrap" Margin="0,6,0,0"
+        <TextBlock x:Name="AnTamNoteText" Grid.Row="3" FontSize="12" FontStyle="Italic" FontWeight="Bold" TextWrapping="Wrap" Margin="0,6,0,0"
                    Foreground="{DynamicResource AccentBrush}" Visibility="Collapsed"/>
         <StackPanel Grid.Row="4" Orientation="Horizontal" Margin="0,12,0,8">
             <Button x:Name="MarkLoaiButton" Content="Đánh dấu không mua máy này" Padding="16,7"

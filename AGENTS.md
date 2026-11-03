@@ -600,3 +600,11 @@ public interface IHostContext                       // 宿主注入 CreatePage
 # tay."). Cả 5 đều đủ 6-8 chữ. Chưa gắn theo kết quả vì 2 cặp (nhiều lỗi, nên
 # bỏ qua) ứng với trường hợp hiện đang ẩn dòng An Tâm (nghiêm trọng / không
 # mua) — cần user chốt có cho hiện ở đó không trước khi gắn.
+
+# (36) CHỮ NHẬN XÉT IN ĐẬM CHO NỔI (2026-11-03, chưa test Windows):
+# Trang Tổng kết: câu kết luận thân thiện (PhrasingText, dòng 2) và dòng "An
+# Tâm nhắn bạn" (AnTamNoteText, dòng 3) đều thêm FontWeight="Bold" (dòng An Tâm
+# giữ FontStyle="Italic" nên thành đậm + nghiêng). Tiêu đề kết luận vốn đã
+# SemiBold 16 nên thứ bậc vẫn giữ: tiêu đề to nhất, 2 dòng nhận xét đậm hơn
+# trước để nổi lên. Làm cả 2 dòng vì user nói "chữ nhận xét" không chỉ rõ dòng
+# nào — nếu chỉ muốn đậm 1 dòng thì nói lại, gỡ dòng còn lại.
