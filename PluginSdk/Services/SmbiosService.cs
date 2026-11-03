@@ -115,7 +115,12 @@ public static class SmbiosService
         byte? chassisType = null;
         bool foundAny = false;
 
-        int pos = 0;
+        // Buffer RSMB của GetSystemFirmwareTable có header 8 byte (major ở [1],
+        // minor ở [2], các structure bắt đầu từ [8]) — đi từ offset 0 sẽ đọc nhầm
+        // byte major (2/3) thành Length của structure đầu tiên và dừng ngay vì
+        // length < 4 (xem LibreHardwareMonitor SMBios.cs trong repo: offset = 8).
+        if (table.Length < 8) return null;
+        int pos = 8;
         while (pos + 4 <= table.Length)
         {
             byte type = table[pos];
