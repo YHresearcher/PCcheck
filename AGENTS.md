@@ -802,3 +802,14 @@ public interface IHostContext                       // 宿主注入 CreatePage
 # FontWeight từ Button nên cả 2 dòng đều trắng đậm. Style Button dùng TemplateBinding nên
 # Background đặt ở nút có tác dụng ở trạng thái thường; hover vẫn theo theme chung (nền
 # NavHover + viền cam). Nếu thấy cam quá mạnh thì giảm xuống (vd chỉ viền + chữ cam).
+
+# (50) BỎ ĐOẠN "Ghi chú:" DÀI CUỐI TRANG TỔNG KẾT (2026-11-03, chưa test Windows):
+# User nói phần ghi chú của mục tổng kết dài quá, bỏ đi. Sửa: xóa TextBlock "Ghi chú:"
+# cuối trang Summary (đoạn giải thích dài về Phrasings.json, thứ tự ưu tiên, kết luận ổ,
+# tín hiệu, KHÔNG MUA, dòng An Tâm, SMART, stress). Chỉ xóa UI này, không đụng code
+# (TextBlock không có x:Name, không code nào tham chiếu) và không đụng BaoCao.txt (file
+# báo cáo vốn không chứa đoạn này). Phần chi tiết từng module cho kỹ thuật viên
+# (ModuleList) vẫn giữ nguyên. Đoạn ghi chú này ngoài dài ra còn lỗi thời (nói tín hiệu
+# chưa tự chọn trong khi đã nối xong, nói dòng An Tâm chỉ hiện khi đạt/cảnh báo nhẹ
+# trong khi giờ nhóm nghiêm trọng/không mua cũng hiện) nên bỏ đi không mất thông tin đúng;
+# quy tắc đúng vẫn nằm trong code + AGENTS + README.

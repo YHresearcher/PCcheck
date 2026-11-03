@@ -67,9 +67,6 @@
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
-                <TextBlock Text="Ghi chú: câu kết luận lấy từ file Phrasings.json (không viết cố định trong C#), chọn theo thứ tự ưu tiên: lỗi nghiêm trọng → lỗi chức năng → cảnh báo linh kiện → thiếu dữ liệu → máy đạt. Thiếu dữ liệu quan trọng thì không được xếp vào nhóm tốt chỉ vì không phát hiện lỗi. Hiện tại chỉ module Đối chiếu cấu hình (kết luận ổ, theo mức độ nghiêm trọng của lỗi trước rồi mới xét sức khỏe) và Cổng kết nối &amp; Sạc (kết luận sạc) có mức Cảnh báo / Chặn riêng; các module còn lại chỉ tính theo đã cho qua / chưa cho qua. Câu pin / CPU-GPU / ngoại vi / kết hợp B-C đã có sẵn trong file, nhưng chưa tự chọn vì chưa có tín hiệu (cần % chai pin, nhiệt/throttling, tick xác nhận tay) — không đoán từ dữ liệu không có. KHÔNG MUA không tự sinh ra từ test — kỹ thuật viên tự đánh dấu khi máy hỏng nặng không nên mua. Dòng 'An Tâm nhắn bạn' chỉ hiện khi máy đạt hoặc cảnh báo nhẹ, không làm nhẹ cảnh báo nghiêm trọng. Hai quy tắc không nói quá: số liệu SMART không đọc được thì hiện Không rõ, không được biến thành ổ khỏe; một bài stress ngắn đạt chỉ chứng minh máy chạy được chừng đó phút ở tải cao, không chứng minh ổn định lâu dài."
-                           TextWrapping="Wrap" FontSize="11"
-                           Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,4,0,0"/>
             </StackPanel>
         </ScrollViewer>
     </Grid>
