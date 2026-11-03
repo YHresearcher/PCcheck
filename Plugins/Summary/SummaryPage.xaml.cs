@@ -22,66 +22,28 @@ public partial class SummaryPage : UserControl
 {
     readonly IHostContext _host;
     readonly Random _random = new();
+    readonly PhrasingBank _bank = new();
     bool _markedLoai;
-    string _currentLevel = "";
+    string _currentScenario = "";
     int _currentPhrasingIndex = -1;
+    int _currentAnTamIndex = -1;
     List<ModuleRow> _lastRows = [];
     string _lastOverallTitle = "";
+    string _lastAnTamNote = "";
 
     /// <summary>1 dòng kết luận từng module hiển thị trong danh sách.</summary>
     public record ModuleRow(string Name, string Grade, string Note);
 
-    /// <summary>Kết luận mua máy: xác định máy MUA ĐƯỢC HAY KHÔNG, cho cả 2 đối tượng
-    /// dùng chung 1 trang — người mua chỉ cần đọc tiêu đề + câu thân thiện ở trên
-    /// là hiểu, kỹ thuật viên đọc tiếp chi tiết từng module ở dưới để biết vì sao.
-    /// Mỗi mức 5 câu thân thiện, app chọn ngẫu nhiên 1 câu, bấm "Đổi cách nói" thì
-    /// đổi sang câu khác cùng mức. Giọng shop thật, câu ngắn, không dùng từ quảng
-    /// cáo, không hứa gì thêm ngoài kết luận (ví dụ câu mua được không tự thêm
-    /// bảo hành, bảo hành đã có ở slogan chung).</summary>
-    static readonly Dictionary<string, string[]> Phrasings = new()
-    {
-        ["Dat"] =
-        [
-            "Máy này ngon rồi, mua được ngay, khỏi lăn tăn gì thêm.",
-            "Test xong hết, máy chạy ổn, mua về dùng được rồi đó.",
-            "Mọi mục đều đạt, máy này yên tâm mua.",
-            "Xong rồi, máy sạch, mua thôi.",
-            "Máy này đạt chuẩn An Tâm, mua được rồi.",
-        ],
-        ["CanhBao"] =
-        [
-            "Máy dùng được, nhưng có chỗ cần kiểm tra thêm hoặc thương lượng giá trước khi mua.",
-            "Mua được, nhớ ghi rõ điều kiện vào đơn, đừng để mua về rồi mới bất ngờ.",
-            "Máy này mua có điều kiện, xem lại phần cảnh báo bên dưới rồi hãy quyết.",
-            "Chưa phải máy hoàn hảo, nhưng mua được nếu đồng ý điều kiện và giá hợp lý.",
-            "Có 1-2 chỗ chưa ngon hẳn, mua thì phải nói rõ điều kiện và bớt giá cho hợp lý.",
-        ],
-        ["Sua"] =
-        [
-            "Máy này chưa mua được, sửa chỗ bị chặn xong rồi test lại từ đầu nhé.",
-            "Có mục bị chặn, thay linh kiện rồi chạy lại test, đừng mua vội.",
-            "Sửa xong rồi test lại, máy này còn cứu được, nhưng hiện tại chưa nên mua.",
-            "Chặn ở vài chỗ, sửa rồi kiểm lại mới tính chuyện mua.",
-            "Đừng mua máy này vội, sửa trước đã.",
-        ],
-        ["Loai"] =
-        [
-            "Máy này thôi, đừng cố mua, loại ra cho khỏe.",
-            "Máy này không nên mua, giữ lại làm linh kiện hoặc loại hẳn.",
-            "Loại máy này đi, mua về chỉ thêm rắc rối.",
-            "Máy này không đạt chuẩn An Tâm, không mua.",
-            "Thôi bỏ máy này, tìm máy khác ngon hơn.",
-        ],
-        ["ChuaXong"] =
-        [
-            "Chưa test xong đâu, còn mục chưa xong ở trên, làm nốt rồi hãy kết luận mua hay không.",
-            "Mới test được vài mục, chạy nốt các mục còn lại đi.",
-            "Chưa đủ dữ liệu để kết luận mua hay không, test tiếp nhé.",
-            "Còn mục chưa xong, kết luận mua vội là sai đó.",
-            "Test chưa xong, quay lại các mục còn thiếu rồi hãy xem tổng kết.",
-        ],
-    };
-
+    /// <summary>Kịch bản kết luận (pool câu lấy từ Phrasings.json qua PhrasingBank,
+    /// không viết cố định trong C#). Thứ tự ưu tiên khi chọn kịch bản:
+    /// lỗi nghiêm trọng → lỗi chức năng → cảnh báo linh kiện → thiếu dữ liệu → máy đạt.
+    /// Thiếu dữ liệu quan trọng thì không được xếp vào nhóm tốt chỉ vì không phát hiện
+    /// lỗi — nên bất kỳ module nào chưa test xong cũng về kịch bản "incomplete",
+    /// không về "good". Kịch bản nào có tín hiệu thì dùng câu chuyên biệt của nó
+    /// (ổ media / ổ sector / ổ hao mòn / ổ SMART chưa rõ); chưa có tín hiệu thì
+    /// dùng câu chung của mức đó (warning / serious / incomplete / good), không đoán.
+    /// Dòng "An Tâm nhắn bạn" chỉ đi kèm kịch bản good và warning, không đi kèm
+    /// serious / incomplete / notBuy — để không làm nhẹ cảnh báo nghiêm trọng.</summary>
     static readonly Dictionary<string, string> OverallTitles = new()
     {
         ["Dat"] = "CÓ THỂ MUA — MUA ĐƯỢC",
@@ -102,8 +64,12 @@ public partial class SummaryPage : UserControl
 
     void ChangePhrasingButton_Click(object sender, RoutedEventArgs e)
     {
-        if (_currentLevel.Length == 0) Refresh();
-        else PhrasingText.Text = PickPhrasing(_currentLevel, _currentPhrasingIndex);
+        if (_currentScenario.Length == 0) Refresh();
+        else
+        {
+            PhrasingText.Text = PickPhrasing(_currentScenario, _currentPhrasingIndex);
+            RefreshAnTamNote(exclude: _currentAnTamIndex);
+        }
     }
 
     void MarkLoaiButton_Click(object sender, RoutedEventArgs e)
@@ -131,6 +97,10 @@ public partial class SummaryPage : UserControl
         string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
         string savedAt = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
         string phrasing = PhrasingText.Text;
+        // Câu đã chọn được lưu cố định vào báo cáo: mở lại BaoCao.txt / KetQua.json
+        // sẽ thấy đúng câu này, không random lại — vì báo cáo là file, không tự sinh lại.
+        string anTamNote = _lastAnTamNote;
+        string scenario = _currentScenario.Length > 0 ? _currentScenario : "incomplete";
         string overall = _lastOverallTitle.Length > 0 ? _lastOverallTitle : "CHƯA TEST XONG";
 
         string ketQuaDir;
@@ -168,6 +138,8 @@ public partial class SummaryPage : UserControl
             txt.AppendLine("Phần 1 — Dành cho người mua (đọc là hiểu: máy mua được hay không):");
             txt.AppendLine($"Kết luận mua máy: {overall}" + (_markedLoai ? " (kỹ thuật viên đánh dấu không mua)" : ""));
             txt.AppendLine($"Nhận xét: {phrasing}");
+            if (anTamNote.Length > 0)
+                txt.AppendLine($"An Tâm nhắn bạn: {anTamNote}");
             txt.AppendLine();
             txt.AppendLine("Phần 2 — Dành cho kỹ thuật viên (bằng chứng kỹ thuật, vì sao ra kết luận trên):");
             txt.AppendLine("Kết luận từng module:");
@@ -186,6 +158,9 @@ public partial class SummaryPage : UserControl
             json.AppendLine($"  \"savedAt\": {JsonSerializer.Serialize(savedAt)},");
             json.AppendLine($"  \"overall\": {JsonSerializer.Serialize(overall)},");
             json.AppendLine($"  \"phrasing\": {JsonSerializer.Serialize(phrasing)},");
+            json.AppendLine($"  \"scenario\": {JsonSerializer.Serialize(scenario)},");
+            json.AppendLine($"  \"anTamNote\": {JsonSerializer.Serialize(anTamNote)},");
+            json.AppendLine($"  \"phrasingLocked\": true,");
             json.AppendLine($"  \"markedLoai\": {(_markedLoai ? "true" : "false")},");
             json.AppendLine("  \"modules\": [");
             for (int i = 0; i < _lastRows.Count; i++)
@@ -280,9 +255,10 @@ public partial class SummaryPage : UserControl
         catch { return ""; }
     }
 
-    string PickPhrasing(string level, int excludeIndex)
+    string PickPhrasing(string scenario, int excludeIndex)
     {
-        var pool = Phrasings[level];
+        var pool = PoolForScenario(scenario);
+        if (pool.Length == 0) return "";
         if (pool.Length == 1) { _currentPhrasingIndex = 0; return pool[0]; }
         int idx;
         do { idx = _random.Next(pool.Length); } while (idx == excludeIndex);
@@ -290,10 +266,51 @@ public partial class SummaryPage : UserControl
         return pool[idx];
     }
 
+    /// <summary>Pool câu cho 1 kịch bản. good = câu tốt (5 mẫu) + kết hợp A (1 câu);
+    /// incomplete = kết hợp E + 5 câu chưa xong chung; serious = kết hợp D (1 câu,
+    /// cố tình không trộn câu "sửa rồi test lại" để không làm nhẹ cảnh báo);
+    /// warning / drive* / notBuy lấy đúng pool trong JSON.</summary>
+    string[] PoolForScenario(string scenario) => scenario switch
+    {
+        "good" => [.. _bank.Good, .. _bank.CombinedA],
+        "driveMediaError" => _bank.DriveMediaError,
+        "driveBadSector" => _bank.DriveBadSector,
+        "driveWear" => _bank.DriveWear,
+        "driveSmartUnknown" => _bank.DriveSmartUnknown,
+        "serious" => _bank.CombinedD,
+        "warning" => _bank.Warning,
+        "incomplete" => [.. _bank.CombinedE, .. _bank.Incomplete],
+        "notBuy" => _bank.NotBuy,
+        _ => _bank.Incomplete,
+    };
+
+    /// <summary>Dòng "An Tâm nhắn bạn": chỉ cho kịch bản good và warning. Khi không
+    /// được hiện thì xóa text, ẩn TextBlock, và _lastAnTamNote = "" để báo cáo
+    /// lưu cũng không có dòng này (không lưu 1 dòng nhắn nhủ vào báo cáo lỗi
+    /// nghiêm trọng rồi làm nhẹ cảnh báo khi mở lại).</summary>
+    void RefreshAnTamNote(int exclude = -1)
+    {
+        bool allowed = _currentScenario is "good" or "warning";
+        if (!allowed || _bank.AnTamNotes.Length == 0)
+        {
+            _lastAnTamNote = "";
+            AnTamNoteText.Text = "";
+            AnTamNoteText.Visibility = Visibility.Collapsed;
+            return;
+        }
+        var pool = _bank.AnTamNotes;
+        int idx;
+        if (pool.Length == 1) idx = 0;
+        else do { idx = _random.Next(pool.Length); } while (idx == exclude);
+        _currentAnTamIndex = idx;
+        _lastAnTamNote = pool[idx];
+        AnTamNoteText.Text = $"An Tâm nhắn bạn: {_lastAnTamNote}";
+        AnTamNoteText.Visibility = Visibility.Visible;
+    }
+
     void Refresh()
     {
         var rows = new List<ModuleRow>();
-        ModuleVerdictLevel autoLevel;
         var modules = _host.Modules.Where(m => !m.Terminal).OrderBy(m => m.Order).ToList();
         var grades = new List<ModuleVerdictLevel>();
         foreach (var m in modules)
@@ -321,44 +338,69 @@ public partial class SummaryPage : UserControl
         ModuleList.ItemsSource = rows;
         _lastRows = rows;
 
-        if (grades.Any(g => g == ModuleVerdictLevel.Chan)) autoLevel = ModuleVerdictLevel.Chan;
-        else if (grades.Any(g => g == ModuleVerdictLevel.CanhBao)) autoLevel = ModuleVerdictLevel.CanhBao;
-        else if (modules.Count > 0 && grades.All(g => g == ModuleVerdictLevel.Dat)) autoLevel = ModuleVerdictLevel.Dat;
-        else autoLevel = ModuleVerdictLevel.ChuaTest;
+        // Chọn kịch bản theo thứ tự ưu tiên: lỗi nghiêm trọng → lỗi chức năng →
+        // cảnh báo linh kiện → thiếu dữ liệu → máy đạt. Lỗi chức năng (loa rè, phím
+        // liệt, điểm chết...) đã có câu trong JSON nhưng CHƯA được chọn ở đây, vì
+        // các module đó hiện chỉ báo "cho qua / chưa cho qua", không báo "lỗi chức
+        // năng" — khi nào module báo được lỗi chức năng thì thêm 1 nhánh ở đây,
+        // trước nhánh cảnh báo, và không được đoán lỗi chức năng từ "chưa cho qua".
+        // Thiếu dữ liệu quan trọng thì không được xếp tốt: bất kỳ module nào chưa
+        // test xong cũng về "incomplete", không về "good", kể cả khi không có lỗi nào.
+        string configNote = _host.Verdicts.TryGetValue("config", out var cv) ? cv.Note : "";
+        string autoTitleKey;
+        string autoScenario;
+        if (grades.Any(g => g == ModuleVerdictLevel.Chan))
+        {
+            autoTitleKey = "Sua";
+            autoScenario = configNote.Contains("lỗi toàn vẹn dữ liệu") ? "driveMediaError"
+                : configNote.Contains("sector") ? "driveBadSector"
+                : "serious";
+        }
+        else if (grades.Any(g => g == ModuleVerdictLevel.CanhBao))
+        {
+            autoTitleKey = "CanhBao";
+            autoScenario = configNote.Contains("chưa rõ sức khỏe") || configNote.Contains("không đọc được lỗi nghiêm trọng")
+                ? "driveSmartUnknown"
+                : configNote.Contains("sức khỏe") ? "driveWear"
+                : "warning";
+        }
+        else if (modules.Count > 0 && grades.All(g => g == ModuleVerdictLevel.Dat))
+        {
+            autoTitleKey = "Dat";
+            autoScenario = "good";
+        }
+        else
+        {
+            autoTitleKey = "ChuaXong";
+            autoScenario = "incomplete";
+        }
 
-        string level = _markedLoai ? "Loai"
-            : autoLevel == ModuleVerdictLevel.Chan ? "Sua"
-            : autoLevel == ModuleVerdictLevel.CanhBao ? "CanhBao"
-            : autoLevel == ModuleVerdictLevel.Dat ? "Dat"
-            : "ChuaXong";
+        string titleKey = _markedLoai ? "Loai" : autoTitleKey;
+        string scenario = _markedLoai ? "notBuy" : autoScenario;
 
-        _lastOverallTitle = OverallTitles[level];
+        _lastOverallTitle = OverallTitles[titleKey];
         OverallText.Text = _lastOverallTitle
-            + (_markedLoai ? $" (kỹ thuật viên đánh dấu; kết luận tự động là {OverallTitles[LevelKey(autoLevel)]})" : "");
-        if (level == "Dat") OverallText.Foreground = Brushes.ForestGreen;
-        else if (level == "Sua" || level == "Loai") OverallText.SetResourceReference(TextBlock.ForegroundProperty, "ErrorBrush");
-        else if (level == "CanhBao") OverallText.SetResourceReference(TextBlock.ForegroundProperty, "AccentBrush");
+            + (_markedLoai ? $" (kỹ thuật viên đánh dấu; kết luận tự động là {OverallTitles[autoTitleKey]})" : "");
+        if (titleKey == "Dat") OverallText.Foreground = Brushes.ForestGreen;
+        else if (titleKey == "Sua" || titleKey == "Loai") OverallText.SetResourceReference(TextBlock.ForegroundProperty, "ErrorBrush");
+        else if (titleKey == "CanhBao") OverallText.SetResourceReference(TextBlock.ForegroundProperty, "AccentBrush");
         else OverallText.SetResourceReference(TextBlock.ForegroundProperty, "TextSecondaryBrush");
 
-        if (level != _currentLevel)
+        // Câu chỉ random lại khi kịch bản đổi, không random lại mỗi lần Refresh —
+        // để câu đang hiện không tự nhảy sang câu khác khi 1 module báo cáo lại.
+        if (scenario != _currentScenario)
         {
-            _currentLevel = level;
-            PhrasingText.Text = PickPhrasing(level, -1);
+            _currentScenario = scenario;
+            PhrasingText.Text = PickPhrasing(scenario, -1);
+            RefreshAnTamNote();
         }
         else if (_currentPhrasingIndex < 0)
         {
-            PhrasingText.Text = PickPhrasing(level, -1);
+            PhrasingText.Text = PickPhrasing(scenario, -1);
+            RefreshAnTamNote();
         }
         MarkLoaiButton.Content = _markedLoai ? "Bỏ đánh dấu không mua" : "Đánh dấu không mua máy này";
     }
-
-    static string LevelKey(ModuleVerdictLevel level) => level switch
-    {
-        ModuleVerdictLevel.Dat => "Dat",
-        ModuleVerdictLevel.CanhBao => "CanhBao",
-        ModuleVerdictLevel.Chan => "Sua",
-        _ => "ChuaXong",
-    };
 
     static string GradeText(ModuleVerdictLevel level) => level switch
     {

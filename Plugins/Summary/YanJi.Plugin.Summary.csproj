@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <None Update="plugin.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="Phrasings.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

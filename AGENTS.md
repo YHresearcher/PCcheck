@@ -317,3 +317,27 @@ public interface IHostContext                       // 宿主注入 CreatePage
 # chỉ xem + nút mở thư mục, theme chỉ ghi chú (đổi bằng công tắc top bar, vì
 # ThemeManager ở host). Wiring: host csproj Build/Copy/Publish, .slnx, installer.
 # Dashboard thêm nút Mở Cài đặt.
+
+# (19) CÂU KẾT LUẬN TỪ FILE JSON + KỊCH BẢN ƯU TIÊN + "AN TÂM NHẮN BẠN" (2026-11-03, chưa test Windows):
+# Plugins/Summary/Phrasings.json là nguồn câu duy nhất (đọc lúc chạy qua
+# PhrasingBank.cs, csproj copy file vào plugins/summary/); C# không còn viết cố
+# định câu kết luận. File hỏng/thiếu thì PhrasingBank dùng câu dự phòng (cũng là
+# câu thật của user: kết hợp A/D/E + câu tốt đầu tiên), không crash.
+# Thứ tự ưu tiên khi chọn kịch bản: lỗi nghiêm trọng → lỗi chức năng → cảnh báo
+# linh kiện → thiếu dữ liệu → máy đạt. Thiếu dữ liệu quan trọng thì không về
+# nhóm tốt: bất kỳ module nào chưa test xong cũng về "incomplete".
+# Kịch bản tự chọn được hiện tại (từ tín hiệu đã có): good (5 câu tốt + kết hợp A),
+# driveMediaError (note chứa "lỗi toàn vẹn dữ liệu"), driveBadSector (note chứa
+# "sector"), driveWear (cảnh báo sức khỏe), driveSmartUnknown (chưa rõ SMART),
+# serious (kết hợp D, cố tình không trộn câu "sửa rồi test lại" để không làm nhẹ
+# cảnh báo), warning (5 câu cảnh báo chung, vd sạc Trung bình / CRC), incomplete
+# (kết hợp E + 5 câu chưa xong), notBuy (5 câu loại, đánh dấu tay).
+# Câu pin / CPU-GPU / ngoại vi / kết hợp B-C đã có sẵn trong JSON nhưng CHƯA tự
+# chọn vì chưa có tín hiệu (pin cần % chai, CPU/GPU cần nhiệt/throttling/artifact,
+# ngoại vi cần tick xác nhận tay, B/C cần cộng nhiều tín hiệu) — không đoán từ
+# dữ liệu không có. Câu chỉ random lại khi kịch bản đổi, không random lại mỗi
+# Refresh. "Đổi cách nói" đổi cả câu kết luận và dòng An Tâm (cùng kịch bản,
+# kết luận không đổi). Dòng "An Tâm nhắn bạn" chỉ hiện khi good hoặc warning,
+# không hiện khi serious / incomplete / notBuy; lưu vào BaoCao.txt + KetQua.json
+# cùng câu kết luận + scenario + phrasingLocked=true — mở lại file đã lưu sẽ thấy
+# đúng câu đã lưu, không random lại.

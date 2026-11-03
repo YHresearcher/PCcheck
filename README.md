@@ -108,6 +108,30 @@ cả hai nền.
   ở góc phải trên, thư mục Tools chỉ xem. Cài đặt lưu ở %APPDATA%\YanJi\
   settings.json, theo app, không theo USB.
 
+## Câu kết luận — file Phrasings.json, chọn theo kịch bản ưu tiên
+
+- Câu kết luận không viết cố định trong C# nữa, mà đọc từ
+  `Plugins/Summary/Phrasings.json` (đi kèm plugin Tổng kết, copy vào
+  `plugins/summary/` khi build). File hỏng hoặc thiếu thì app dùng câu dự phòng,
+  không crash. Sửa câu thì sửa file JSON này, không cần sửa code.
+- Thứ tự ưu tiên: lỗi nghiêm trọng → lỗi chức năng → cảnh báo linh kiện →
+  thiếu dữ liệu → máy đạt. Thiếu dữ liệu quan trọng thì không được xếp tốt:
+  còn bài nào chưa test xong là về "chưa đủ dữ liệu", không về "có thể mua".
+- Kịch bản tự chọn được hiện tại: máy tốt (5 mẫu + kết hợp A), ổ lỗi media,
+  ổ bad sector, ổ hao mòn, ổ SMART chưa rõ, lỗi nghiêm trọng (kết hợp D),
+  cảnh báo chung, chưa đủ dữ liệu (kết hợp E), không mua (đánh dấu tay).
+  Câu pin, CPU/GPU, ngoại vi và kết hợp B/C đã có sẵn trong file nhưng chưa tự
+  chọn, vì chưa có tín hiệu (cần % chai pin, nhiệt/throttling, tick xác nhận
+  tay) — bước tiếp theo là nối tín hiệu, không đoán từ dữ liệu không có.
+- Mỗi phiên chỉ random 1 câu phù hợp, câu đó được lưu cố định vào báo cáo
+  (`BaoCao.txt` + `KetQua.json` kèm `scenario` và `phrasingLocked: true`).
+  Mở lại báo cáo đã lưu sẽ thấy đúng câu đó, không random lại. Nút "Đổi cách
+  nói" chỉ đổi câu trong cùng 1 kịch bản, kết luận không đổi.
+- Dòng "An Tâm nhắn bạn" (vd "Máy tốt là một chuyện, mua đúng giá mới là
+  chuyện đáng vui!") chỉ hiện khi máy đạt hoặc cảnh báo nhẹ, không hiện khi
+  có lỗi nghiêm trọng, chưa đủ dữ liệu, hoặc đã đánh dấu không mua — để không
+  làm nhẹ cảnh báo.
+
 ## Kết luận mua máy (trang Tổng kết: mua được hay không, cho cả kỹ thuật viên và người mua)
 
 - Trang Tổng kết nằm cuối thanh điều hướng, app tự nhảy tới đây khi cả 7 module
