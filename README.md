@@ -130,11 +130,11 @@ Phần cổng tự động chỉ báo những gì hệ thống thật sự nhìn
 
 ## Splash screen
 
-Mở app lên là thấy màn hình chờ 480×400 ở giữa màn hình, không có viền cửa sổ, không hiện trên taskbar: logo An Tâm 120px, tên **"An Tâm PC Test"**, dòng **"Công cụ kiểm tra PC/ Laptop cũ"**, dòng **"Vi tính An Tâm | Chuyên máy đã qua sử dụng, chuẩn doanh nghiệp"** màu cam, 2 chi nhánh + vitinhantam.com, và thanh "Đang khởi động...".
+Mở app lên là thấy màn hình chờ 480×400 ở giữa màn hình, không có viền cửa sổ, không hiện trên taskbar: chỉ logo An Tâm 120px, tên **"An Tâm PC Test"**, thanh tiến trình và dòng "Đang khởi động...". Khối thông tin shop không còn nằm trên Splash nữa mà chuyển sang phần mềm chính (xem ngay dưới).
 
 Splash hiện trong lúc app tải các module, tự đóng khi cửa sổ chính đã tải xong và đủ tối thiểu 1,5 giây (máy nhanh cũng không bị chớp tắt), rồi chuyển focus sang cửa sổ chính. Không cần bấm gì để tắt. Màu splash theo theme đang dùng (tối = nền xám đậm, sáng = nền kem ấm), logo cam nổi trên cả hai nền.
 
-Thanh trên cùng của cửa sổ chính có dải cam 3px, tên app + dòng phụ, cuối thanh điều hướng trái có nút **"Tham quan shop"** (mở vitinhantam.com trong trình duyệt mặc định, hiện trên mọi trang) và dòng **"An Tâm PC Test v1.1.0"**.
+Thanh trên cùng của cửa sổ chính có dải cam 3px, logo + tên app, dưới tên là dòng **"Công cụ kiểm tra PC/ Laptop cũ"** và dòng **"Vi tính An Tâm | Chuyên máy đã qua sử dụng, chuẩn doanh nghiệp"** màu cam. Top bar chia 2 cột (trái co giãn, phải tự rộng) nên khi khung hẹp thì chữ bên trái tự xuống dòng thay vì chèn lên nút bên phải. Cuối thanh điều hướng trái có khối thông tin shop (2 chi nhánh + vitinhantam.com + "Bảo hành 6 tháng nguyên máy", chữ tự xuống dòng theo chiều rộng sidebar cố định 200), nút **"Tham quan shop"** (mở vitinhantam.com trong trình duyệt mặc định, hiện trên mọi trang) và dòng **"An Tâm PC Test v1.1.0"**.
 
 ## Vi Tính An Tâm
 

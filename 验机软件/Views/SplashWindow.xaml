@@ -7,10 +7,13 @@
         ShowInTaskbar="False" Topmost="True"
         FontFamily="Segoe UI, Microsoft YaHei UI"
         TextElement.Foreground="{DynamicResource TextBrush}">
-    <!-- Màn hình chờ khởi động: logo + thương hiệu An Tâm. Màu theo theme hiện tại
-         (tối = nền xám đậm, sáng = nền kem ấm) qua token, không viết màu trực tiếp;
-         logo cam #ED740C nổi trên cả hai nền. Cửa sổ tự đóng khi MainWindow đã tải
-         xong (xem App.xaml.cs), không cần bấm gì. -->
+    <!-- Màn hình chờ khởi động: chỉ logo + tên + tiến trình, gọn nhẹ.
+         Khối thông tin shop (dòng giới thiệu + 2 chi nhánh + website) đã chuyển
+         sang phần mềm chính (top bar + sidebar MainWindow) để luôn nhìn thấy,
+         không còn nằm trên Splash nữa. Màu theo theme hiện tại (tối = nền xám đậm,
+         sáng = nền kem ấm) qua token, không viết màu trực tiếp; logo cam #ED740C
+         nổi trên cả hai nền. Cửa sổ tự đóng khi MainWindow đã tải xong
+         (xem App.xaml.cs), không cần bấm gì. -->
     <Border Background="{DynamicResource SubtleBgBrush}"
             BorderBrush="{DynamicResource AccentBrush}" BorderThickness="1"
             CornerRadius="16" Padding="24">
@@ -20,26 +23,6 @@
                    RenderOptions.BitmapScalingMode="HighQuality"/>
             <TextBlock Text="An Tâm PC Test" FontSize="28" FontWeight="Bold"
                        HorizontalAlignment="Center"/>
-            <TextBlock Text="Công cụ kiểm tra PC/ Laptop cũ"
-                       FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}"
-                       HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center"
-                       Margin="0,4,0,0"/>
-            <TextBlock Text="Vi tính An Tâm | Chuyên máy đã qua sử dụng, chuẩn doanh nghiệp"
-                       FontSize="13" FontWeight="SemiBold"
-                       Foreground="{DynamicResource AccentBrush}"
-                       HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center"
-                       Margin="0,4,0,0"/>
-            <TextBlock Text="Chi nhánh 1: 52 Nguyễn Cửu Vân, P. Long An, T. Tây Ninh"
-                       FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}"
-                       HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center"
-                       Margin="0,8,0,0"/>
-            <TextBlock Text="Chi nhánh 2: 218/3 đường số 11, phường Thủ Đức, Tp. HCM"
-                       FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}"
-                       HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center"
-                       Margin="0,2,0,0"/>
-            <TextBlock Text="vitinhantam.com"
-                       FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}"
-                       HorizontalAlignment="Center" Margin="0,2,0,0"/>
             <ProgressBar IsIndeterminate="True" Width="200" Height="6" Margin="0,16,0,0"/>
             <TextBlock Text="Đang khởi động..." FontSize="11"
                        Foreground="{DynamicResource TextSecondaryBrush}"

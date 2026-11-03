@@ -721,3 +721,20 @@ public interface IHostContext                       // 宿主注入 CreatePage
 # (app WPF chỉ chạy Windows) — ảnh thật phải chụp từ bản Windows rồi chèn sau,
 # không bịa ảnh chụp màn hình giả. Khi user gửi ảnh chụp từ bản Windows thì chèn
 # vào mục ảnh chụp màn hình (chưa có mục này trong file, thêm khi có ảnh thật).
+
+# (43) KHỐI THÔNG TIN SHOP CHUYỂN TỪ SPLASH SANG PHẦN MỀM CHÍNH + SỬA LỖI KHUNG HẸP (2026-11-03, chưa test Windows):
+# User chốt: khối thông tin dưới tên phần mềm phải nằm trong phần mềm chính, không phải Splash.
+# Lỗi khung hẹp: top bar MainWindow trước đây để 2 StackPanel cùng nằm 1 ô Grid không có cột,
+# lại thêm dòng phụ dài không có TextWrapping, nên thu hẹp cửa sổ là chữ trái chèn lên nút phải.
+# Sửa: top bar chia 2 cột (* + Auto), cột trái là Grid (logo Auto + chữ *) để TextWrapping có tác
+# dụng (StackPanel ngang đo chữ với chiều rộng vô hạn nên wrap không chạy); dòng phụ cũ 1 dòng
+# thay bằng 2 dòng (tagline + dòng shop cam SemiBold), hẹp thì tự xuống dòng, top bar cao thêm
+# chứ không chồng nhau. MinWidth 880 giữ nguyên (không hạ, vì các trang module cần chiều rộng).
+# Khối shop trong sidebar (dưới NavList, trên nút Tham quan shop): CN1 + CN2 + vitinhantam.com +
+# "Bảo hành 6 tháng nguyên máy" (giữ lại thông tin bảo hành từ dòng phụ cũ, không để mất);
+# sidebar rộng cố định 200 nên chữ tự xuống dòng, khung hẹp cũng không vỡ. Thứ tự khai báo
+# DockPanel.Bottom ngược với thứ tự nhìn thấy nên khối này khai sau nút mới hiện trên nút.
+# Splash gọn lại chỉ còn logo + tên + tiến trình + "Đang khởi động...", không còn tagline/dòng
+# shop/chi nhánh/website; kích thước 480x400 giữ nguyên, nội dung căn giữa nên vẫn cân.
+# README cập nhật theo (mục Splash + top bar/sidebar). Chỉ sửa XAML, không đụng C#, kiểm chứng
+# bằng parse XML + assert, chưa biên dịch/chạy trên Windows thật.
