@@ -31,10 +31,10 @@ public partial class HealthPage : UserControl
             ModuleVerdictLevel grade;
             string note;
             if (_host.Verdicts.TryGetValue(m.Id, out var v)) { grade = v.Level; note = v.Note; }
-            if (_host.Signals.TryGetValue(m.Id, out var sigs) && sigs.Count > 0)
-                note += " | Tín hiệu: " + string.Join(", ", sigs.Select(SignalText));
             else if (_host.IsDone(m.Id)) { grade = ModuleVerdictLevel.Dat; note = "Đã cho qua"; }
             else { grade = ModuleVerdictLevel.ChuaTest; note = "Chưa test — chưa đủ dữ liệu, không được hiểu là khỏe"; }
+            if (_host.Signals.TryGetValue(m.Id, out var sigs) && sigs.Count > 0)
+                note += " | Tín hiệu: " + string.Join(", ", sigs.Select(SignalText));
             string gradeText = grade switch
             {
                 ModuleVerdictLevel.Dat => "Đạt",
