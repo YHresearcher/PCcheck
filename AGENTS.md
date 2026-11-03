@@ -527,3 +527,14 @@ public interface IHostContext                       // 宿主注入 CreatePage
 # như các nút wizard, dùng sẵn using System.Diagnostics của host, cùng URL
 # https://www.vitinhantam.com và UseShellExecute). Trang Tổng kết không còn nút
 # này (cả XAML lẫn handler đã xóa) để chỉ còn 1 nút duy nhất.
+
+# (31) QUY TẮC VẦN LỤC BÁT DO USER CHỐT + CẶP 3 MỚI (2026-11-03, chưa test Windows):
+# Quy tắc user chốt: vần chữ cuối câu 6 = vần chữ thứ 6 câu 8 (đây cũng chính
+# là điều script kiểm từ (26): van(tiếng 6 câu 6) == van(tiếng 6 câu 8), chuẩn
+# hóa ay~ai). Chữ thứ 8 câu 8 KHÔNG cần hiệp với câu 6 (trong bài dài nó hiệp
+# với chữ 6 câu 6 tiếp theo, nhưng mỗi câu nhắn là cặp độc lập nên không ràng).
+# Cặp 3 đổi theo đúng câu user cho: "Rẻ mà vui chẳng được lâu / máy lành,
+# không lỗi, nhẹ đầu, mình vui." — qua script: 6-8 chữ, thanh đúng, "lâu" hiệp
+# "đầu" (âu). Câu này tự nhiên hơn câu cũ ("thì sau bền vui") vì "nhẹ đầu,
+# mình vui" là tiếng shop thật; ý "gốc rõ" của câu cũ nhường chỗ cho "không
+# lỗi, nhẹ đầu". Cả 21 cặp sau đổi vẫn qua kiểm, không ngoại lệ.
