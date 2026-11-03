@@ -461,3 +461,16 @@ public interface IHostContext                       // 宿主注入 CreatePage
 # là ngoại lệ duy nhất chặn cho qua; bản lề lỏng và trầy nhẹ vẫn giữ câu riêng,
 # các lỗi còn lại vẫn dùng câu cảnh báo chung. Trang Sức khỏe đã bỏ mô tả cho
 # các mã tín hiệu không còn sản sinh nữa.
+
+# (25) "AN TÂM NHẮN BẠN" VIẾT THEO KIỂU THƠ 2 VẾ (2026-11-03, chưa test Windows):
+# Toàn bộ 21 câu anTamNotes chuyển từ văn xuôi sang thơ 2 vế, nhịp đều, vần nhẹ,
+# giọng dân dã miền Nam vừa phải ("hông", "ngại chi mà", "coi như không").
+# Câu mẫu của user giữ nguyên từng chữ: "Mua máy là để dùng lâu, máy trâu thì
+# giá hông rẻ." Các câu còn lại giữ nguyên ý cũ, chỉ đổi cách nói thành thơ
+# (vd "Kiểm tra kỹ hôm nay thì khỏi tiếc ngày mai" thành "Kiểm kỹ hôm nay cho
+# chắc tay, ngày mai khỏi tiếc khỏi trách ai"). Quy tắc hiện không đổi: chỉ hiện
+# khi đạt / cảnh báo / chức năng, không hiện khi nghiêm trọng / thiếu dữ liệu /
+# không mua; câu chỉ đổi khi kịch bản đổi. Fallback trong PhrasingBank.cs vẫn
+# chỉ 1 câu, nay cũng đổi sang bản thơ của câu đầu để lỡ JSON hỏng thì giọng
+# vẫn khớp. Câu thơ là 1 chuỗi có dấu phẩy giữa 2 vế, không xuống dòng, nên
+# Summary và BaoCao.txt không cần đổi layout.
