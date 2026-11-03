@@ -369,10 +369,10 @@ public static class HardwareInfoService
         {
             report.HasDriveWarning = true;
             foreach (var w in warnings) report.DriveWarningReasons.Add($"Ổ{tag} {w}");
-            return $"CẢNH BÁO — {string.Join("; ", warnings)}, tối đa bán có điều kiện";
+            return $"CẢNH BÁO — {string.Join("; ", warnings)}, tối đa mua có điều kiện";
         }
         if (health != null)
-            return $"ĐẠT — sức khỏe {health}% (≥90%), không có lỗi nghiêm trọng, bán nguyên trạng";
+            return $"ĐẠT — sức khỏe {health}% (≥90%), không có lỗi nghiêm trọng, mua được nguyên trạng";
         report.HasDriveUnknown = true;
         return "Không rõ — kiểm tra tay bằng CrystalDiskInfo, chưa đủ dữ liệu để kết luận (không tự cho là tốt)";
     }
@@ -394,10 +394,10 @@ public static class HardwareInfoService
         if (health is < 90)
         {
             report.HasDriveWarning = true;
-            return $"CẢNH BÁO — sức khỏe {health}% (<90%), tối đa bán có điều kiện";
+            return $"CẢNH BÁO — sức khỏe {health}% (<90%), tối đa mua có điều kiện";
         }
         if (health != null)
-            return $"ĐẠT — sức khỏe {health}% (≥90%), bán nguyên trạng";
+            return $"ĐẠT — sức khỏe {health}% (≥90%), mua được nguyên trạng";
         report.HasDriveUnknown = true;
         return "Không rõ — kiểm tra tay bằng CrystalDiskInfo, chưa đủ dữ liệu để kết luận (không tự cho là tốt)";
     }

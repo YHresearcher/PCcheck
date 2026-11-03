@@ -57,7 +57,7 @@
 # S/N trống vẫn lưu (KhongCoSN); thư mục app ghi không được thì fallback %APPDATA%\YanJi\KetQua\
 # và báo rõ. Thiết kế mới (wizard 1 bài/lần, Hardware Info kiểu CPU-Z, kết luận mua 2 phần) đã
 # chốt thành file thiết kế ở ~/workspace/your_files/ThietKeMoi_TestMayAnTam_Wizard_Dashboard.md,
-# CHƯA sửa MainWindow theo thiết kế đó — còn chờ chốt kết luận mua thay hẳn hay song song kết luận bán.
+# CHƯA sửa MainWindow theo thiết kế đó — nhưng kết luận mua đã chốt ngày 2026-11-03 (xem (16)), chỉ còn chờ làm Dashboard/wizard.
 # Phần còn lại của file này vẫn là
 # tài liệu gốc bằng tiếng Trung, chưa dịch, dùng để tham khảo kỹ thuật.
 
@@ -269,3 +269,11 @@ public interface IHostContext                       // 宿主注入 CreatePage
 - 试音曲署名（AvConference 页面）是用户给定原文，不得改动。
 - 临时探针工程（.ui-probe 等）用完即删；LHM 上游源码不要批量转码/改动。
 - 改了本文件描述的机制（目录、契约、构建链路、安装组件）时同步更新本文件。
+
+# (16) KẾT LUẬN MUA MÁY, CHO CẢ KỸ THUẬT VIÊN VÀ NGƯỜI MUA (2026-11-03, user chốt):
+# Kết luận tổng đổi hẳn sang mua, không song song bán: CÓ THỂ MUA / CẦN KIỂM TRA
+# THÊM-THƯƠNG LƯỢNG / KHÔNG KHUYẾN NGHỊ MUA / CHƯA ĐỦ DỮ LIỆU / KHÔNG MUA (đánh dấu tay).
+# Trang Tổng kết chia 2 tầng: trên cho người mua (tiêu đề + câu thân thiện là đủ hiểu),
+# dưới cho kỹ thuật viên (chi tiết từng module); BaoCao.txt cũng chia Phần 1 người mua /
+# Phần 2 kỹ thuật viên. Các chữ bán ở module ổ/sạc đổi sang mua (mua được nguyên trạng,
+# tối đa mua có điều kiện, kiểm tra tay trước khi mua).

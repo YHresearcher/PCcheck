@@ -11,7 +11,11 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0" Text="Kết luận tổng" FontSize="18" FontWeight="Bold"/>
+        <StackPanel Grid.Row="0">
+            <TextBlock Text="Kết luận mua máy — mua được hay không" FontSize="18" FontWeight="Bold"/>
+            <TextBlock Text="Dành cho người mua: chỉ cần đọc 2 dòng dưới là đủ" FontSize="11"
+                       Foreground="{DynamicResource TextSecondaryBrush}"/>
+        </StackPanel>
         <TextBlock x:Name="OverallText" Grid.Row="1" FontSize="16" FontWeight="SemiBold" Margin="0,8,0,0"/>
         <TextBlock x:Name="PhrasingText" Grid.Row="2" FontSize="13" TextWrapping="Wrap" Margin="0,6,0,0"
                    Foreground="{DynamicResource TextSecondaryBrush}"/>
@@ -19,9 +23,9 @@
             <Button x:Name="ChangePhrasingButton" Content="Đổi cách nói" Padding="16,7"
                     Click="ChangePhrasingButton_Click"
                     ToolTip="Đổi sang 1 cách nói khác cho cùng 1 kết luận tổng, kết luận không đổi"/>
-            <Button x:Name="MarkLoaiButton" Content="Đánh dấu loại máy này" Margin="8,0,0,0" Padding="16,7"
+            <Button x:Name="MarkLoaiButton" Content="Đánh dấu không mua máy này" Margin="8,0,0,0" Padding="16,7"
                     Click="MarkLoaiButton_Click"
-                    ToolTip="Máy hỏng nặng, không sửa để bán thì bấm đây để kết luận tổng thành LOẠI. Bấm lại để bỏ đánh dấu."/>
+                    ToolTip="Máy hỏng nặng, không nên mua thì bấm đây để kết luận thành KHÔNG MUA. Bấm lại để bỏ đánh dấu."/>
         </StackPanel>
 
         <!-- Lưu hồ sơ phiên: 1 máy = 1 thư mục riêng trên USB, không ghi đè.
@@ -42,7 +46,7 @@
 
         <ScrollViewer Grid.Row="5" VerticalScrollBarVisibility="Auto">
             <StackPanel>
-                <TextBlock Text="Kết luận từng module" FontWeight="SemiBold" FontSize="13" Margin="0,0,0,6"/>
+                <TextBlock Text="Dành cho kỹ thuật viên — chi tiết từng module (vì sao ra kết luận trên)" FontWeight="SemiBold" FontSize="13" Margin="0,0,0,6"/>
                 <ItemsControl x:Name="ModuleList">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
@@ -59,7 +63,7 @@
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
-                <TextBlock Text="Ghi chú: kết luận tổng tự động chỉ tính từ kết luận từng module đã có. Hiện tại chỉ module Đối chiếu cấu hình (kết luận ổ, theo mức độ nghiêm trọng của lỗi trước rồi mới xét sức khỏe) và Cổng kết nối &amp; Sạc (kết luận sạc) có mức Cảnh báo / Chặn riêng; các module còn lại chỉ tính theo đã cho qua / chưa cho qua, chưa chấm điểm pin, nhiệt độ hay tốc độ ổ vì shop chưa chốt ngưỡng cho các mục đó. LOẠI không tự sinh ra từ test — kỹ thuật viên tự đánh dấu khi máy hỏng nặng không sửa để bán. Hai quy tắc không nói quá: số liệu SMART không đọc được thì hiện Không rõ, không được biến thành ổ khỏe; một bài stress ngắn đạt chỉ chứng minh máy chạy được chừng đó phút ở tải cao, không chứng minh ổn định lâu dài."
+                <TextBlock Text="Ghi chú: kết luận tổng tự động chỉ tính từ kết luận từng module đã có. Hiện tại chỉ module Đối chiếu cấu hình (kết luận ổ, theo mức độ nghiêm trọng của lỗi trước rồi mới xét sức khỏe) và Cổng kết nối &amp; Sạc (kết luận sạc) có mức Cảnh báo / Chặn riêng; các module còn lại chỉ tính theo đã cho qua / chưa cho qua, chưa chấm điểm pin, nhiệt độ hay tốc độ ổ vì shop chưa chốt ngưỡng cho các mục đó. LOẠI không tự sinh ra từ test — kỹ thuật viên tự đánh dấu khi máy hỏng nặng không nên mua. Hai quy tắc không nói quá: số liệu SMART không đọc được thì hiện Không rõ, không được biến thành ổ khỏe; một bài stress ngắn đạt chỉ chứng minh máy chạy được chừng đó phút ở tải cao, không chứng minh ổn định lâu dài."
                            TextWrapping="Wrap" FontSize="11"
                            Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,4,0,0"/>
             </StackPanel>

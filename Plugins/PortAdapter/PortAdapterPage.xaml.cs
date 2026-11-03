@@ -9,7 +9,7 @@ namespace YanJi.Plugin.PortAdapter;
 /// 切页不重扫）；「Test sạc」跑 10 秒采样；人工目视勾选 + 确认通过。
 /// 通过约定同其它模块：确认通过 → PassChanged(true) → 导航圆点变绿 + 自动跳下一模块；
 /// 重新 quét / test sạc → 回到待测试。未 test sạc（máy có pin）或 sạc đánh giá Kém thì
-/// không cho qua — sạc hỏng mà cho qua là bán máy kèm sạc hỏng cho khách。</summary>
+/// không cho qua — sạc hỏng mà cho qua là mua máy kèm sạc hỏng。</summary>
 public partial class PortAdapterPage : UserControl, YanJi.PluginSdk.IModulePage
 {
     bool _running;
@@ -219,7 +219,7 @@ public partial class PortAdapterPage : UserControl, YanJi.PluginSdk.IModulePage
     }
 
     /// <summary>Báo cáo kết luận module cho trang Tổng kết. Sạc Kém = Chặn, sạc Trung bình
-    /// = Cảnh báo (cho qua được nhưng tối đa bán có điều kiện), sạc Tốt / Xuất sắc mà
+    /// = Cảnh báo (cho qua được nhưng tối đa mua có điều kiện), sạc Tốt / Xuất sắc mà
     /// đã cho qua = Đạt, còn lại (chưa test, chưa cho qua) = Chưa test xong.
     /// Máy không pin thì không có phần sạc, cho qua cổng là Đạt.</summary>
     void ReportPortsVerdict()
@@ -228,7 +228,7 @@ public partial class PortAdapterPage : UserControl, YanJi.PluginSdk.IModulePage
         if (_adapterHealth == "Kém")
             _host.ReportVerdict("ports", new(ModuleVerdictLevel.Chan, $"Sạc Kém ({_adapterScore}/100) — thay sạc rồi test lại"));
         else if (_adapterHealth == "Trung bình")
-            _host.ReportVerdict("ports", new(ModuleVerdictLevel.CanhBao, $"Sạc Trung bình ({_adapterScore}/100) — tối đa bán có điều kiện"));
+            _host.ReportVerdict("ports", new(ModuleVerdictLevel.CanhBao, $"Sạc Trung bình ({_adapterScore}/100) — tối đa mua có điều kiện"));
         else if (Passed)
             _host.ReportVerdict("ports", new(ModuleVerdictLevel.Dat, _noBattery ? "Máy không pin, đã cho qua cổng" : $"Sạc {_adapterHealth} ({_adapterScore}/100)"));
         else if (!_adapterTested && !_noBattery)

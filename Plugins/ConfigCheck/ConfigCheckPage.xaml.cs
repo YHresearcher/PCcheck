@@ -71,10 +71,10 @@ public partial class ConfigCheckPage : UserControl, YanJi.PluginSdk.IModulePage
                 PhaseText.Text = $"Thu thập xong ({report.CollectedAt:HH:mm:ss}), vui lòng đối chiếu từng mục bên dưới";
                 if (report.HasDriveWarning)
                     PhaseText.Text += report.DriveWarningReasons.Count > 0
-                        ? $" Lưu ý: có ổ cảnh báo — {string.Join("; ", report.DriveWarningReasons)} — tối đa bán có điều kiện."
-                        : " Lưu ý: có ổ cảnh báo (<90%) — tối đa bán có điều kiện.";
+                        ? $" Lưu ý: có ổ cảnh báo — {string.Join("; ", report.DriveWarningReasons)} — tối đa mua có điều kiện."
+                        : " Lưu ý: có ổ cảnh báo (<90%) — tối đa mua có điều kiện.";
                 if (report.HasDriveUnknown)
-                    PhaseText.Text += " Lưu ý: có ổ chưa rõ sức khỏe — kiểm tra tay bằng CrystalDiskInfo trước khi bán.";
+                    PhaseText.Text += " Lưu ý: có ổ chưa rõ sức khỏe — kiểm tra tay bằng CrystalDiskInfo trước khi mua.";
             }
             PassButton.IsEnabled = true;
         }
@@ -110,10 +110,10 @@ public partial class ConfigCheckPage : UserControl, YanJi.PluginSdk.IModulePage
         PhaseText.Text = "Đã xác nhận cho qua; nếu thay linh kiện hoặc cần kiểm lại, bấm \"Kiểm tra lại\"";
         if (_lastReport?.HasDriveWarning == true)
             PhaseText.Text += _lastReport.DriveWarningReasons.Count > 0
-                ? $" Lưu ý: có ổ cảnh báo — {string.Join("; ", _lastReport.DriveWarningReasons)} — tối đa bán có điều kiện."
-                : " Lưu ý: có ổ cảnh báo (<90%) — tối đa bán có điều kiện.";
+                ? $" Lưu ý: có ổ cảnh báo — {string.Join("; ", _lastReport.DriveWarningReasons)} — tối đa mua có điều kiện."
+                : " Lưu ý: có ổ cảnh báo (<90%) — tối đa mua có điều kiện.";
         if (_lastReport?.HasDriveUnknown == true)
-            PhaseText.Text += " Lưu ý: có ổ chưa rõ sức khỏe — kiểm tra tay bằng CrystalDiskInfo trước khi bán.";
+            PhaseText.Text += " Lưu ý: có ổ chưa rõ sức khỏe — kiểm tra tay bằng CrystalDiskInfo trước khi mua.";
     }
 
     /// <summary>Báo cáo kết luận module cho trang Tổng kết. Quét xong mà chưa bấm cho qua
@@ -130,8 +130,8 @@ public partial class ConfigCheckPage : UserControl, YanJi.PluginSdk.IModulePage
         else if (r.HasDriveWarning)
             _host.ReportVerdict("config", new(ModuleVerdictLevel.CanhBao,
                 r.DriveWarningReasons.Count > 0
-                    ? $"Có ổ cảnh báo — {string.Join("; ", r.DriveWarningReasons)} — tối đa bán có điều kiện"
-                    : "Có ổ cảnh báo (<90%) — tối đa bán có điều kiện"));
+                    ? $"Có ổ cảnh báo — {string.Join("; ", r.DriveWarningReasons)} — tối đa mua có điều kiện"
+                    : "Có ổ cảnh báo (<90%) — tối đa mua có điều kiện"));
         else if (r.HasDriveUnknown)
             _host.ReportVerdict("config", new(ModuleVerdictLevel.CanhBao, "Có ổ chưa rõ sức khỏe — kiểm tra tay bằng CrystalDiskInfo"));
         else if (Passed)

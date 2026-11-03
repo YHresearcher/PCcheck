@@ -8,13 +8,16 @@ using YanJi.PluginSdk;
 
 namespace YanJi.Plugin.Summary;
 
-/// <summary>Trang Tổng kết: kết luận từng module + kết luận tổng, mỗi kết luận tổng
-/// có nhiều cách nói thân thiện chọn ngẫu nhiên. Cách nói chỉ đổi câu chữ,
-/// không đổi kết luận — bấm "Đổi cách nói" để xem câu khác, kết luận giữ nguyên.
-/// Kết luận tổng tự động: có module Chặn = SỬA RỒI TEST LẠI; không Chặn nhưng có
-/// Cảnh báo = BÁN CÓ ĐIỀU KIỆN; tất cả Đạt = ĐẠT; còn lại = CHƯA TEST XONG.
-/// LOẠI không tự sinh ra (test không biết chi phí sửa có đáng hay không) nên
-/// kỹ thuật viên tự đánh dấu bằng nút bên dưới; bỏ đánh dấu thì về lại kết luận tự động.</summary>
+/// <summary>Trang Tổng kết = khu vực kết luận mua máy: xác định máy MUA ĐƯỢC HAY
+/// KHÔNG, cho cả kỹ thuật viên và người mua dùng chung — người mua chỉ cần đọc
+/// tiêu đề + câu thân thiện ở trên, kỹ thuật viên đọc chi tiết từng module ở dưới.
+/// Mỗi kết luận tổng có nhiều cách nói thân thiện chọn ngẫu nhiên. Cách nói chỉ
+/// đổi câu chữ, không đổi kết luận — bấm "Đổi cách nói" để xem câu khác, kết
+/// luận giữ nguyên. Kết luận tổng tự động: có module Chặn = KHÔNG KHUYẾN NGHỊ
+/// MUA; không Chặn nhưng có Cảnh báo = CẦN KIỂM TRA THÊM / THƯƠNG LƯỢNG; tất cả
+/// Đạt = CÓ THỂ MUA; còn lại = CHƯA ĐỦ DỮ LIỆU. KHÔNG MUA không tự sinh ra (test
+/// không biết chi phí sửa có đáng hay không) nên kỹ thuật viên tự đánh dấu bằng
+/// nút bên dưới; bỏ đánh dấu thì về lại kết luận tự động.</summary>
 public partial class SummaryPage : UserControl
 {
     readonly IHostContext _host;
@@ -28,61 +31,64 @@ public partial class SummaryPage : UserControl
     /// <summary>1 dòng kết luận từng module hiển thị trong danh sách.</summary>
     public record ModuleRow(string Name, string Grade, string Note);
 
-    /// <summary>Cách nói thân thiện cho mỗi kết luận tổng — mỗi mức 5 câu, app chọn
-    /// ngẫu nhiên 1 câu, bấm "Đổi cách nói" thì đổi sang câu khác cùng mức.
-    /// Giọng shop thật, câu ngắn, không dùng từ quảng cáo, không hứa gì thêm
-    /// ngoài kết luận (ví dụ câu ĐẠT không tự thêm bảo hành, bảo hành đã có ở slogan chung).</summary>
+    /// <summary>Kết luận mua máy: xác định máy MUA ĐƯỢC HAY KHÔNG, cho cả 2 đối tượng
+    /// dùng chung 1 trang — người mua chỉ cần đọc tiêu đề + câu thân thiện ở trên
+    /// là hiểu, kỹ thuật viên đọc tiếp chi tiết từng module ở dưới để biết vì sao.
+    /// Mỗi mức 5 câu thân thiện, app chọn ngẫu nhiên 1 câu, bấm "Đổi cách nói" thì
+    /// đổi sang câu khác cùng mức. Giọng shop thật, câu ngắn, không dùng từ quảng
+    /// cáo, không hứa gì thêm ngoài kết luận (ví dụ câu mua được không tự thêm
+    /// bảo hành, bảo hành đã có ở slogan chung).</summary>
     static readonly Dictionary<string, string[]> Phrasings = new()
     {
         ["Dat"] =
         [
-            "Máy này ngon rồi, bán được ngay, khỏi lăn tăn gì thêm.",
-            "Test xong hết, máy chạy ổn, giao khách được rồi đó.",
-            "Mọi mục đều đạt, máy này yên tâm bán.",
-            "Xong rồi, máy sạch, bán thôi.",
-            "Máy này đạt chuẩn An Tâm, lên kệ được rồi.",
+            "Máy này ngon rồi, mua được ngay, khỏi lăn tăn gì thêm.",
+            "Test xong hết, máy chạy ổn, mua về dùng được rồi đó.",
+            "Mọi mục đều đạt, máy này yên tâm mua.",
+            "Xong rồi, máy sạch, mua thôi.",
+            "Máy này đạt chuẩn An Tâm, mua được rồi.",
         ],
         ["CanhBao"] =
         [
-            "Máy dùng được, nhưng có chỗ cần nói rõ với khách trước khi bán.",
-            "Bán được, nhớ ghi rõ điều kiện vào đơn, đừng để khách bất ngờ.",
-            "Máy này bán có điều kiện, xem lại phần cảnh báo bên dưới rồi hãy giao.",
-            "Chưa phải máy hoàn hảo, nhưng bán được nếu khách đồng ý điều kiện.",
-            "Có 1-2 chỗ chưa ngon hẳn, bán thì phải nói thật với khách.",
+            "Máy dùng được, nhưng có chỗ cần kiểm tra thêm hoặc thương lượng giá trước khi mua.",
+            "Mua được, nhớ ghi rõ điều kiện vào đơn, đừng để mua về rồi mới bất ngờ.",
+            "Máy này mua có điều kiện, xem lại phần cảnh báo bên dưới rồi hãy quyết.",
+            "Chưa phải máy hoàn hảo, nhưng mua được nếu đồng ý điều kiện và giá hợp lý.",
+            "Có 1-2 chỗ chưa ngon hẳn, mua thì phải nói rõ điều kiện và bớt giá cho hợp lý.",
         ],
         ["Sua"] =
         [
-            "Máy này chưa bán được, sửa chỗ bị chặn xong rồi test lại từ đầu nhé.",
-            "Có mục bị chặn, thay linh kiện rồi chạy lại test, đừng giao vội.",
-            "Sửa xong rồi test lại, máy này còn cứu được.",
-            "Chặn ở vài chỗ, sửa rồi kiểm lại là bán được.",
-            "Đừng bán máy này vội, sửa trước đã.",
+            "Máy này chưa mua được, sửa chỗ bị chặn xong rồi test lại từ đầu nhé.",
+            "Có mục bị chặn, thay linh kiện rồi chạy lại test, đừng mua vội.",
+            "Sửa xong rồi test lại, máy này còn cứu được, nhưng hiện tại chưa nên mua.",
+            "Chặn ở vài chỗ, sửa rồi kiểm lại mới tính chuyện mua.",
+            "Đừng mua máy này vội, sửa trước đã.",
         ],
         ["Loai"] =
         [
-            "Máy này thôi, đừng cố bán, loại ra cho khỏe.",
-            "Máy này không nên bán, giữ lại làm linh kiện hoặc loại hẳn.",
-            "Loại máy này đi, bán ra chỉ thêm rắc rối.",
-            "Máy này không đạt chuẩn An Tâm, loại.",
-            "Thôi bỏ máy này, tìm máy khác ngon hơn cho khách.",
+            "Máy này thôi, đừng cố mua, loại ra cho khỏe.",
+            "Máy này không nên mua, giữ lại làm linh kiện hoặc loại hẳn.",
+            "Loại máy này đi, mua về chỉ thêm rắc rối.",
+            "Máy này không đạt chuẩn An Tâm, không mua.",
+            "Thôi bỏ máy này, tìm máy khác ngon hơn.",
         ],
         ["ChuaXong"] =
         [
-            "Chưa test xong đâu, còn mục chưa xong ở trên, làm nốt rồi hãy kết luận.",
+            "Chưa test xong đâu, còn mục chưa xong ở trên, làm nốt rồi hãy kết luận mua hay không.",
             "Mới test được vài mục, chạy nốt các mục còn lại đi.",
-            "Chưa đủ dữ liệu để kết luận, test tiếp nhé.",
-            "Còn mục chưa xong, kết luận vội là sai đó.",
+            "Chưa đủ dữ liệu để kết luận mua hay không, test tiếp nhé.",
+            "Còn mục chưa xong, kết luận mua vội là sai đó.",
             "Test chưa xong, quay lại các mục còn thiếu rồi hãy xem tổng kết.",
         ],
     };
 
     static readonly Dictionary<string, string> OverallTitles = new()
     {
-        ["Dat"] = "ĐẠT – BÁN ĐƯỢC NGAY",
-        ["CanhBao"] = "BÁN CÓ ĐIỀU KIỆN",
-        ["Sua"] = "SỬA RỒI TEST LẠI",
-        ["Loai"] = "LOẠI – KHÔNG BÁN MÁY NÀY",
-        ["ChuaXong"] = "CHƯA TEST XONG",
+        ["Dat"] = "CÓ THỂ MUA — MUA ĐƯỢC",
+        ["CanhBao"] = "CẦN KIỂM TRA THÊM / THƯƠNG LƯỢNG",
+        ["Sua"] = "KHÔNG KHUYẾN NGHỊ MUA",
+        ["Loai"] = "KHÔNG MUA MÁY NÀY",
+        ["ChuaXong"] = "CHƯA ĐỦ DỮ LIỆU — CHƯA KẾT LUẬN ĐƯỢC",
     };
 
     public SummaryPage(IHostContext host)
@@ -157,9 +163,12 @@ public partial class SummaryPage : UserControl
             txt.AppendLine("BÁO CÁO KIỂM TRA MÁY — Vi Tính An Tâm");
             txt.AppendLine($"S/N: {(snRaw.Length > 0 ? snRaw : "Chưa nhập")}");
             txt.AppendLine($"Thời gian lưu: {savedAt}");
-            txt.AppendLine($"Kết luận: {overall}" + (_markedLoai ? " (kỹ thuật viên đánh dấu loại)" : ""));
+            txt.AppendLine();
+            txt.AppendLine("Phần 1 — Dành cho người mua (đọc là hiểu: máy mua được hay không):");
+            txt.AppendLine($"Kết luận mua máy: {overall}" + (_markedLoai ? " (kỹ thuật viên đánh dấu không mua)" : ""));
             txt.AppendLine($"Nhận xét: {phrasing}");
             txt.AppendLine();
+            txt.AppendLine("Phần 2 — Dành cho kỹ thuật viên (bằng chứng kỹ thuật, vì sao ra kết luận trên):");
             txt.AppendLine("Kết luận từng module:");
             foreach (var r in _lastRows)
                 txt.AppendLine($"- {r.Name}: {r.Grade} — {r.Note}");
@@ -339,7 +348,7 @@ public partial class SummaryPage : UserControl
         {
             PhrasingText.Text = PickPhrasing(level, -1);
         }
-        MarkLoaiButton.Content = _markedLoai ? "Bỏ đánh dấu loại" : "Đánh dấu loại máy này";
+        MarkLoaiButton.Content = _markedLoai ? "Bỏ đánh dấu không mua" : "Đánh dấu không mua máy này";
     }
 
     static string LevelKey(ModuleVerdictLevel level) => level switch

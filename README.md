@@ -81,30 +81,33 @@ chuyển focus sang cửa sổ chính. Không cần bấm gì để tắt. Màu 
 theme đang dùng (tối = nền xám đậm, sáng = nền kem ấm), logo cam nổi trên
 cả hai nền.
 
-## Tổng kết (kết luận từng module + kết luận tổng, cách nói random thân thiện)
+## Kết luận mua máy (trang Tổng kết: mua được hay không, cho cả kỹ thuật viên và người mua)
 
 - Trang Tổng kết nằm cuối thanh điều hướng, app tự nhảy tới đây khi cả 7 module
   đã cho qua xong. Trang này không có nút cho qua riêng, vì nó chỉ tổng hợp.
+  Trang này trả lời 1 câu duy nhất: máy MUA ĐƯỢC HAY KHÔNG, cho cả 2 đối tượng
+  dùng chung — người mua chỉ cần đọc tiêu đề + câu thân thiện ở trên là đủ,
+  kỹ thuật viên đọc chi tiết từng module ở dưới để biết vì sao.
 - Kết luận từng module: Đối chiếu cấu hình và Cổng kết nối & Sạc có mức riêng
   (Đạt / Cảnh báo / Chặn / Chưa test xong, lấy từ kết luận ổ và kết luận sạc);
   các module còn lại chỉ tính theo đã cho qua (Đạt) / chưa cho qua
   (Chưa test xong). App chưa chấm điểm pin, nhiệt độ hay tốc độ ổ, vì shop
   chưa chốt ngưỡng cho các mục đó — đừng đọc kết luận tổng như là đã chấm
   hết mọi thứ.
-- Kết luận tổng tự động, tính từ kết luận từng module, không chấm điểm 100:
-  - Có module Chặn = **SỬA RỒI TEST LẠI**.
-  - Không Chặn nhưng có Cảnh báo = **BÁN CÓ ĐIỀU KIỆN**.
-  - Tất cả Đạt = **ĐẠT – BÁN ĐƯỢC NGAY**.
-  - Còn module chưa xong = **CHƯA TEST XONG** (chưa phải kết luận bán).
+- Kết luận mua tự động, tính từ kết luận từng module, không chấm điểm 100:
+  - Có module Chặn = **KHÔNG KHUYẾN NGHỊ MUA**.
+  - Không Chặn nhưng có Cảnh báo = **CẦN KIỂM TRA THÊM / THƯƠNG LƯỢNG**.
+  - Tất cả Đạt = **CÓ THỂ MUA — MUA ĐƯỢC**.
+  - Còn module chưa xong = **CHƯA ĐỦ DỮ LIỆU** (chưa kết luận mua được hay không).
 - Mỗi kết luận tổng có 5 cách nói thân thiện khác nhau, app chọn ngẫu nhiên
   1 câu khi kết luận đổi, và giữ nguyên câu đó cho tới khi kết luận đổi hoặc
   kỹ thuật viên bấm "Đổi cách nói". Đổi cách nói chỉ đổi câu chữ, kết luận
   không đổi. Các câu đều giọng shop thật, câu ngắn, không hứa thêm gì ngoài
   kết luận (ví dụ câu ĐẠT không tự thêm bảo hành).
-- **LOẠI không tự sinh ra từ test**, vì test không biết chi phí sửa có đáng
+- **KHÔNG MUA không tự sinh ra từ test**, vì test không biết chi phí sửa có đáng
   hay không (ổ chặn + sạc kém vẫn sửa được bằng cách thay linh kiện, không
-  tự động thành loại). Kỹ thuật viên tự bấm "Đánh dấu loại máy này" khi máy
-  hỏng nặng không sửa để bán, kết luận tổng thành LOẠI với 5 cách nói riêng;
+  tự động thành không mua). Kỹ thuật viên tự bấm "Đánh dấu không mua máy này"
+  khi máy hỏng nặng không nên mua, kết luận thành KHÔNG MUA với 5 cách nói riêng;
   bấm lại để bỏ đánh dấu và về lại kết luận tự động.
 - **Lưu hồ sơ phiên này** (trang Tổng kết, ô S/N + nút lưu): mỗi máy 1
   thư mục riêng `<thư mục app>\KetQua\<S/N>_<yyyyMMdd_HHmmss>\`, gồm
