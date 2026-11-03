@@ -120,19 +120,17 @@ public partial class SummaryPage : UserControl
         string scenario = _currentScenario.Length > 0 ? _currentScenario : "incomplete";
         string overall = _lastOverallTitle.Length > 0 ? _lastOverallTitle : "CHƯA TEST XONG";
 
-        string ketQuaDir;
-        string fallbackNote = "";
+        // Hồ sơ luôn lưu vào thư mục app \ KetQua (portable, tự tạo khi lưu)
+        string ketQuaDir = YanJi.PluginSdk.Services.AppSettings.GetKetQuaDir();
         try
         {
-            // Đường dẫn hồ sơ theo Cài đặt (UsbPath nếu có, không thì thư mục app)
-            ketQuaDir = YanJi.PluginSdk.Services.AppSettings.GetKetQuaDir();
             Directory.CreateDirectory(ketQuaDir);
         }
-        catch
+        catch (Exception ex)
         {
-            ketQuaDir = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "YanJi", "KetQua");
-            fallbackNote = " (đường dẫn hồ sơ trong Cài đặt ghi không được, đã lưu vào %APPDATA%\\YanJi\\KetQua\\)";
+            SaveStatusText.Text = $"Lưu hồ sơ thất bại: không tạo được thư mục {ketQuaDir}: {ex.Message}. Thử kiểm tra USB còn ghi được không, rồi bấm Lưu lại.";
+            SaveStatusText.SetResourceReference(TextBlock.ForegroundProperty, "ErrorBrush");
+            return;
         }
 
         string folderName = $"{sn}_{timestamp}";
@@ -198,7 +196,7 @@ public partial class SummaryPage : UserControl
 
             AppendIndex(ketQuaDir, savedAt, snRaw.Length > 0 ? snRaw : "KhongCoSN", overall, folderName);
             string freeNote = FreeSpaceNote(ketQuaDir);
-            SaveStatusText.Text = $"Đã lưu hồ sơ vào {folder}{fallbackNote}.{freeNote} Lưu xong mới test máy tiếp theo, vì kết quả đo ổ của máy sau sẽ ghi đè file gốc.";
+            SaveStatusText.Text = $"Đã lưu hồ sơ vào {folder}.{freeNote} Lưu xong mới test máy tiếp theo, vì kết quả đo ổ của máy sau sẽ ghi đè file gốc.";
             SaveStatusText.SetResourceReference(TextBlock.ForegroundProperty, "TextSecondaryBrush");
         }
         catch (Exception ex)

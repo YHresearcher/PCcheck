@@ -17,7 +17,7 @@ public partial class StressTestPage : UserControl, YanJi.PluginSdk.IModulePage
     TimeSpan _lastRun = TimeSpan.Zero; // 最近一次烤了多久（未烤过为 0，状态行提示用）
     DateTime? _runStart;               // 本轮烤机起点（running→停止 的那一拍结算进 _lastRun）
     bool _autoStopAttempted;           // Đã thử tự dừng cho lần nướng này chưa (tránh gọi StopVerified mỗi 500ms nếu dừng không được)
-    bool _autoStopped;                 // Lần nướng vừa rồi là tự dừng theo Cài đặt (để ghi chú ở trạng thái sau khi dừng)
+    bool _autoStopped;                 // Lần nướng vừa rồi là tự dừng theo thiết lập ở trang này (để ghi chú ở trạng thái sau khi dừng)
 
     /// <summary>核对完成状态变化（true = 已通过，false = 回到待核对）；MainWindow 据此同步导航圆点。</summary>
     public event Action<bool>? PassChanged;
@@ -36,6 +36,10 @@ public partial class StressTestPage : UserControl, YanJi.PluginSdk.IModulePage
             ThreadsBox.Items.Add(new ComboBoxItem { Content = $"{i} luồng", Tag = i });
         ThreadsBox.SelectedIndex = logical - 1;
         CoresHint.Text =  $"Máy này có {phys} nhân vật lý / {logical} luồng logic; phần vượt quá số nhân vật lý sẽ chạy bằng siêu phân luồng";
+        // Thời lượng nướng + tự dừng chỉnh ngay trên trang này (không còn trang Cài đặt):
+        // điền giá trị đã lưu để kỹ thuật viên thấy và sửa.
+        StressMinutesBox.Text = YanJi.PluginSdk.Services.AppSettings.StressMinutes.ToString();
+        AutoStopCheck.IsChecked = YanJi.PluginSdk.Services.AppSettings.AutoStopStress;
 
         _tick.Tick += (_, _) => RefreshRunningState();
         StressTestService.StateChanged += OnServiceStateChanged;
@@ -55,6 +59,27 @@ public partial class StressTestPage : UserControl, YanJi.PluginSdk.IModulePage
         Loaded += (_, _) => SensorMonitorService.Start();
         SensorHintText.Text = "Đang khởi tạo cảm biến…";
         RefreshRunningState();
+    }
+
+    void SaveStressSettingsButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (!int.TryParse(StressMinutesBox.Text.Trim(), out int minutes) || minutes < 1 || minutes > 60)
+        {
+            StressSettingsStatusText.Text = "Số phút phải từ 1 đến 60.";
+            StressSettingsStatusText.SetResourceReference(TextBlock.ForegroundProperty, "ErrorBrush");
+            return;
+        }
+        bool autoStop = AutoStopCheck.IsChecked == true;
+        if (YanJi.PluginSdk.Services.AppSettings.Save(minutes, autoStop, out string error))
+        {
+            StressSettingsStatusText.Text = "Đã lưu.";
+            StressSettingsStatusText.SetResourceReference(TextBlock.ForegroundProperty, "TextSecondaryBrush");
+        }
+        else
+        {
+            StressSettingsStatusText.Text = $"Lưu không được: {error}";
+            StressSettingsStatusText.SetResourceReference(TextBlock.ForegroundProperty, "ErrorBrush");
+        }
     }
 
     void StartButton_Click(object sender, RoutedEventArgs e)
@@ -296,12 +321,9 @@ public partial class StressTestPage : UserControl, YanJi.PluginSdk.IModulePage
             var span = DateTime.Now - t0;
             int minutes = YanJi.PluginSdk.Services.AppSettings.StressMinutes;
             bool autoStop = YanJi.PluginSdk.Services.AppSettings.AutoStopStress;
-            DurationHintText.Text = autoStop
-                ? $"Thời lượng nướng khuyến nghị: {minutes} phút, sẽ tự dừng khi đủ (theo Cài đặt)."
-                : $"Thời lượng nướng khuyến nghị: {minutes} phút (đổi ở Cài đặt). Mặc định không tự dừng — kỹ thuật viên tự quyết dừng khi nào.";
             if (span >= TimeSpan.FromMinutes(minutes) && autoStop && !_autoStopAttempted)
             {
-                // Tự dừng theo Cài đặt, dùng đúng đường dừng có kiểm chứng (không phải
+                // Tự dừng theo thiết lập ở trang này, dùng đúng đường dừng có kiểm chứng (không phải
                 // đường dừng mới): nếu dừng không được, StopVerified đã ghi log và
                 // IsRunning vẫn true, cờ _autoStopAttempted ngăn gọi lại mỗi 500ms.
                 _autoStopAttempted = true;

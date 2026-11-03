@@ -813,3 +813,32 @@ public interface IHostContext                       // 宿主注入 CreatePage
 # chưa tự chọn trong khi đã nối xong, nói dòng An Tâm chỉ hiện khi đạt/cảnh báo nhẹ
 # trong khi giờ nhóm nghiêm trọng/không mua cũng hiện) nên bỏ đi không mất thông tin đúng;
 # quy tắc đúng vẫn nằm trong code + AGENTS + README.
+
+# (51) BỎ MỤC CÀI ĐẶT + THỜI LƯỢNG NƯỚNG LÊN TRANG TẢN NHIỆT + FONT BE VIETNAM PRO + SỬA NÚT ĐIỂM CHẾT + AN TÂM BỎ BOLD (2026-11-03, chưa test Windows):
+# User: app chạy portable nên bỏ dòng %APPDATA% + ô đường dẫn hồ sơ USB, bỏ luôn mục Cài đặt.
+# Sửa: xóa hẳn plugin Settings (host csproj 3 target, .slnx, setup.iss Components/Files,
+# nút "Mở Cài đặt" ở Dashboard + handler NavigateTo("settings")); AppSettings bỏ UsbPath,
+# GetKetQuaDir luôn = thư mục app \ KetQua (tự tạo khi lưu), Tổng kết + Dashboard bỏ
+# fallback %APPDATA% (ghi không được thì báo lỗi, không im lặng lưu chỗ khác).
+# Thời lượng nướng + tự dừng đem lên trang Tản nhiệt (ô số phút 1-60 + checkbox tự dừng
+# + nút Lưu, điền giá trị đã lưu khi mở trang; timer vẫn đọc AppSettings live nên đổi
+# là áp dụng ngay); thêm chú thích nướng để làm gì + khuyến nghị 3 phút kiểm tra nhanh,
+# máy nghi ngờ nướng lâu hơn. Nút tự dừng đem lên cùng (không bỏ) vì nó gắn với thời
+# lượng nướng; user không nói bỏ nó.
+# Lỗi tìm thấy khi bỏ Cài đặt: host Settings (theme) và PluginSdk AppSettings cùng ghi
+# %APPDATA%\YanJi\settings.json bằng DTO riêng nên lưu bên này xóa bên kia (đổi theme
+# mất thời lượng nướng, lưu nướng mất theme). Sửa cả 2 Save thành gộp file (đọc file cũ
+# rồi chỉ đổi trường của mình, giữ trường còn lại; UsbPath cũ xóa luôn); Load giữ nguyên
+# (bỏ qua trường lạ). settings.json vẫn ở %APPDATA% (chỉ là cài đặt theo máy test, hồ sơ
+# phiên mới là thứ lên USB) — nếu user muốn settings cũng portable thì nói thêm.
+# Tổng kết: AnTamNoteText bỏ FontWeight Bold (giữ Italic + màu cam); câu kết luận
+# (PhrasingText) vẫn Bold. Màn hình: hàng thao tác đổi sang WrapPanel + gốc bọc
+# ScrollViewer để nút "Phát hiện điểm chết" xuống dòng khi khung hẹp thay vì bị che,
+# không cần kéo rộng cửa sổ. Font: Be Vietnam Pro nhúng vào app (6 file TTF Regular/
+# Italic/SemiBold/SemiBoldItalic/Bold/BoldItalic + OFL.txt, Resource trong host csproj),
+# FontFamily "/Fonts/#Be Vietnam Pro, Segoe UI, Microsoft YaHei UI" ở MainWindow +
+# Splash + PluginManagerWindow (trang plugin kế thừa từ MainWindow nên không cần sửa
+# từng trang); ô log vẫn Consolas (log code, không đổi). README cập nhật theo (bỏ hàng
+# Cài đặt, Tản nhiệt, lưu hồ sơ, font, ghi công Be Vietnam Pro). File settings.json cũ
+# có trường UsbPath vẫn đọc được (JSON bỏ qua trường lạ), lần lưu sau sẽ xóa trường đó.
+# Chỉ kiểm chứng bằng parse XML + đếm ngoặc + assert, chưa biên dịch/chạy Windows thật.

@@ -68,7 +68,6 @@ Name: "disk"; Description: "Đo tốc độ ổ (tích hợp mã nguồn Crystal
 Name: "summary"; Description: "Tổng kết (kết luận từng module + kết luận tổng, cách nói thân thiện random)"; Types: full
 Name: "dashboard"; Description: "Tổng quan (điểm vào app: tiến độ + kết luận mua + nút vào wizard)"; Types: full
 Name: "health"; Description: "Sức khỏe thiết bị (đánh giá theo mức độ nghiêm trọng, chỉ đọc)"; Types: full
-Name: "settings"; Description: "Cài đặt (đường dẫn hồ sơ USB, thời lượng nướng, tự dừng)"; Types: full
 Name: "visual"; Description: "Ngoại quan (tick tay bản lề lỏng, trầy nhẹ)"; Types: full
 
 ; 附加任务默认都勾选（用户可取消）：桌面快捷方式 / 开始菜单项 / PawnIO 驱动
@@ -92,7 +91,6 @@ Source: "..\publish\plugins\disk\*"; DestDir: "{app}\plugins\disk"; Components: 
 Source: "..\publish\plugins\summary\*"; DestDir: "{app}\plugins\summary"; Components: summary; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "..\publish\plugins\dashboard\*"; DestDir: "{app}\plugins\dashboard"; Components: dashboard; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "..\publish\plugins\health\*"; DestDir: "{app}\plugins\health"; Components: health; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "..\publish\plugins\settings\*"; DestDir: "{app}\plugins\settings"; Components: settings; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "..\publish\plugins\visual\*"; DestDir: "{app}\plugins\visual"; Components: visual; Flags: ignoreversion recursesubdirs createallsubdirs
 ; 烤机工具负载只有散热测试用：随 stress 组件安装（不勾散热可省约 130MB）
 Source: "..\publish\Tools\*"; DestDir: "{app}\Tools"; Components: stress; Flags: ignoreversion recursesubdirs createallsubdirs

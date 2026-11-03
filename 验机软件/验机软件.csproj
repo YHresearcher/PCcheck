@@ -28,6 +28,18 @@
     <ProjectReference Include="..\PluginSdk\YanJi.PluginSdk.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- Font chữ Be Vietnam Pro (OFL-1.1, nhúng vào app để hiện đúng tiếng Việt
+         trên mọi máy, không cần cài font hệ thống; fallback Segoe UI nếu thiếu) -->
+    <Resource Include="Fonts\BeVietnamPro-Regular.ttf" />
+    <Resource Include="Fonts\BeVietnamPro-Italic.ttf" />
+    <Resource Include="Fonts\BeVietnamPro-SemiBold.ttf" />
+    <Resource Include="Fonts\BeVietnamPro-SemiBoldItalic.ttf" />
+    <Resource Include="Fonts\BeVietnamPro-Bold.ttf" />
+    <Resource Include="Fonts\BeVietnamPro-BoldItalic.ttf" />
+    <None Include="Fonts\OFL.txt" />
+  </ItemGroup>
+
   <!-- FurMark 烤机工具：构建序依赖（先构建它 → 它把负载拷到下面的 Tools/furmark/）。
        用 MSBuild 任务而非 ProjectReference：ProjectReference 会把 FurMark 的输出文件
        一并流入本工程输出/发布根目录（多出一份框架依赖 FurMark.exe 与 Assets 副本）。
@@ -62,8 +74,6 @@
              Properties="Configuration=$(Configuration)" RemoveProperties="RuntimeIdentifier;SelfContained" />
     <MSBuild Projects="..\Plugins\Health\YanJi.Plugin.Health.csproj" Targets="Build"
              Properties="Configuration=$(Configuration)" RemoveProperties="RuntimeIdentifier;SelfContained" />
-    <MSBuild Projects="..\Plugins\Settings\YanJi.Plugin.Settings.csproj" Targets="Build"
-             Properties="Configuration=$(Configuration)" RemoveProperties="RuntimeIdentifier;SelfContained" />
     <MSBuild Projects="..\Plugins\Visual\YanJi.Plugin.Visual.csproj" Targets="Build"
              Properties="Configuration=$(Configuration)" RemoveProperties="RuntimeIdentifier;SelfContained" />
   </Target>
@@ -81,7 +91,6 @@
       <_PluginSummaryFiles Include="..\Plugins\Summary\bin\$(Configuration)\net10.0-windows10.0.19041.0\**\*" />
       <_PluginDashboardFiles Include="..\Plugins\Dashboard\bin\$(Configuration)\net10.0-windows10.0.19041.0\**\*" />
       <_PluginHealthFiles Include="..\Plugins\Health\bin\$(Configuration)\net10.0-windows10.0.19041.0\**\*" />
-      <_PluginSettingsFiles Include="..\Plugins\Settings\bin\$(Configuration)\net10.0-windows10.0.19041.0\**\*" />
       <_PluginVisualFiles Include="..\Plugins\Visual\bin\$(Configuration)\net10.0-windows10.0.19041.0\**\*" />
     </ItemGroup>
     <Copy SourceFiles="@(_PluginConfigFiles)" SkipUnchangedFiles="true"
@@ -104,8 +113,6 @@
           DestinationFiles="@(_PluginDashboardFiles->'$(OutDir)plugins\dashboard\%(RecursiveDir)%(Filename)%(Extension)')" />
     <Copy SourceFiles="@(_PluginHealthFiles)" SkipUnchangedFiles="true"
           DestinationFiles="@(_PluginHealthFiles->'$(OutDir)plugins\health\%(RecursiveDir)%(Filename)%(Extension)')" />
-    <Copy SourceFiles="@(_PluginSettingsFiles)" SkipUnchangedFiles="true"
-          DestinationFiles="@(_PluginSettingsFiles->'$(OutDir)plugins\settings\%(RecursiveDir)%(Filename)%(Extension)')" />
     <Copy SourceFiles="@(_PluginVisualFiles)" SkipUnchangedFiles="true"
           DestinationFiles="@(_PluginVisualFiles->'$(OutDir)plugins\visual\%(RecursiveDir)%(Filename)%(Extension)')" />
   </Target>
@@ -123,7 +130,6 @@
       <_PubSummary Include="..\Plugins\Summary\bin\$(Configuration)\net10.0-windows10.0.19041.0\**\*" />
       <_PubDashboard Include="..\Plugins\Dashboard\bin\$(Configuration)\net10.0-windows10.0.19041.0\**\*" />
       <_PubHealth Include="..\Plugins\Health\bin\$(Configuration)\net10.0-windows10.0.19041.0\**\*" />
-      <_PubSettings Include="..\Plugins\Settings\bin\$(Configuration)\net10.0-windows10.0.19041.0\**\*" />
       <_PubVisual Include="..\Plugins\Visual\bin\$(Configuration)\net10.0-windows10.0.19041.0\**\*" />
     </ItemGroup>
     <Copy SourceFiles="@(_PubConfig)" SkipUnchangedFiles="true"
@@ -146,8 +152,6 @@
           DestinationFiles="@(_PubDashboard->'$(PublishDir)plugins\dashboard\%(RecursiveDir)%(Filename)%(Extension)')" />
     <Copy SourceFiles="@(_PubHealth)" SkipUnchangedFiles="true"
           DestinationFiles="@(_PubHealth->'$(PublishDir)plugins\health\%(RecursiveDir)%(Filename)%(Extension)')" />
-    <Copy SourceFiles="@(_PubSettings)" SkipUnchangedFiles="true"
-          DestinationFiles="@(_PubSettings->'$(PublishDir)plugins\settings\%(RecursiveDir)%(Filename)%(Extension)')" />
     <Copy SourceFiles="@(_PubVisual)" SkipUnchangedFiles="true"
           DestinationFiles="@(_PubVisual->'$(PublishDir)plugins\visual\%(RecursiveDir)%(Filename)%(Extension)')" />
   </Target>

@@ -1,14 +1,15 @@
 using System.IO;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace YanJi.PluginSdk.Services;
 
 /// <summary>Cài đặt chung của app, đọc bởi nhiều plugin nên đặt ở PluginSdk (không
 /// phải 1 plugin riêng, để Tổng kết / Tản nhiệt / Tổng quan cùng đọc 1 chỗ).
-/// File: %APPDATA%\YanJi\settings.json (theo app, không theo USB — vì cài đặt
-/// là của bản app trên USB đó, còn hồ sơ từng máy mới theo đường dẫn USB).
-/// File hỏng / thiếu thì về mặc định, không crash app. Đường dẫn hồ sơ trống =
-/// tự động (thư mục app \ KetQua, ghi không được thì fallback %APPDATA%).</summary>
+/// File: %APPDATA%\YanJi\settings.json (chỉ lưu thời lượng nướng + tự dừng, theo
+/// máy test, không theo USB). File hỏng / thiếu thì về mặc định, không crash app.
+/// Hồ sơ từng máy luôn lưu vào thư mục app \ KetQua (portable, tự tạo khi lưu),
+/// không còn đường dẫn tùy chọn, không fallback về %APPDATA%.</summary>
 public static class AppSettings
 {
     const string FileName = "settings.json";
@@ -16,26 +17,22 @@ public static class AppSettings
     static string SettingsPath => Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "YanJi", FileName);
 
-    /// <summary>Đường dẫn gốc chứa hồ sơ KetQua do người dùng tự chọn (trống = tự động).</summary>
-    public static string UsbPath { get; private set; } = "";
-
     /// <summary>Thời lượng nướng khuyến nghị, phút (1–60, mặc định 3 — khớp đề xuất
     /// "stress nhanh 3 phút" trong thiết kế; chỉ là khuyến nghị, không tự dừng
-    /// trừ khi AutoStopStress bật).</summary>
+    /// trừ khi AutoStopStress bật). Chỉnh ngay trên trang Tản nhiệt.</summary>
     public static int StressMinutes { get; private set; } = 3;
 
     /// <summary>Tự dừng nướng máy khi đủ thời lượng khuyến nghị (mặc định TẮT —
     /// kỹ thuật viên có thể muốn nướng lâu hơn cho máy nghi ngờ, nên không tự
-    /// dừng nếu chưa bật).</summary>
+    /// dừng nếu chưa bật). Chỉnh ngay trên trang Tản nhiệt.</summary>
     public static bool AutoStopStress { get; private set; }
 
     static AppSettings() => Load();
 
-    sealed record SettingsDto(string? UsbPath, int? StressMinutes, bool? AutoStopStress);
+    sealed record SettingsDto(int? StressMinutes, bool? AutoStopStress);
 
     public static void Load()
     {
-        UsbPath = "";
         StressMinutes = 3;
         AutoStopStress = false;
         try
@@ -43,7 +40,6 @@ public static class AppSettings
             if (!File.Exists(SettingsPath)) return;
             var dto = JsonSerializer.Deserialize<SettingsDto>(File.ReadAllText(SettingsPath));
             if (dto == null) return;
-            UsbPath = dto.UsbPath?.Trim() ?? "";
             if (dto.StressMinutes is int m) StressMinutes = Math.Clamp(m, 1, 60);
             AutoStopStress = dto.AutoStopStress == true;
         }
@@ -53,19 +49,30 @@ public static class AppSettings
         }
     }
 
-    /// <summary>Lưu cài đặt, trả về false nếu ghi file không được (kèm lý do để trang Cài đặt báo).</summary>
-    public static bool Save(string usbPath, int stressMinutes, bool autoStopStress, out string error)
+    /// <summary>Lưu cài đặt, trả về false nếu ghi file không được (kèm lý do để trang Tản nhiệt báo).
+    /// File này dùng chung với host Settings (theme): chỉ đổi 2 trường của mình,
+    /// giữ nguyên DarkTheme trong file cũ, để lưu thời lượng nướng không xóa theme
+    /// (và ngược lại); trường UsbPath cũ đã bỏ tính năng thì xóa luôn.</summary>
+    public static bool Save(int stressMinutes, bool autoStopStress, out string error)
     {
         error = "";
-        UsbPath = usbPath?.Trim() ?? "";
         StressMinutes = Math.Clamp(stressMinutes, 1, 60);
         AutoStopStress = autoStopStress;
         try
         {
             Directory.CreateDirectory(Path.GetDirectoryName(SettingsPath)!);
-            var json = JsonSerializer.Serialize(new SettingsDto(UsbPath, StressMinutes, AutoStopStress),
-                new JsonSerializerOptions { WriteIndented = true });
-            File.WriteAllText(SettingsPath, json);
+            JsonObject obj;
+            try
+            {
+                obj = File.Exists(SettingsPath)
+                    ? JsonNode.Parse(File.ReadAllText(SettingsPath)) as JsonObject ?? new JsonObject()
+                    : new JsonObject();
+            }
+            catch { obj = new JsonObject(); }
+            obj.Remove("UsbPath");
+            obj["StressMinutes"] = StressMinutes;
+            obj["AutoStopStress"] = AutoStopStress;
+            File.WriteAllText(SettingsPath, obj.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
             return true;
         }
         catch (Exception ex)
@@ -75,12 +82,9 @@ public static class AppSettings
         }
     }
 
-    public static void Reset() => Save("", 3, false, out _);
+    public static void Reset() => Save(3, false, out _);
 
-    /// <summary>Thư mục gốc chứa hồ sơ KetQua theo cài đặt: UsbPath nếu có, còn không
-    /// là thư mục app (bản portable = USB). Không tự tạo thư mục ở đây — nơi lưu
-    /// hồ sơ sẽ tự tạo và fallback nếu ghi không được, để báo rõ cho người dùng.</summary>
-    public static string GetKetQuaDir() => UsbPath.Length > 0
-        ? UsbPath
-        : Path.Combine(AppContext.BaseDirectory, "KetQua");
+    /// <summary>Thư mục chứa hồ sơ KetQua: luôn là thư mục app \ KetQua (bản
+    /// portable = USB). Không tự tạo thư mục ở đây — nơi lưu hồ sơ sẽ tự tạo.</summary>
+    public static string GetKetQuaDir() => Path.Combine(AppContext.BaseDirectory, "KetQua");
 }

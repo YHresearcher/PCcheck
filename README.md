@@ -48,18 +48,17 @@ Nút Bắt đầu / Tiếp tục vào **chế độ wizard**: menu bên trái b�
 
 | # | Module | Làm gì |
 |---|--------|--------|
-| 0 | Tổng quan (Dashboard) | Tiến độ, kết luận hiện tại, nút bắt đầu/tiếp tục, mở hồ sơ, vào Cài đặt. Chỉ đọc, không phải bài test. |
+| 0 | Tổng quan (Dashboard) | Tiến độ, kết luận hiện tại, nút bắt đầu/tiếp tục, mở hồ sơ. Chỉ đọc, không phải bài test. |
 | 10 | Đối chiếu cấu hình | Tự quét CPU, card màn hình, RAM, ổ, card mạng, màn hình, pin, rồi đối chiếu từng mục với cấu hình đơn hàng. Trình bày kiểu CPU-Z: tab CPU / Memory / Storage / Graphics / Khác, số liệu thô, không phải kết luận. Nhóm Máy & Mainboard (tab Khác) đọc model/serial máy + mainboard + BIOS trực tiếp từ bảng SMBIOS thô của firmware, đối chiếu với WMI, lệch thì báo cảnh báo và bắt kiểm tra tem tay (không chặn). Serial máy và serial mainboard khác nhau là bình thường. Giới hạn: BIOS bị flash giả thì SMBIOS và WMI cùng nói dối giống nhau, khi đó tra serial trên web hãng hoặc soi tem dưới đáy máy. Trên cùng trang, ngay dưới tiêu đề, có thẻ chung Hãng / Model / S/N máy lấy từ nhóm Máy & Mainboard, khỏi phải chui vào tab Khác tìm; bấm Kiểm tra lại thì thẻ này cập nhật theo. |
 | 20 | Test bàn phím | Bàn phím ANSI 104 phím, bấm phím nào thì phím đó sáng lên, nhả ra thì chuyển xanh, đếm "đã test X / 104". Tick tay "Có phím liệt / không nhận" thì ghi nhận lỗi, vẫn cho qua được. |
 | 30 | Test điểm chết màn hình | Chọn màn hình rồi xem toàn màn hình đổi màu trắng, đỏ, xanh lá, xanh dương, đen, bấm phím bất kỳ hoặc click chuột để đổi màu, Esc để thoát. Máy nhiều màn hình thì test từng cái. Tick tay "Phát hiện điểm chết / điểm sáng" thì ghi nhận lỗi, vẫn cho qua được. |
 | 40 | Camera - Mic - Loa | Camera xem trước trực tiếp, mic có thanh mức âm + ghi / phát lại, loa phát nhạc test. Đủ 3 mục thì bấm cho qua một lần. Tick tay "Loa rè" / "Camera không hoạt động" thì ghi nhận lỗi, vẫn cho qua được. Dòng ghi công bài nhạc test giữ nguyên văn bản gốc, không được đổi. |
-| 50 | Test tản nhiệt | Nướng CPU bằng Prime95, nướng GPU bằng FurMark viết lại bằng C# / OpenTK, hoặc nướng cả hai. Có biểu đồ nhiệt độ và công suất CPU / GPU theo thời gian thực. Tick tay "CPU gặp lỗi / crash khi nướng" và "Phát hiện lỗi hiển thị GPU (artifact)" thì chặn cho qua. Nút "Dừng tất cả test nặng" dừng thật Prime95 / FurMark / đo tốc độ ổ, có kiểm chứng (kill xong phải xác nhận tiến trình đã chết, chưa chết thì quét lại theo đường dẫn Tools và báo rõ tên tiến trình còn sống, không hiện "Đã dừng" giả). Trang Tản nhiệt không cho qua khi chưa dừng được thật. |
+| 50 | Test tản nhiệt | Nướng CPU bằng Prime95, nướng GPU bằng FurMark viết lại bằng C# / OpenTK, hoặc nướng cả hai. Có biểu đồ nhiệt độ và công suất CPU / GPU theo thời gian thực. Tick tay "CPU gặp lỗi / crash khi nướng" và "Phát hiện lỗi hiển thị GPU (artifact)" thì chặn cho qua. Nút "Dừng tất cả test nặng" dừng thật Prime95 / FurMark / đo tốc độ ổ, có kiểm chứng (kill xong phải xác nhận tiến trình đã chết, chưa chết thì quét lại theo đường dẫn Tools và báo rõ tên tiến trình còn sống, không hiện "Đã dừng" giả). Trang Tản nhiệt không cho qua khi chưa dừng được thật. Thời lượng nướng + tự dừng chỉnh ngay trên trang này (khuyến nghị 3 phút cho kiểm tra nhanh, máy nghi ngờ thì nướng lâu hơn), kèm chú thích nướng máy để làm gì. |
 | 60 | Cổng kết nối & Sạc | App tự quét cổng + test sạc 10 giây (lấy mẫu điện áp + công suất mỗi giây, cho điểm sức khỏe sạc). Cổng vật lý trên vỏ máy (HDMI, VGA, RJ45, USB-A, USB-C, đầu sạc) thì kỹ thuật viên nhìn bằng mắt và tick tay ở cuối trang. Máy có pin mà chưa test sạc hoặc sạc đánh giá Kém thì nút cho qua không cho qua. Máy bàn không có pin thì bỏ qua phần sạc. Điện áp hiển thị là điện áp ở đầu pin, không phải điện áp ra của củ sạc. |
 | 70 | Ngoại quan | 8 hạng mục quan trọng, tick tay: vỏ nứt / móp / vỡ góc, bản lề lỏng, màn hình trầy / viền nứt, phím bong / mất phím, cổng móp / gãy chân, pin phồng, thiếu ốc / tem rách / dấu mở máy, trầy xước nhẹ. Tick thì ghi nhận cảnh báo, vẫn cho qua được — trừ **pin phồng thì chặn cho qua**. |
 | 80 | Đo tốc độ ổ | Đo tốc độ đọc / ghi tuần tự và ngẫu nhiên, kết quả lưu thành `KetQuaDoO.json` và `LichSuDoO.csv` trong `%APPDATA%\YanJi\disk_result`. |
 | 85 | Sức khỏe thiết bị | Chỉ đọc, không phải bài test: đánh giá theo mức độ nghiêm trọng từ kết quả đã test — Đạt / Cảnh báo / Chặn / Chưa test. Chưa test không được hiểu là khỏe; stress ngắn đạt không chứng minh ổn định lâu dài. |
 | 90 | Tổng kết | Trang cuối (Terminal, không có nút cho qua riêng): liệt kê kết luận từng module, rồi cho kết luận tổng (mua được hay không), câu thân thiện + dòng "An Tâm nhắn bạn", ô S/N + nút lưu hồ sơ. |
-| 95 | Cài đặt | Đường dẫn hồ sơ (để trống = thư mục app \ KetQua, ghi khác nếu muốn lưu thẳng vào USB / ổ riêng), thời lượng nướng khuyến nghị (mặc định 3 phút, 1–60), tự dừng khi đủ thời lượng (mặc định tắt). Giao diện sáng/tối vẫn đổi bằng công tắc ở góc phải trên, thư mục Tools chỉ xem. Cài đặt lưu ở `%APPDATA%\YanJi\settings.json`, theo app, không theo USB. |
 
 Mỗi module bấm cho qua xong là app tự nhảy sang module chưa xong tiếp theo. Bấm "Kiểm tra lại" hoặc "Đặt lại" là xóa trạng thái đã cho qua để test lại từ đầu.
 
@@ -124,7 +123,7 @@ Phần cổng tự động chỉ báo những gì hệ thống thật sự nhìn
 
 ## Lưu hồ sơ phiên này (trang Tổng kết)
 
-Ô S/N + nút **"Lưu hồ sơ phiên này"**: mỗi máy 1 thư mục riêng `<thư mục app>\KetQua\<S/N>_<yyyyMMdd_HHmmss>\`, gồm `BaoCao.txt` (kết luận + nhận xét + kết quả từng module + bằng chứng), `KetQua.json` (máy đọc được) và bản sao `KetQuaDoO.json` mới nhất (vì file gốc trong %APPDATA% sẽ bị máy sau ghi đè). Cùng S/N test lại cũng không đè lên nhau nhờ timestamp (+ _2, _3 nếu trùng giây). Chỉ mục `KetQua\DanhSach.csv` thêm 1 dòng/phiên. S/N để trống vẫn lưu được (tên thư mục dùng KhongCoSN). Lưu xong mới test máy tiếp theo. Nếu thư mục app ghi không được thì lưu vào `%APPDATA%\YanJi\KetQua\` và báo rõ, không im lặng lưu chỗ khác.
+Ô S/N + nút **"Lưu hồ sơ phiên này"**: mỗi máy 1 thư mục riêng `<thư mục app>\KetQua\<S/N>_<yyyyMMdd_HHmmss>\`, gồm `BaoCao.txt` (kết luận + nhận xét + kết quả từng module + bằng chứng), `KetQua.json` (máy đọc được) và bản sao `KetQuaDoO.json` mới nhất (vì file gốc trong %APPDATA% sẽ bị máy sau ghi đè). Cùng S/N test lại cũng không đè lên nhau nhờ timestamp (+ _2, _3 nếu trùng giây). Chỉ mục `KetQua\DanhSach.csv` thêm 1 dòng/phiên. S/N để trống vẫn lưu được (tên thư mục dùng KhongCoSN). Lưu xong mới test máy tiếp theo. Thư mục app ghi không được thì báo lỗi, không tự lưu sang chỗ khác.
 
 Ô S/N tự điền từ serial firmware của máy (SMBIOS) khi mở trang Tổng kết, nếu ô đang trống. Nếu firmware không có serial thật (hãng để sẵn chữ giữ chỗ) thì ô để trống cho gõ tay, không bịa số. Nếu bạn sửa hoặc xóa số sau đó thì nó không điền lại, để tôn trọng số gõ tay — vì tem dán khác serial firmware chính là trường hợp cần kiểm tra tay. Nếu lần đầu mở trang mà đọc không được thì lần sau mở lại trang sẽ thử lại, không khóa luôn. Số tự điền vẫn có thể sai nếu BIOS từng bị flash lại, nên vẫn cần đối chiếu tem dán.
 
@@ -153,7 +152,7 @@ Thanh trên cùng của cửa sổ chính có dải cam 3px, logo + tên app, d�
   - Sáng (dùng ban ngày): nền trắng, nền phụ #FFF6EC, cam #D95E00, hover #C25200, mục đang chọn #FFE7CC.
   - Tối (giao diện thương hiệu chính, nền gần đen như logo trình bày): nền #111111, nền phụ #262626, cam đúng #ED740C, hover #F5861F, mục đang chọn #3D2A1A.
 - Vì toàn bộ control đều dùng DynamicResource trỏ vào token theme nên đổi 2 file theme là toàn bộ app đổi màu theo, không cần sửa từng trang. Màu đỏ lỗi giữ nguyên #C42B1C / #FF6B5E, không dùng cam cho lỗi để khỏi nhầm.
-- Font chính đổi thứ tự thành "Segoe UI, Microsoft YaHei UI" cho chữ tiếng Việt có dấu hiển thị đúng; font Consolas ở các ô log giữ nguyên.
+- Font chính là Be Vietnam Pro (nhúng vào app, giấy phép OFL-1.1, fallback Segoe UI nếu thiếu) cho chữ tiếng Việt có dấu hiển thị đúng trên mọi máy; font Consolas ở các ô log giữ nguyên.
 - Hệ thống theme lần đầu chạy theo theme của Windows, nút mặt trời / mặt trăng ở top bar đổi theme và lưu lại lựa chọn.
 
 ## Build trên máy Windows có .NET SDK 10
@@ -188,7 +187,7 @@ Nếu đang xài Mac, đọc file `Huong_dan_build_tren_Mac.md` trong repo này 
 
 ## Ghi công và giấy phép
 
-- BibaYanji của Bibapcs — code chính, giấy phép MIT, file LICENSE gốc giữ nguyên. Các thành phần kèm theo giữ giấy phép riêng của chúng: LibreHardwareMonitor (MPL-2.0), Prime95 (GIMPS freeware), PawnIO (GPL-2.0 có ngoại lệ), CrystalDiskMark và diskspd (MIT), NAudio (Ms-PL), OpenTK (MIT), FurMark bản Python gốc (MIT). Khi copy hay phát lại thư mục này, giữ nguyên các file LICENSE kèm theo, đừng xóa.
+- BibaYanji của Bibapcs — code chính, giấy phép MIT, file LICENSE gốc giữ nguyên. Các thành phần kèm theo giữ giấy phép riêng của chúng: LibreHardwareMonitor (MPL-2.0), Prime95 (GIMPS freeware), PawnIO (GPL-2.0 có ngoại lệ), CrystalDiskMark và diskspd (MIT), NAudio (Ms-PL), OpenTK (MIT), FurMark bản Python gốc (MIT), Be Vietnam Pro (OFL-1.1). Khi copy hay phát lại thư mục này, giữ nguyên các file LICENSE kèm theo, đừng xóa.
 - Module Cổng kết nối & Sạc — port từ laptop-diagnostic-tool của Tanxe Studio, giấy phép MIT, ghi công theo cơ chế Credits của plugin.
 - Bài nhạc test ở trang Camera - Mic - Loa: xem `AUDIO-LICENSE.md`.
 - App này không tích hợp phần mềm thương mại đóng nguồn nào (ví dụ HWiNFO) vào code, theo quy tắc của repo gốc. Thu thập phần cứng chỉ qua LibreHardwareMonitor và giao diện có sẵn của Windows (WMI, registry, Win32).

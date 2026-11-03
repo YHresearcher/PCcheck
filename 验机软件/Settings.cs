@@ -1,9 +1,11 @@
 using System.IO;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace YanJi;
 
-/// <summary>简单设置持久化（%APPDATA%\YanJi\settings.json）。</summary>
+/// <summary>简单设置持久化（%APPDATA%\YanJi\settings.json，与 PluginSdk AppSettings 共用同一文件：
+/// 保存时只改 DarkTheme 字段并保留文件里已有的其它字段，避免换主题时把 nướng 设置写丢）。</summary>
 public static class Settings
 {
     static string DirPath => Path.Combine(
@@ -37,10 +39,19 @@ public static class Settings
         try
         {
             Directory.CreateDirectory(DirPath);
-            File.WriteAllText(FilePath, JsonSerializer.Serialize(new Dto
+            // 只改 DarkTheme，保留文件里已有的其它字段（AppSettings 的 nướng 设置），
+            // 否则换一次主题就会把 nướng 设置写丢（两边原来是互相覆盖同一文件）。
+            JsonObject obj;
+            try
             {
-                DarkTheme = DarkTheme,
-            }, new JsonSerializerOptions { WriteIndented = true }));
+                obj = File.Exists(FilePath)
+                    ? JsonNode.Parse(File.ReadAllText(FilePath)) as JsonObject ?? new JsonObject()
+                    : new JsonObject();
+            }
+            catch { obj = new JsonObject(); }
+            if (DarkTheme is bool dark) obj["DarkTheme"] = dark;
+            else obj.Remove("DarkTheme");
+            File.WriteAllText(FilePath, obj.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
         }
         catch { /* 设置保存失败不致命 */ }
     }

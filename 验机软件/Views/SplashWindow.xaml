@@ -5,7 +5,7 @@
         WindowStyle="None" AllowsTransparency="True" Background="Transparent"
         WindowStartupLocation="CenterScreen" ResizeMode="NoResize"
         ShowInTaskbar="False" Topmost="True"
-        FontFamily="Segoe UI, Microsoft YaHei UI"
+        FontFamily="/Fonts/#Be Vietnam Pro, Segoe UI, Microsoft YaHei UI"
         TextElement.Foreground="{DynamicResource TextBrush}">
     <!-- Màn hình chờ khởi động: chỉ logo + tên + tiến trình, gọn nhẹ.
          Khối thông tin shop (dòng giới thiệu + 2 chi nhánh + website) đã chuyển

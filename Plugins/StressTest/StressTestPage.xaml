@@ -41,9 +41,21 @@
                     <TextBlock x:Name="RunStateText" Text="Chưa nướng máy lần nào; nướng máy làm phần cứng chạy hết công suất và nóng lên, chú ý nhiệt độ và quạt"
                                Margin="0,6,0,0" TextWrapping="Wrap"
                                Foreground="{DynamicResource TextSecondaryBrush}"/>
-                    <TextBlock x:Name="DurationHintText" Text="Thời lượng nướng khuyến nghị: 3 phút (đổi ở Cài đặt). Mặc định không tự dừng — kỹ thuật viên tự quyết dừng khi nào."
+                    <TextBlock Text="Nướng máy để làm gì: cho CPU/GPU chạy hết công suất để xem máy có nóng quá, có tự tắt hay crash, có lỗi hiển thị không. Nướng ngắn đạt chỉ chứng minh máy chịu được chừng đó phút ở tải cao, không chứng minh ổn định lâu dài."
+                               Margin="0,6,0,0" TextWrapping="Wrap" FontSize="11"
+                               Foreground="{DynamicResource TextSecondaryBrush}"/>
+                    <TextBlock Text="Khuyến nghị: 3 phút cho kiểm tra nhanh; máy nghi ngờ thì nướng lâu hơn."
                                Margin="0,4,0,0" TextWrapping="Wrap" FontSize="11"
                                Foreground="{DynamicResource TextSecondaryBrush}"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,6,0,0" VerticalAlignment="Center">
+                        <TextBlock Text="Thời lượng nướng:" VerticalAlignment="Center"/>
+                        <TextBox x:Name="StressMinutesBox" Width="60" Margin="8,0,0,0" Padding="6,4"/>
+                        <TextBlock Text="phút" VerticalAlignment="Center" Margin="8,0,0,0"/>
+                        <CheckBox x:Name="AutoStopCheck" Content="Tự dừng khi đủ giờ" VerticalAlignment="Center" Margin="16,0,0,0"/>
+                        <Button x:Name="SaveStressSettingsButton" Content="Lưu" Padding="16,7" Margin="12,0,0,0" Click="SaveStressSettingsButton_Click"/>
+                        <TextBlock x:Name="StressSettingsStatusText" Margin="10,0,0,0" VerticalAlignment="Center" FontSize="11"
+                                   Foreground="{DynamicResource TextSecondaryBrush}"/>
+                    </StackPanel>
                     <!-- Tick tay những gì phần mềm không tự phát hiện: CPU lỗi/crash
                          và lỗi hiển thị GPU (artifact) chỉ mắt người mới thấy khi nướng.
                          Tick 1 trong 2 ô này thì nút cho qua sẽ bị chặn (giống ổ bị chặn),

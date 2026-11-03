@@ -4,7 +4,7 @@
         Title="An Tâm PC Test" Width="980" Height="720"
         MinWidth="880" MinHeight="640"
         Background="{DynamicResource WindowBgBrush}"
-        FontFamily="Segoe UI, Microsoft YaHei UI"
+        FontFamily="/Fonts/#Be Vietnam Pro, Segoe UI, Microsoft YaHei UI"
         TextElement.Foreground="{DynamicResource TextBrush}">
     <Grid>
         <Grid.RowDefinitions>
