@@ -12,19 +12,18 @@ không đổi. Bản gốc tiếng Trung vẫn giữ nguyên ở file
 
 ## Tải bản chạy được
 
-Repo này **chưa phát hành ở mục Releases**. Cách tải duy nhất hiện tại là
-qua GitHub Actions:
+Vào mục **Releases** của repo, tải file **AnTamPCtest-portable.zip** ở
+Release **"latest"** (luôn là bản mới nhất từ nhánh main) về, giải nén ra
+USB là chạy. Link tải trực tiếp, không cần đăng nhập GitHub:
 
-1. Vào tab **Actions** của repo.
-2. Bấm vào run **Build Windows portable** mới nhất (run nào tick xanh mới có
-   file, run nào báo lỗi thì không có).
-3. Kéo xuống cuối trang run, tới mục **Artifacts**, bấm tải
-   **AnTamPCtest-portable** về.
-4. Giải nén file zip ra, copy cả thư mục `publish` bên trong sang USB, giữ
-   nguyên cấu trúc bên trong.
+https://github.com/YHresearcher/PCcheck/releases/latest/download/AnTamPCtest-portable.zip
 
-Lưu ý: GitHub bắt đăng nhập tài khoản GitHub mới tải được artifact, kể cả
-repo public.
+Release "latest" chỉ được cập nhật khi build thành công, nên bản lỗi không
+ghi đè lên bản tốt đang phát hành. Nếu Releases chưa có file (ví dụ build
+đang chạy hoặc vừa lỗi), cách dự phòng là vào tab **Actions**, bấm vào run
+**Build Windows portable** mới nhất tick xanh, kéo xuống cuối trang run,
+tới mục **Artifacts**, tải **AnTamPCtest-portable** về — cách này thì
+GitHub bắt đăng nhập tài khoản mới tải được, kể cả repo public.
 
 ## Chạy portable từ USB
 

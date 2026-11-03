@@ -1,8 +1,13 @@
 # Build An Tâm PC test trên máy chủ Windows của GitHub, không cần máy Windows ở nhà.
-# Cách dùng: push repo này lên GitHub, vào tab Actions, chọn workflow này, bấm Run workflow,
-# chờ build xong, tải artifact "AnTamPCtest-portable" về, giải nén ra USB là chạy được trên máy Windows.
+# Cách dùng: push repo này lên GitHub, chờ build xong, tải file
+# AnTamPCtest-portable.zip ở mục Releases (Release "latest", luôn là bản mới nhất
+# từ nhánh main) về, giải nén ra USB là chạy được trên máy Windows. Tải ở Releases
+# không cần đăng nhập GitHub, khác với artifact ở Actions (cần đăng nhập).
+# Artifact "AnTamPCtest-portable" vẫn giữ lại làm bản dự phòng cho dev.
 # Chạy tự động mỗi lần push lên main (để push bằng deploy key cũng tự build được,
 # không cần gọi API workflow_dispatch), và vẫn bấm tay chạy lại được khi cần.
+# Release "latest" chỉ được cập nhật khi build thành công, nên bản lỗi không
+# ghi đè lên bản tốt đang phát hành.
 name: Build Windows portable
 
 on:
@@ -10,8 +15,10 @@ on:
     branches: [main]
   workflow_dispatch:
 
+# contents: write là bắt buộc để tạo / cập nhật Release bằng gh CLI;
+# nếu để read thì bước Release sẽ lỗi 403 và không có file ở Releases.
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
@@ -44,3 +51,22 @@ jobs:
           name: AnTamPCtest-portable
           path: publish/**
           if-no-files-found: error
+
+      - name: Nén thư mục publish thành zip cho Releases
+        # Nén nội dung bên trong publish (không nén cả thư mục publish),
+        # để giải nén ra là chạy ngay, không phải chui thêm 1 cấp thư mục.
+        run: Compress-Archive -Path publish\* -DestinationPath AnTamPCtest-portable.zip -Force
+
+      - name: Tạo / cập nhật Release "latest"
+        # Release "latest" là 1 Release duy nhất, cập nhật liên tục, không tạo
+        # Release mới mỗi lần push (tránh spam danh sách Releases).
+        # Link tải ổn định, không cần đăng nhập:
+        # https://github.com/YHresearcher/PCcheck/releases/latest/download/AnTamPCtest-portable.zip
+        # gh CLI có sẵn trên runner, xác thực bằng GITHUB_TOKEN của workflow.
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release upload latest AnTamPCtest-portable.zip --clobber 2>$null
+          if ($LASTEXITCODE -ne 0) {
+            gh release create latest AnTamPCtest-portable.zip --title "An Tâm PC test — bản mới nhất" --notes "Bản portable mới nhất từ nhánh main, commit ${{ github.sha }}. Tải file AnTamPCtest-portable.zip, giải nén ra USB là chạy trên máy Windows (cần quyền Admin)."
+          }

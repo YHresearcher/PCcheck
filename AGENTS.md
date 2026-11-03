@@ -19,7 +19,12 @@
 # (9) splash screen (Views/SplashWindow, 480x400, logo 120px + "An Tâm PC test" + Vi Tính An Tâm +
 # slogan bảo hành 6 tháng + địa chỉ/website + thanh tiến trình): App.xaml bỏ tự tạo MainWindow,
 # App.OnStartup hiện splash trước, tạo MainWindow (tải 7 module), đóng splash sau khi MainWindow
-# Loaded và đủ tối thiểu 1,5 giây, rồi Activate MainWindow; màu splash theo token theme, không màu trực tiếp.
+# Loaded và đủ tối thiểu 1,5 giây, rồi Activate MainWindow; màu splash theo token theme, không màu trực tiếp;
+# (10) phát hành Releases (workflow .github/workflows/build-windows.yml): sau bước upload-artifact,
+# nén publish thành AnTamPCtest-portable.zip rồi dùng gh CLI cập nhật Release "latest" duy nhất
+# (upload --clobber, chưa có thì create), link tải ổn định releases/latest/download/..., không cần đăng nhập;
+# workflow cần permissions contents: write, nếu để read thì bước Release lỗi 403; Release chỉ cập nhật
+# khi build thành công, bản lỗi không ghi đè bản tốt.
 # Phần còn lại của file này vẫn là
 # tài liệu gốc bằng tiếng Trung, chưa dịch, dùng để tham khảo kỹ thuật.
 
