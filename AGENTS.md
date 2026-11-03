@@ -538,3 +538,20 @@ public interface IHostContext                       // 宿主注入 CreatePage
 # "đầu" (âu). Câu này tự nhiên hơn câu cũ ("thì sau bền vui") vì "nhẹ đầu,
 # mình vui" là tiếng shop thật; ý "gốc rõ" của câu cũ nhường chỗ cho "không
 # lỗi, nhẹ đầu". Cả 21 cặp sau đổi vẫn qua kiểm, không ngoại lệ.
+
+# (32) RÀ LẠI HẾT 21 CẶP THEO NGHĨA GỐC (2026-11-03, chưa test Windows):
+# User chốt: sửa hết các câu còn lại theo quy tắc vần (chữ cuối câu 6 = vần
+# chữ 6 câu 8) nhưng phải đúng nghĩa gốc, không làm câu vô nghĩa. Rà từng cặp
+# với câu văn xuôi gốc của nó: sửa 4 cặp bị lệch nghĩa, giữ 17 cặp còn lại
+# (gồm cặp 3 của user) vì đã đúng nghĩa — sửa câu đúng chỉ để đổi chữ thì dễ
+# thành câu vô nghĩa hơn, đúng điều user dặn tránh.
+# (1) "chuyện mừng rồi / được rồi thật vui" thành "một chuyện thôi / vui rồi
+# thôi mà" (sát câu gốc "Máy tốt là một chuyện thôi, mua đúng giá mới là vui
+# rồi" hơn, bỏ chữ "mừng" thêm vào); (5) "sửa mãi chẳng an / bàn cho xong"
+# thành "sửa mãi tốn tiền / rồi liền chốt ngay" (câu cũ lệch nghĩa gốc: gốc
+# là rẻ + sửa hoài = thành đắt (tiền), câu cũ nói thành "chẳng an" (không yên
+# lòng) là lạc sang nghĩa khác); (15) "dùng tốt mới vui" thành "dùng tốt ngay
+# vui" (lấy lại chữ "ngay" của gốc "dùng ngay"); (20) "trả tiền khi đã rõ rồi
+# mới mua" thành "hiểu rồi cho rõ mới thôi trả tiền" (câu cũ đảo thứ tự: trả
+# tiền rồi mới mua, trong khi gốc là hiểu rõ TRƯỚC KHI trả tiền). Cả 21 cặp sau
+# sửa vẫn qua script kiểm 6-8 chữ, thanh, vần, không ngoại lệ.
