@@ -474,3 +474,17 @@ public interface IHostContext                       // 宿主注入 CreatePage
 # chỉ 1 câu, nay cũng đổi sang bản thơ của câu đầu để lỡ JSON hỏng thì giọng
 # vẫn khớp. Câu thơ là 1 chuỗi có dấu phẩy giữa 2 vế, không xuống dòng, nên
 # Summary và BaoCao.txt không cần đổi layout.
+
+# (26) "AN TÂM NHẮN BẠN" CHUYỂN SANG LỤC BÁT (2026-11-03, chưa test Windows):
+# User chọn lục bát (thất ngôn bát cú được gác lại: 8 câu x 7 chữ, luật đối
+# nghiêm ngặt, quá dài cho một dòng nhắn trong Summary/Báo cáo). Cả 21 câu đều
+# là 1 cặp lục bát 6 + 8, đã kiểm bằng script: số chữ 6/8, thanh 2-4-6 =
+# bằng-trắc-bằng (câu 6) và 2-4-6-8 = bằng-trắc-bằng-bằng (câu 8), vần tiếng 6
+# câu 6 hiệp với tiếng 6 câu 8 (chuẩn hóa ay~ai). Câu mẫu 6-6 của user không
+# giữ nguyên từng chữ được nữa: "Mua máy là để dùng lâu" vừa thiếu chữ cho câu
+# 8, vừa đặt "máy" (sắc) ở vị trí 2 vốn phải bằng, nên nắn thành "Máy mua chạy
+# tốt dài lâu / máy trâu giá chẳng rẻ đâu nghe chưa" (giữ ý: dùng lâu, máy
+# trâu giá chẳng rẻ). Mỗi câu trong JSON giờ chứa "\n" giữa 2 dòng: Summary
+# (TextBlock) hiện thành 2 dòng, BaoCao.txt cũng tách thành 2 dòng, KetQua.json
+# ghi bằng Serialize nên ký tự xuống dòng được escape đúng. Fallback trong
+# PhrasingBank.cs cũng đổi sang cặp lục bát đầu tiên. Quy tắc hiện không đổi.
