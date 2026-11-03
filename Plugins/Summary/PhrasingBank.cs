@@ -89,7 +89,7 @@ public class PhrasingBank
         Warning = ["Máy dùng được, nhưng có chỗ cần kiểm tra thêm hoặc thương lượng giá trước khi mua."];
         Incomplete = ["Chưa đủ dữ liệu để kết luận mua hay không, test tiếp nhé."];
         NotBuy = ["Máy này không đạt chuẩn An Tâm, không mua."];
-        AnTamNotes = ["Máy tốt là một chuyện, mua đúng giá mới là chuyện đáng vui!"];
+        AnTamNotes = ["Máy tốt là một chuyện, mua đúng giá mới là chuyện đáng ăn mừng nè bạn!"];
     }
 
     static string[] Pool(JsonElement root, string key)

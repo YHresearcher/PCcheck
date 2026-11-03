@@ -565,3 +565,13 @@ public interface IHostContext                       // 宿主注入 CreatePage
 # trong PhrasingBank.cs về lại câu gốc của user ("Máy tốt là một chuyện, mua
 # đúng giá mới là chuyện đáng vui!"). Quy tắc hiện không đổi (chỉ đạt / cảnh
 # báo / chức năng, câu chỉ đổi khi kịch bản đổi, khóa vào báo cáo khi lưu).
+
+# (34) "AN TÂM NHẮN BẠN" VIẾT LẠI THÂN THIỆN + THÚ VỊ HƠN, VẪN LÀ VĂN XUÔI (2026-11-03, chưa test Windows):
+# User muốn thân thiện + thú vị hơn sau khi đã bỏ thơ: 21 câu viết lại bằng văn
+# xuôi (không thơ, không cặp 6-8, mỗi câu 1 dòng), giữ nguyên ý từng câu gốc
+# (vd rẻ + sửa hoài = thành đắt, pin/ổ yếu = trừ giá, rõ lai lịch > bóng loáng)
+# nhưng giọng ấm hơn và hình ảnh sinh động hơn: xưng hô bạn/nha/nè/hen, "móc
+# ví", "kê cao gối mà ngủ", "tiếc hùi hụi", "niềm tin thì không bảo hành được",
+# "sướng tay", "hơn đứt". Vẫn là lời khuyên mua chung, không khẳng định về
+# chiếc máy cụ thể, nên hiện cả ở đạt / cảnh báo / chức năng đều an toàn.
+# Fallback trong PhrasingBank.cs đổi theo câu 1 mới. Quy tắc hiện không đổi.
