@@ -80,6 +80,8 @@ public partial class ConfigCheckPage : UserControl, YanJi.PluginSdk.IModulePage
                 if (report.HasDriveUnknown)
                     PhaseText.Text += " Lưu ý: có ổ chưa rõ sức khỏe — kiểm tra tay bằng CrystalDiskInfo trước khi mua.";
             }
+            if (report.SmbiosMismatch)
+                PhaseText.Text += $" Lưu ý: thông tin máy không khớp SMBIOS↔WMI — {string.Join("; ", report.SmbiosMismatchReasons)} — kiểm tra tem máy tay.";
             PassButton.IsEnabled = true;
         }
         catch (Exception ex)
@@ -118,6 +120,8 @@ public partial class ConfigCheckPage : UserControl, YanJi.PluginSdk.IModulePage
                 : " Lưu ý: có ổ cảnh báo (<90%) — tối đa mua có điều kiện.";
         if (_lastReport?.HasDriveUnknown == true)
             PhaseText.Text += " Lưu ý: có ổ chưa rõ sức khỏe — kiểm tra tay bằng CrystalDiskInfo trước khi mua.";
+        if (_lastReport?.SmbiosMismatch == true)
+            PhaseText.Text += $" Lưu ý: thông tin máy không khớp SMBIOS↔WMI — {string.Join("; ", _lastReport.SmbiosMismatchReasons)} — kiểm tra tem máy tay.";
     }
 
 
@@ -168,23 +172,57 @@ public partial class ConfigCheckPage : UserControl, YanJi.PluginSdk.IModulePage
     {
         if (_host == null) return;
         var r = _lastReport;
+        ModuleVerdictLevel level;
+        string note;
         if (r == null)
-            _host.ReportVerdict("config", new(ModuleVerdictLevel.ChuaTest, "Chưa quét"));
+        {
+            level = ModuleVerdictLevel.ChuaTest; note = "Chưa quét";
+        }
         else if (r.DriveBlockReasons.Count > 0)
-            _host.ReportVerdict("config", new(ModuleVerdictLevel.Chan, string.Join("; ", r.DriveBlockReasons)));
+        {
+            level = ModuleVerdictLevel.Chan; note = string.Join("; ", r.DriveBlockReasons);
+        }
         else if (r.HasDriveWarning)
-            _host.ReportVerdict("config", new(ModuleVerdictLevel.CanhBao,
-                r.DriveWarningReasons.Count > 0
-                    ? $"Có ổ cảnh báo — {string.Join("; ", r.DriveWarningReasons)} — tối đa mua có điều kiện"
-                    : "Có ổ cảnh báo (<90%) — tối đa mua có điều kiện"));
+        {
+            level = ModuleVerdictLevel.CanhBao;
+            note = r.DriveWarningReasons.Count > 0
+                ? $"Có ổ cảnh báo — {string.Join("; ", r.DriveWarningReasons)} — tối đa mua có điều kiện"
+                : "Có ổ cảnh báo (<90%) — tối đa mua có điều kiện";
+        }
         else if (r.HasDriveUnknown)
-            _host.ReportVerdict("config", new(ModuleVerdictLevel.CanhBao, "Có ổ chưa rõ sức khỏe — kiểm tra tay bằng CrystalDiskInfo"));
+        {
+            level = ModuleVerdictLevel.CanhBao; note = "Có ổ chưa rõ sức khỏe — kiểm tra tay bằng CrystalDiskInfo";
+        }
         else if (_batterySignals.Contains("batteryWorn20_30") || _batterySignals.Contains("batteryWornOver40"))
-            _host.ReportVerdict("config", new(ModuleVerdictLevel.CanhBao, _batteryNote));
+        {
+            level = ModuleVerdictLevel.CanhBao; note = _batteryNote;
+        }
         else if (Passed)
-            _host.ReportVerdict("config", new(ModuleVerdictLevel.Dat, "Đã đối chiếu đúng với đơn hàng"));
+        {
+            level = ModuleVerdictLevel.Dat; note = "Đã đối chiếu đúng với đơn hàng";
+        }
         else
-            _host.ReportVerdict("config", new(ModuleVerdictLevel.ChuaTest, "Đã quét, chờ đối chiếu với đơn hàng"));
+        {
+            level = ModuleVerdictLevel.ChuaTest; note = "Đã quét, chờ đối chiếu với đơn hàng";
+        }
+        // Không khớp SMBIOS↔WMI: không chặn như ổ, nhưng không cho qua sạch —
+        // nếu đã cho qua mà không còn cảnh báo nào khác thì thành Cảnh báo, nếu
+        // đã có cảnh báo khác thì ghi thêm vào ghi chú. Chưa cho qua (ChuaTest)
+        // hoặc ổ bị chặn (Chan) thì giữ nguyên mức, vì không khớp đã hiện trong
+        // nhóm Máy & Mainboard và dòng PhaseText, không cần đổi mức.
+        if (r?.SmbiosMismatch == true)
+        {
+            if (level == ModuleVerdictLevel.Dat)
+            {
+                level = ModuleVerdictLevel.CanhBao;
+                note = $"Thông tin máy không khớp giữa SMBIOS và WMI — kiểm tra tem máy tay ({string.Join("; ", r.SmbiosMismatchReasons)})";
+            }
+            else if (level == ModuleVerdictLevel.CanhBao)
+            {
+                note += $" | Không khớp SMBIOS↔WMI: {string.Join("; ", r.SmbiosMismatchReasons)}";
+            }
+        }
+        _host.ReportVerdict("config", new(level, note));
     }
 
     /// <summary>更新核对状态行（通过 = 绿色「✓ 已核对通过」）并通知导航圆点。</summary>

@@ -127,6 +127,14 @@ cả hai nền.
   (`BaoCao.txt` + `KetQua.json` kèm `scenario` và `phrasingLocked: true`).
   Mở lại báo cáo đã lưu sẽ thấy đúng câu đó, không random lại. Nút "Đổi cách
   nói" chỉ đổi câu trong cùng 1 kịch bản, kết luận không đổi.
+- Nhóm Máy & Mainboard (đầu trang Đối chiếu cấu hình, tab Khác): đọc model
+  máy, model mainboard, serial máy, serial mainboard và BIOS trực tiếp từ bảng
+  SMBIOS thô của firmware, không qua WMI hay registry nên sửa registry không
+  đổi được. App đối chiếu model và serial SMBIOS với WMI, lệch thì báo cảnh báo
+  và bắt kỹ thuật viên kiểm tra tem máy tay (không chặn như ổ). Serial máy và
+  serial mainboard khác nhau là bình thường, không phải dấu hiệu fake. Giới hạn:
+  nếu BIOS bị flash giả thì SMBIOS và WMI cùng nói dối giống nhau, khi đó phải
+  tra serial trên web hãng hoặc soi tem dưới đáy máy.
 - Tín hiệu chi tiết: pin chai tính từ % chai lớn nhất (dưới 20% khỏe, 20–dưới
   40% chai vừa, từ 40% chai nặng — mốc là ví dụ, không phải tiêu chuẩn cứng);
   CPU quá nhiệt khi nhiệt tối đa lúc nướng từ 95°C trở lên (mốc nháp, chưa phải

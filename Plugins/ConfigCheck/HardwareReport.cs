@@ -33,4 +33,10 @@ public class HardwareReport
     /// <summary>Có ổ chưa rõ sức khỏe (SMART đọc không được): cho qua được nhưng phải
     /// kiểm tra tay bằng CrystalDiskInfo trước khi mua, không tự cho là tốt.</summary>
     public bool HasDriveUnknown { get; set; }
+    /// <summary>Thông tin máy/mainboard từ SMBIOS thô không khớp với WMI (model hoặc
+    /// serial lệch nhau ở cả 2 nguồn đều đọc được): cho qua được nhưng verdict
+    /// thành Cảnh báo, kỹ thuật viên phải kiểm tra tem máy tay. Rỗng = khớp hoặc
+    /// không đối chiếu được (1 bên không đọc được / hãng để trống).</summary>
+    public List<string> SmbiosMismatchReasons { get; } = [];
+    public bool SmbiosMismatch => SmbiosMismatchReasons.Count > 0;
 }

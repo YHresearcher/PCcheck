@@ -373,3 +373,34 @@ public interface IHostContext                       // 宿主注入 CreatePage
 # (Tản nhiệt bắt đầu nướng, Bàn phím đặt lại, Ngoại quan đặt lại), để tín hiệu cũ
 # không dính sang lần test sau. Trang Sức khỏe hiện tín hiệu kèm mô tả tiếng Việt.
 # Wiring module mới: host csproj Build/Copy/Publish, .slnx, installer (như mọi plugin).
+
+# (21) MÁY & MAINBOARD TỪ SMBIOS THÔ + ĐỐI CHIẾU WMI (2026-11-03, chưa test Windows):
+# Plugins/ConfigCheck/SmbiosService.cs đọc bảng SMBIOS thô bằng GetSystemFirmwareTable
+# ('RSMB', thử cả 2 cách đóng gói 0x52534D42 và 0x424D5352, cái nào trả dữ liệu thì
+# dùng), KHÔNG qua WMI, KHÔNG qua registry. Chỉ parse Type 0 (BIOS), 1 (máy), 2
+# (mainboard), 3 (khung máy); KHÔNG parse Type 17 RAM (WMI PhysicalMemory vốn đã
+# lấy từ chính Type 17 nên đối chiếu 2 nguồn đó không bắt được fake tầng firmware,
+# chỉ thêm rủi ro sai offset). Placeholder hãng ("To be filled by O.E.M.", "Not
+# Specified", "Default string"...) = không có, không dùng để đối chiếu.
+# Nhóm "Máy & Mainboard" là nhóm đầu tiên trong Đối chiếu cấu hình, rơi vào tab
+# Khác (cùng Card mạng / Màn hình / Pin) vì SetTabGroups chỉ tách CPU/RAM/Ổ/GPU.
+# Đối chiếu (HardwareInfoService.CollectMachine): model khớp tuyệt đối sau chuẩn
+# hóa = khớp; 1 bên chứa bên kia (WMI thêm hậu tố "Notebook PC") = gần khớp, chỉ
+# ghi chú, không tính không khớp; còn lại = không khớp. Serial phải khớp tuyệt
+# đối (chứa nhau cũng tính không khớp). Serial Type 1 và Type 2 khác nhau là BÌNH
+# THƯỜNG (serial máy vs serial board) — không đối chiếu 2 serial này với nhau.
+# Không khớp ghi vào HardwareReport.SmbiosMismatchReasons; verdict: không chặn như
+# ổ, nhưng đã cho qua mà không còn cảnh báo nào khác thì thành Cảnh báo, đã có
+# cảnh báo khác thì ghi thêm vào ghi chú; chưa cho qua hoặc ổ chặn thì giữ mức
+# (không khớp đã hiện trong nhóm + PhaseText). Máy ảo (VMware/QEMU/VirtualBox...)
+# thì nhóm báo rõ là máy ảo, không tin model. UUID chỉ để tham khảo, KHÔNG dùng
+# để đối chiếu (cách hiển thị UUID giữa các tool có thể lệch byte order).
+# VRAM từ registry (qwMemorySize) giờ ghi rõ "(từ registry)" vì có thể bị sửa để
+# fake VRAM; LHM (NVAPI/ADL) mới là số đo trực tiếp. EDID màn hình CHƯA đổi nguồn:
+# block EDID đầy đủ (để tính kích thước/tấm nền/dải màu) không có API Windows đơn
+# giản nào trả về ngoài cache registry (đọc trực tiếp phải qua DDC/I2C từ màn hình),
+# nên giữ cache registry và ghi rõ đây là nguồn chưa xác thực được trong nhóm —
+# không đổi sang WmiMonitorID (nó chỉ có hãng/mã/serial/tên, không có block EDID).
+# Giới hạn vẫn đúng: BIOS bị flash giả thì SMBIOS và WMI cùng nói dối giống nhau,
+# đối chiếu trong máy không bắt được — phải tra S/N trên web hãng hoặc soi tem
+# dưới đáy máy.

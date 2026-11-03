@@ -19,24 +19,29 @@ public static class HardwareInfoService
     public static HardwareReport Collect(IProgress<CollectProgress>? progress = null)
     {
         var report = new HardwareReport();
-        const int total = 7;
+        const int total = 8;
 
+        // Nhóm Máy & Mainboard đọc SMBIOS thô trước tiên (không qua WMI/registry),
+        // rồi đối chiếu với WMI — xem CollectMachine, lý do không khớp ghi vào
+        // report.SmbiosMismatchReasons để trang Đối chiếu cấu hình báo verdict.
+        progress?.Report(new(0, total, "Máy & Mainboard"));
+        report.Groups.Add(SafeGroup("Máy & Mainboard", g => CollectMachine(g, report)));
         // LibreHardwareMonitor 整体只 Open 一次，快照分给各分组用
-        progress?.Report(new(0, total, "CPU"));
+        progress?.Report(new(1, total, "CPU"));
         var lhm = LhmService.Collect();
 
         report.Groups.Add(SafeGroup("CPU", g => CollectCpu(g, lhm)));
-        progress?.Report(new(1, total, "Card màn hình (GPU)"));
+        progress?.Report(new(2, total, "Card màn hình (GPU)"));
         report.Groups.Add(SafeGroup("Card màn hình (GPU)", g => CollectGpu(g, lhm)));
-        progress?.Report(new(2, total, "RAM"));
+        progress?.Report(new(3, total, "RAM"));
         report.Groups.Add(SafeGroup("RAM", g => CollectMemory(g, lhm)));
-        progress?.Report(new(3, total, "Ổ"));
+        progress?.Report(new(4, total, "Ổ"));
         report.Groups.Add(SafeGroup("Ổ", g => CollectDisks(g, lhm, report)));
-        progress?.Report(new(4, total, "Card mạng"));
+        progress?.Report(new(5, total, "Card mạng"));
         report.Groups.Add(SafeGroup("Card mạng", CollectNics));
-        progress?.Report(new(5, total, "Màn hình"));
+        progress?.Report(new(6, total, "Màn hình"));
         report.Groups.Add(SafeGroup("Màn hình", CollectDisplays));
-        progress?.Report(new(6, total, "Pin"));
+        progress?.Report(new(7, total, "Pin"));
         report.Groups.Add(SafeGroup("Pin", g => CollectBattery(g, lhm)));
         return report;
     }
@@ -55,6 +60,95 @@ public static class HardwareInfoService
     static void Separator(InfoGroup g, int index)
     {
         if (index > 0) g.Add("", "");
+    }
+
+    // ═══ Máy & Mainboard (SMBIOS thô + đối chiếu WMI) ═══
+
+    /// <summary>Nhóm Máy &amp; Mainboard: đọc SMBIOS thô (Type 0/1/2/3) rồi đối chiếu
+    /// với WMI (Win32_ComputerSystemProduct + Win32_BaseBoard). Quy tắc đối chiếu:
+    /// - Chỉ đối chiếu khi CẢ 2 bên đều đọc được và không phải placeholder (hãng
+    ///   để trống thì không đối chiếu, tránh báo không khớp giả).
+    /// - Model: khớp tuyệt đối (sau chuẩn hóa khoảng trắng/chữ hoa) = khớp;
+    ///   1 bên chứa bên kia (vd WMI thêm hậu tố "Notebook PC") = gần khớp, chỉ
+    ///   ghi chú, không tính là không khớp; còn lại = không khớp.
+    /// - Serial: phải khớp tuyệt đối, chứa nhau cũng tính là không khớp (serial
+    ///   khác nhau là máy khác nhau, không có chuyện hậu tố).
+    /// - Serial Type 1 (máy) và Type 2 (board) khác nhau là BÌNH THƯỜNG (1 cái là
+    ///   serial máy, 1 cái là serial board) — không bao giờ đối chiếu 2 serial này
+    ///   với nhau, chỉ đối chiếu mỗi serial với WMI cùng loại của nó.
+    /// - Không khớp thì ghi vào report.SmbiosMismatchReasons; verdict thành Cảnh
+    ///   báo ở trang Đối chiếu cấu hình (không chặn như ổ, vì hãng có thể ghi
+    ///   model khác nhau giữa SMBIOS và WMI ở 1 số máy, kỹ thuật viên kiểm tra
+    ///   tem tay là đủ). BIOS bị flash giả thì SMBIOS và WMI cùng nói dối giống
+    ///   nhau — trường hợp đó đối chiếu trong máy không bắt được, phải tra serial
+    ///   trên web hãng hoặc soi tem dưới đáy máy (xem ghi chú cuối nhóm).</summary>
+    static void CollectMachine(InfoGroup g, HardwareReport report)
+    {
+        var smb = SmbiosService.Read();
+        if (smb == null)
+        {
+            g.Add("SMBIOS thô", "Không đọc được (API firmware không hỗ trợ hoặc bị chặn)");
+            g.Add("Ghi chú", "Không xác thực được model máy/mainboard từ firmware — đối chiếu tem máy tay trước khi mua");
+            return;
+        }
+        g.Add("Hãng máy (SMBIOS)", smb.SystemManufacturer ?? "Không đọc được (hãng để trống)");
+        g.Add("Model máy (SMBIOS)", smb.SystemProduct ?? "Không đọc được (hãng để trống)");
+        g.Add("S/N máy (SMBIOS)", smb.SystemSerial ?? "Không đọc được (hãng để trống)");
+        if (smb.SystemUuid != null) g.Add("UUID máy (SMBIOS)", smb.SystemUuid);
+        g.Add("Hãng mainboard (SMBIOS)", smb.BoardManufacturer ?? "Không đọc được (hãng để trống)");
+        g.Add("Model mainboard (SMBIOS)", smb.BoardProduct ?? "Không đọc được (hãng để trống)");
+        g.Add("S/N mainboard (SMBIOS)", smb.BoardSerial ?? "Không đọc được (hãng để trống)");
+        if (smb.BiosVendor != null || smb.BiosVersion != null)
+            g.Add("BIOS (SMBIOS)", $"{smb.BiosVendor} {smb.BiosVersion}".Trim() + (smb.BiosDate != null ? $" ({smb.BiosDate})" : ""));
+        g.Add("Khung máy (SMBIOS)", SmbiosService.ChassisTypeName(smb.ChassisType));
+        if (smb.IsVirtualMachine)
+            g.Add("CẢNH BÁO", "Máy ảo — thông tin SMBIOS do hypervisor đặt, không tin model này");
+
+        // Đối chiếu WMI (chỉ khi cả 2 bên đều có giá trị thật)
+        try
+        {
+            var sys = WmiQuery(Cimv2, "SELECT Name, IdentifyingNumber FROM Win32_ComputerSystemProduct").FirstOrDefault();
+            var board = WmiQuery(Cimv2, "SELECT Product, SerialNumber FROM Win32_BaseBoard").FirstOrDefault();
+            string wmiSysProduct = sys != null ? GetStr(sys, "Name") : "";
+            string wmiSysSerial = sys != null ? GetStr(sys, "IdentifyingNumber") : "";
+            string wmiBoardProduct = board != null ? GetStr(board, "Product") : "";
+            string wmiBoardSerial = board != null ? GetStr(board, "SerialNumber") : "";
+            g.Add("Model máy (WMI)", wmiSysProduct.Length > 0 ? wmiSysProduct : "Không đọc được");
+            g.Add("Model mainboard (WMI)", wmiBoardProduct.Length > 0 ? wmiBoardProduct : "Không đọc được");
+            CheckModel("Model máy", smb.SystemProduct, wmiSysProduct, report);
+            CheckModel("Model mainboard", smb.BoardProduct, wmiBoardProduct, report);
+            CheckSerial("S/N máy", smb.SystemSerial, wmiSysSerial, report);
+            CheckSerial("S/N mainboard", smb.BoardSerial, wmiBoardSerial, report);
+        }
+        catch
+        {
+            g.Add("Đối chiếu WMI", "Không đọc được WMI — không đối chiếu được");
+        }
+
+        if (report.SmbiosMismatchReasons.Count > 0)
+            g.Add("CẢNH BÁO KHÔNG KHỚP", string.Join("; ", report.SmbiosMismatchReasons) + " — kiểm tra tem máy tay trước khi mua");
+        else
+            g.Add("Đối chiếu SMBIOS ↔ WMI", "Khớp hoặc không đối chiếu được (1 bên không đọc được / hãng để trống)");
+        g.Add("Ghi chú chống fake", "SMBIOS thô không bị sửa registry đổi được; nhưng nếu BIOS bị flash giả thì SMBIOS và WMI cùng nói dối giống nhau — khi đó tra S/N trên web hãng hoặc soi tem dưới đáy máy mới phân biệt được");
+    }
+
+    static string Normalize(string s) =>
+        string.Join(" ", s.Trim().ToLowerInvariant().Split([' ', '\t'], StringSplitOptions.RemoveEmptyEntries));
+
+    static void CheckModel(string label, string? smbios, string wmi, HardwareReport report)
+    {
+        if (smbios == null || wmi.Length == 0) return;
+        string a = Normalize(smbios), b = Normalize(wmi);
+        if (a == b) return;
+        if (a.Contains(b) || b.Contains(a)) return; // Gần khớp (khác hậu tố) — chỉ ghi chú ở 2 dòng trên, không tính không khớp
+        report.SmbiosMismatchReasons.Add($"{label}: SMBIOS '{smbios}' ≠ WMI '{wmi}'");
+    }
+
+    static void CheckSerial(string label, string? smbios, string wmi, HardwareReport report)
+    {
+        if (smbios == null || wmi.Length == 0) return;
+        if (Normalize(smbios) != Normalize(wmi))
+            report.SmbiosMismatchReasons.Add($"{label}: SMBIOS '{smbios}' ≠ WMI '{wmi}'");
     }
 
     // ═══ CPU ═══
@@ -110,7 +204,10 @@ public static class HardwareInfoService
             {
                 long? vram = MatchRegistryVram(regVram, name, GetStr(mo, "PNPDeviceID"));
                 if (vram is > 0)
-                    g.Add("VRAM" + tag, FormatSize(vram.Value));
+                    // VRAM từ registry (qwMemorySize) có thể bị sửa bằng registry
+                    // để fake VRAM, nên ghi rõ nguồn — không hiển thị như số đo
+                    // từ phần cứng. LHM (NVAPI/ADL) ở nhánh trên mới là số đo trực tiếp.
+                    g.Add("VRAM" + tag, FormatSize(vram.Value) + " (từ registry)");
                 else
                 {
                     ulong wmi = GetU64(mo, "AdapterRAM");
