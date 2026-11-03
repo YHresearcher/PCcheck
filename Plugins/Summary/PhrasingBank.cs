@@ -26,6 +26,7 @@ public class PhrasingBank
     public string[] Incomplete { get; private set; } = [];
     public string[] NotBuy { get; private set; } = [];
     public string[] AnTamNotes { get; private set; } = [];
+    public Dictionary<string, string> AnTamSituational { get; } = [];
 
     // Các pool sẵn cho tín hiệu tương lai (pin / CPU-GPU / ngoại vi / B-C).
     // Tổng kết chưa dùng chúng vì chưa có tín hiệu, nhưng loader vẫn đọc để
@@ -64,6 +65,7 @@ public class PhrasingBank
             Incomplete = Pool(root, "incomplete");
             NotBuy = Pool(root, "notBuy");
             AnTamNotes = Pool(root, "anTamNotes");
+            ReadSingles(root, "anTamSituational", AnTamSituational);
             ReadGroup(root, "battery", Battery);
             ReadGroup(root, "cpuGpu", CpuGpu);
             ReadGroup(root, "peripheral", Peripheral);
@@ -90,6 +92,11 @@ public class PhrasingBank
         Incomplete = ["Chưa đủ dữ liệu để kết luận mua hay không, test tiếp nhé."];
         NotBuy = ["Máy này không đạt chuẩn An Tâm, không mua."];
         AnTamNotes = ["Máy ngon mua được thật vui,\nGiá mà vừa túi, niềm vui thêm đầy."];
+        AnTamSituational["good"] = "Máy ngon chẳng ngại đem soi,\nCàng xem càng thích, càng coi càng mừng.";
+        AnTamSituational["manyFaults"] = "Nhìn ngoài bóng bẩy như hoa,\nKiểm xong mới biết, hóa ra hơi buồn.";
+        AnTamSituational["price"] = "Máy này chưa hẳn là tồi,\nGiá mà bớt chút, thì ngồi tính sau.";
+        AnTamSituational["skip"] = "Thấy xinh chớ vội trao tiền,\nKẻo mai ôm máy, muộn phiền ôm theo.";
+        AnTamSituational["completion"] = "Mua máy chớ quá vội vàng,\nAn Tâm kiểm trước, nhẹ nhàng xuống tay.";
     }
 
     static string[] Pool(JsonElement root, string key)
@@ -107,5 +114,13 @@ public class PhrasingBank
         if (!root.TryGetProperty(key, out var obj) || obj.ValueKind != JsonValueKind.Object) return;
         foreach (var prop in obj.EnumerateObject())
             target[prop.Name] = Pool(obj, prop.Name);
+    }
+
+    static void ReadSingles(JsonElement root, string key, Dictionary<string, string> target)
+    {
+        if (!root.TryGetProperty(key, out var obj) || obj.ValueKind != JsonValueKind.Object) return;
+        foreach (var prop in obj.EnumerateObject())
+            if (prop.Value.ValueKind == JsonValueKind.String && prop.Value.GetString() is string s && s.Length > 0)
+                target[prop.Name] = s;
     }
 }

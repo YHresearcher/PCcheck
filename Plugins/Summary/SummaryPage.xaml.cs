@@ -47,9 +47,10 @@ public partial class SummaryPage : UserControl
     /// liệt, điểm chết, loa rè, webcam, bản lề, trầy nhẹ, sạc Kém, kết hợp B);
     /// chưa có tín hiệu thì dùng câu chung của mức đó (warning / serious /
     /// incomplete / good), không đoán. Tín hiệu tốt (pin khỏe, CPU tốt) chỉ thêm
-    /// câu vào pool tốt, không đổi tiêu đề. Dòng "An Tâm nhắn bạn" chỉ đi kèm
-    /// kịch bản đạt / cảnh báo / chức năng, không đi kèm serious / incomplete /
-    /// notBuy — để không làm nhẹ cảnh báo nghiêm trọng.</summary>
+    /// câu vào pool tốt, không đổi tiêu đề. Dòng "An Tâm nhắn bạn" gắn theo kết quả: đạt → soi, cảnh báo → bớt giá,
+    /// lỗi (chức năng / nghiêm trọng) → hơi buồn, không mua → bỏ qua; chỉ ẩn khi
+    /// chưa đủ dữ liệu. Các câu nghiêm trọng / không mua là câu cảnh báo / thất vọng
+    /// nên không làm nhẹ cảnh báo.</summary>
     static readonly Dictionary<string, string> OverallTitles = new()
     {
         ["Dat"] = "CÓ THỂ MUA — MUA ĐƯỢC",
@@ -335,20 +336,44 @@ public partial class SummaryPage : UserControl
         _ => _bank.Incomplete,
     };
 
-    /// <summary>Dòng "An Tâm nhắn bạn": chỉ cho kịch bản good và warning. Khi không
-    /// được hiện thì xóa text, ẩn TextBlock, và _lastAnTamNote = "" để báo cáo
-    /// lưu cũng không có dòng này (không lưu 1 dòng nhắn nhủ vào báo cáo lỗi
-    /// nghiêm trọng rồi làm nhẹ cảnh báo khi mở lại).</summary>
+    /// <summary>Dòng "An Tâm nhắn bạn" gắn theo kết quả (user chốt 2026-11-03):
+    /// mỗi nhóm kết quả hiện đúng 1 cặp tình huống cố định, không random pool
+    /// chung nữa. good → câu soi; warning / cảnh báo linh kiện → câu bớt giá;
+    /// lỗi chức năng + lỗi nghiêm trọng → câu hơi buồn (phát hiện lỗi, thất vọng,
+    /// không xoa dịu, không bảo mua); kỹ thuật viên đánh dấu không mua → câu bỏ
+    /// qua. Nghiêm trọng + không mua giờ ĐƯỢC hiện (trước đây ẩn) vì 2 cặp này
+    /// là câu cảnh báo/thất vọng, không phải câu vui làm nhẹ cảnh báo. Chỉ ẩn
+    /// khi chưa đủ dữ liệu. File thiếu cặp tình huống thì dự phòng bằng random
+    /// pool chung (luật cũ), không thì ẩn — không tự bịa câu.</summary>
     void RefreshAnTamNote(int exclude = -1)
     {
-        // An Tâm nhắn bạn đi kèm các kịch bản đạt / cảnh báo / chức năng (tiêu đề
-        // CÓ THỂ MUA hoặc CẦN KIỂM TRA THÊM), không đi kèm nghiêm trọng / thiếu
-        // dữ liệu / không mua — để không làm nhẹ cảnh báo nghiêm trọng.
-        bool allowed = _currentScenario is "good" or "warning" or "combinedB"
-            or "keyboardDead" or "screenDeadPixel" or "speakerDistorted" or "webcamFail" or "hingeLoose"
-            or "batteryWornOver40" or "batteryWorn20_30" or "cpuOverheat" or "scratchesLight"
-            or "driveWear" or "driveSmartUnknown";
-        if (!allowed || _bank.AnTamNotes.Length == 0)
+        string? situKey = _currentScenario switch
+        {
+            "good" => "good",
+            "warning" or "combinedB" or "batteryWornOver40" or "batteryWorn20_30" or "cpuOverheat" or "scratchesLight" or "driveWear" or "driveSmartUnknown" => "price",
+            "keyboardDead" or "screenDeadPixel" or "speakerDistorted" or "webcamFail" or "hingeLoose" => "manyFaults",
+            "driveMediaError" or "driveBadSector" or "cpuFail" or "gpuArtifact" or "batteryNotCharging" or "serious" => "manyFaults",
+            "notBuy" => "skip",
+            _ => null,
+        };
+        if (situKey == null)
+        {
+            // Chưa đủ dữ liệu (hoặc kịch bản lạ) → ẩn, báo cáo lưu cũng không có dòng này.
+            _lastAnTamNote = "";
+            AnTamNoteText.Text = "";
+            AnTamNoteText.Visibility = Visibility.Collapsed;
+            return;
+        }
+        if (_bank.AnTamSituational.TryGetValue(situKey, out var situ) && situ.Length > 0)
+        {
+            _currentAnTamIndex = -1;
+            _lastAnTamNote = situ;
+            AnTamNoteText.Text = $"An Tâm nhắn bạn: {situ}";
+            AnTamNoteText.Visibility = Visibility.Visible;
+            return;
+        }
+        // File thiếu cặp tình huống → dự phòng luật cũ: random pool chung, không thì ẩn.
+        if (_bank.AnTamNotes.Length == 0)
         {
             _lastAnTamNote = "";
             AnTamNoteText.Text = "";

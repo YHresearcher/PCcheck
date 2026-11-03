@@ -608,3 +608,28 @@ public interface IHostContext                       // 宿主注入 CreatePage
 # SemiBold 16 nên thứ bậc vẫn giữ: tiêu đề to nhất, 2 dòng nhận xét đậm hơn
 # trước để nổi lên. Làm cả 2 dòng vì user nói "chữ nhận xét" không chỉ rõ dòng
 # nào — nếu chỉ muốn đậm 1 dòng thì nói lại, gỡ dòng còn lại.
+
+# (37) "AN TÂM NHẮN BẠN" GẮN THEO KẾT QUẢ MÁY (2026-11-03, chưa test Windows):
+# User chốt "Gắn theo kết quả máy" cho 5 cặp tình huống (đều nguyên văn của user,
+# nằm trong Phrasings.json key mới "anTamSituational" + fallback trong
+# PhrasingBank.cs, đọc bằng ReadSingles vì mỗi key chỉ 1 câu, không phải mảng):
+# good → "Máy ngon chẳng ngại đem soi, / Càng xem càng thích, càng coi càng
+# mừng."; warning + cảnh báo linh kiện (combinedB, pin chai, CPU quá nhiệt, trầy
+# nhẹ, ổ hao mòn / SMART chưa rõ) → "Máy này chưa hẳn là tồi, / Giá mà bớt chút,
+# thì ngồi tính sau."; lỗi chức năng (phím liệt, điểm chết, loa rè, webcam, bản
+# lề) + lỗi nghiêm trọng (ổ media / sector, CPU lỗi, GPU artifact, sạc Kém,
+# serious chung) → "Nhìn ngoài bóng bẩy như hoa, / Kiểm xong mới biết, hóa ra
+# hơi buồn."; kỹ thuật viên đánh dấu không mua → "Thấy xinh chớ vội trao tiền,
+# / Kẻo mai ôm máy, muộn phiền ôm theo.". Mỗi kết quả hiện đúng 1 cặp cố định,
+# không random pool chung nữa; câu chỉ đổi khi kịch bản đổi (luật cũ giữ nguyên
+# qua Refresh: chỉ gọi RefreshAnTamNote khi scenario đổi hoặc chưa từng chọn).
+# HAI ĐỔI LUẬT CẦN NHỚ: (1) nghiêm trọng + không mua giờ ĐƯỢC hiện dòng An Tâm
+# (trước đây ẩn) vì 2 cặp này là câu cảnh báo/thất vọng, không phải câu vui làm
+# nhẹ cảnh báo — tiêu đề đỏ KHÔNG KHUYẾN NGHỊ MUA / KHÔNG MUA MÁY NÀY vẫn đứng
+# trên, câu nhắn nhủ chỉ bình luận thêm, không bảo mua. (2) Vì mỗi kết quả hiện
+# có cặp riêng nên 21 cặp chung trong anTamNotes không còn được chọn trên trang
+# Tổng kết nữa — vẫn nằm trong file và làm dự phòng khi file thiếu cặp tình huống
+# (random pool chung luật cũ), không xóa. Chưa đủ dữ liệu vẫn ẩn dòng An Tâm.
+# Cặp "completion" ("Mua máy chớ quá vội vàng, / An Tâm kiểm trước, nhẹ nhàng
+# xuống tay.") ĐÃ LƯU vào JSON + fallback nhưng CHƯA GẮN hiển thị vì chưa rõ
+# user muốn nó hiện khi nào — cần user chốt trigger trước khi gắn.
