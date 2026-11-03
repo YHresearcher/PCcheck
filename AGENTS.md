@@ -738,3 +738,22 @@ public interface IHostContext                       // 宿主注入 CreatePage
 # shop/chi nhánh/website; kích thước 480x400 giữ nguyên, nội dung căn giữa nên vẫn cân.
 # README cập nhật theo (mục Splash + top bar/sidebar). Chỉ sửa XAML, không đụng C#, kiểm chứng
 # bằng parse XML + assert, chưa biên dịch/chạy trên Windows thật.
+
+# (44) THẺ CHUNG HÃNG / MODEL / S/N Ở ĐỐI CHIẾU CẤU HÌNH + SỬA S/N TỔNG KẾT KHÔNG THỬ LẠI (2026-11-03, chưa test Windows):
+# User báo S/N chưa tự get và muốn S/N, model, brand chung 1 chỗ trong mục Đối chiếu cấu hình.
+# Nguyên nhân 1: S/N máy vốn chỉ nằm trong nhóm Máy & Mainboard ở tab Khác (tab mặc định không
+# phải Khác), nên khó thấy; nguyên nhân 2 (lỗi thật): Summary FillSerialFromSmbios đánh dấu
+# _serialAutoFilled = true TRƯỚC khi đọc, nên lần đầu đọc thất bại (SMBIOS null/placeholder)
+# thì không bao giờ thử lại dù trang là resident instance và Loaded chạy lại mỗi lần vào.
+# Sửa: (a) ConfigCheck thêm thẻ chung ngay dưới tiêu đề (Hãng / Model / S/N máy, 3 cột *,
+# chữ tự xuống dòng), lấy đúng từ nhóm Máy & Mainboard của báo cáo (SMBIOS thô); chưa thu thập
+# thì "Chưa thu thập", SMBIOS không đọc được thì cả 3 "Không đọc được", hãng để trống thì hiện
+# nguyên câu "Không đọc được (hãng để trống)" của nhóm; bấm Kiểm tra lại thì thẻ cập nhật theo
+# (SetIdentity(null) lúc bắt đầu thu thập, SetIdentity(report) lúc thu thập xong). Không lấy WMI
+# chắp vá khi SMBIOS lỗi (WMI IdentifyingNumber vốn cũng từ SMBIOS Type 1, không độc lập hơn).
+# (b) Summary chỉ đánh dấu _serialAutoFilled = true khi điền thành công; đọc null thì lần sau
+# mở lại trang sẽ thử lại; người dùng sửa/xóa sau khi điền thành công thì vẫn không điền lại.
+# README cập nhật theo (bảng module + mục Lưu hồ sơ). Chỉ sửa XAML + 2 file cs, kiểm chứng bằng
+# parse XML + assert + đếm ngoặc, chưa biên dịch/chạy trên Windows thật. Nếu trên máy user thẻ
+# vẫn hiện "Không đọc được" thì SMBIOS thật sự không đọc được trên máy đó, cần xem tiếp (hỏi
+# user xem thẻ hiện gì + nhóm Máy & Mainboard hiện gì) chứ không phải do giấu trong tab nữa.

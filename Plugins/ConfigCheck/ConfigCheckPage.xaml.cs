@@ -48,6 +48,7 @@ public partial class ConfigCheckPage : UserControl, YanJi.PluginSdk.IModulePage
         PassButton.IsEnabled = false;
         DetectProgress.Value = 0;
         SetTabGroups(null);
+        SetIdentity(null);
         PhaseText.SetResourceReference(TextBlock.ForegroundProperty, "TextSecondaryBrush");
         try
         {
@@ -63,6 +64,7 @@ public partial class ConfigCheckPage : UserControl, YanJi.PluginSdk.IModulePage
             _host?.ReportSignals("config", _batterySignals);
             ReportConfigVerdict();
             SetTabGroups(report);
+            SetIdentity(report);
             DetectProgress.Value = 100;
             if (report.DriveBlockReasons.Count > 0)
             {
@@ -137,6 +139,35 @@ public partial class ConfigCheckPage : UserControl, YanJi.PluginSdk.IModulePage
         GraphicsHost.ItemsSource = groups.Where(g => g.Title.StartsWith("Card màn hình")).ToList();
         OtherHost.ItemsSource = groups.Where(g =>
             g.Title != "CPU" && g.Title != "RAM" && g.Title != "Ổ" && !g.Title.StartsWith("Card màn hình")).ToList();
+    }
+
+    /// <summary>Thẻ chung Hãng / Model / S/N máy trên cùng trang (1 chỗ, khỏi phải
+    /// chui vào tab Khác tìm trong nhóm Máy &amp; Mainboard). Giá trị lấy đúng từ
+    /// nhóm Máy &amp; Mainboard của báo cáo (SMBIOS thô); SMBIOS không đọc được
+    /// (nhóm chỉ có dòng "SMBIOS thô") thì cả 3 đều hiện "Không đọc được", không
+    /// bịa số, không lấy WMI chắp vá. Chưa thu thập (report null) thì hiện
+    /// "Chưa thu thập".</summary>
+    void SetIdentity(HardwareReport? report)
+    {
+        string brand = "Chưa thu thập", model = "Chưa thu thập", serial = "Chưa thu thập";
+        var machine = report?.Groups.FirstOrDefault(g => g.Title == "Máy & Mainboard");
+        if (machine != null)
+        {
+            string? Get(string name) => machine.Entries.FirstOrDefault(e => e.Name == name)?.Value;
+            if (Get("SMBIOS thô") != null)
+            {
+                brand = model = serial = "Không đọc được";
+            }
+            else
+            {
+                brand = Get("Hãng máy (SMBIOS)") ?? "Không đọc được";
+                model = Get("Model máy (SMBIOS)") ?? "Không đọc được";
+                serial = Get("S/N máy (SMBIOS)") ?? "Không đọc được";
+            }
+        }
+        BrandText.Text = brand;
+        ModelText.Text = model;
+        SerialText.Text = serial;
     }
 
     /// <summary>Tính tín hiệu pin từ nhóm Pin trong báo cáo: lấy % chai lớn nhất

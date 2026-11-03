@@ -26,7 +26,7 @@ public partial class SummaryPage : UserControl
     readonly Random _random = new();
     readonly PhrasingBank _bank = new();
     bool _markedLoai;
-    bool _serialAutoFilled; // S/N đã tự điền 1 lần từ SMBIOS thì không điền lại (tôn trọng chữ người dùng sửa/xóa sau đó)
+    bool _serialAutoFilled; // S/N đã tự điền THÀNH CÔNG 1 lần từ SMBIOS thì không điền lại (tôn trọng chữ người dùng sửa/xóa sau đó); đọc thất bại thì lần sau mở lại trang sẽ thử lại
     string _currentScenario = "";
     int _currentPhrasingIndex = -1;
     int _currentAnTamIndex = -1;
@@ -72,17 +72,20 @@ public partial class SummaryPage : UserControl
 
     /// <summary>Tự điền ô S/N từ serial máy trong SMBIOS thô (cùng nguồn với nhóm
     /// Máy &amp; Mainboard, không qua WMI/registry) — kỹ thuật viên khỏi gõ tay,
-    /// và tên thư mục hồ sơ sẽ đúng serial thật của máy. Chỉ điền 1 lần khi ô
-    /// còn trống; firmware không có serial thật (placeholder đã bị lọc thành
-    /// null) thì để trống cho nhập tay; người dùng sửa/xóa sau đó thì không điền
-    /// lại, vì tem dán khác serial firmware chính là trường hợp cảnh báo không
+    /// và tên thư mục hồ sơ sẽ đúng serial thật của máy. Chỉ điền khi ô còn trống
+    /// và đọc được serial thật; đọc không được thì lần sau mở lại trang sẽ thử lại
+    /// (trước đây đánh dấu đã điền ngay cả khi đọc thất bại nên không bao giờ thử
+    /// lại); firmware không có serial thật (placeholder đã bị lọc thành null) thì
+    /// để trống cho nhập tay; người dùng sửa/xóa sau khi điền thành công thì không
+    /// điền lại, vì tem dán khác serial firmware chính là trường hợp cảnh báo không
     /// khớp cần kiểm tra tay, không được tự ghi đè.</summary>
     void FillSerialFromSmbios()
     {
         if (_serialAutoFilled || SerialBox.Text.Trim().Length > 0) return;
-        _serialAutoFilled = true;
         string? serial = SmbiosService.Read()?.SystemSerial;
-        if (serial != null) SerialBox.Text = serial;
+        if (serial == null) return; // Đọc không được thì lần sau mở lại trang sẽ thử lại, không khóa luôn như trước
+        SerialBox.Text = serial;
+        _serialAutoFilled = true;
     }
 
     void MarkLoaiButton_Click(object sender, RoutedEventArgs e)
