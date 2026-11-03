@@ -11,6 +11,8 @@
   <Project Path="Plugins/PortAdapter/YanJi.Plugin.PortAdapter.csproj" />
   <Project Path="Plugins/DiskMark/YanJi.Plugin.DiskMark.csproj" />
   <Project Path="Plugins/Summary/YanJi.Plugin.Summary.csproj" />
+  <Project Path="Plugins/Dashboard/YanJi.Plugin.Dashboard.csproj" />
+  <Project Path="Plugins/Health/YanJi.Plugin.Health.csproj" />
   <!-- GPU 烤机工具（C# / OpenTK 重实现 FurMark-Python，MIT）：构建后自动拷到 验机软件/Tools/furmark/ -->
   <Project Path="FurMark/FurMark.csproj" />
   <!-- 开源采集库源码（MPL-2.0），配置核对/散热测试插件以项目引用使用。

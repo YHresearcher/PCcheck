@@ -1,0 +1,39 @@
+<UserControl x:Class="YanJi.Plugin.Health.HealthPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0">
+            <TextBlock Text="Sức khỏe thiết bị" FontSize="18" FontWeight="Bold"/>
+            <TextBlock Text="Đánh giá theo mức độ nghiêm trọng, chỉ đọc — không phải bài test mới" FontSize="11"
+                       Foreground="{DynamicResource TextSecondaryBrush}"/>
+        </StackPanel>
+        <TextBlock Grid.Row="1" Text="Khác với Thông tin phần cứng (số liệu thô): đây là đánh giá. Module chưa có dữ liệu thì hiện Chưa test, không được hiểu là khỏe. Bài stress ngắn đạt không chứng minh ổn định lâu dài — xem thời gian nướng ở trang Tản nhiệt."
+                   TextWrapping="Wrap" FontSize="11" Margin="0,8,0,12"
+                   Foreground="{DynamicResource TextSecondaryBrush}"/>
+
+        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+            <ItemsControl x:Name="HealthList">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border Style="{StaticResource CardBorder}" Margin="0,0,0,8" Padding="12,8">
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{Binding Name}" FontWeight="SemiBold"/>
+                                    <TextBlock Text="{Binding Grade}" Margin="8,0,0,0" FontWeight="SemiBold"/>
+                                </StackPanel>
+                                <TextBlock Text="{Binding Note}" TextWrapping="Wrap" Margin="0,4,0,0"
+                                           Foreground="{DynamicResource TextSecondaryBrush}"/>
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

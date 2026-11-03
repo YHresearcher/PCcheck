@@ -66,6 +66,8 @@ Name: "stress"; Description: "Kiểm tra tản nhiệt (nướng CPU/GPU/cả ha
 Name: "ports"; Description: "Cổng kết nối & Sạc (quét cổng WMI + test sạc 10 giây + tick tay cổng vật lý)"; Types: full
 Name: "disk"; Description: "Đo tốc độ ổ (tích hợp mã nguồn CrystalDiskMark, 4 bài SEQ1M/RND4K)"; Types: full
 Name: "summary"; Description: "Tổng kết (kết luận từng module + kết luận tổng, cách nói thân thiện random)"; Types: full
+Name: "dashboard"; Description: "Tổng quan (điểm vào app: tiến độ + kết luận mua + nút vào wizard)"; Types: full
+Name: "health"; Description: "Sức khỏe thiết bị (đánh giá theo mức độ nghiêm trọng, chỉ đọc)"; Types: full
 
 ; 附加任务默认都勾选（用户可取消）：桌面快捷方式 / 开始菜单项 / PawnIO 驱动
 [Tasks]
@@ -86,6 +88,8 @@ Source: "..\publish\plugins\stress\*"; DestDir: "{app}\plugins\stress"; Componen
 Source: "..\publish\plugins\ports\*"; DestDir: "{app}\plugins\ports"; Components: ports; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "..\publish\plugins\disk\*"; DestDir: "{app}\plugins\disk"; Components: disk; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "..\publish\plugins\summary\*"; DestDir: "{app}\plugins\summary"; Components: summary; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "..\publish\plugins\dashboard\*"; DestDir: "{app}\plugins\dashboard"; Components: dashboard; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "..\publish\plugins\health\*"; DestDir: "{app}\plugins\health"; Components: health; Flags: ignoreversion recursesubdirs createallsubdirs
 ; 烤机工具负载只有散热测试用：随 stress 组件安装（不勾散热可省约 130MB）
 Source: "..\publish\Tools\*"; DestDir: "{app}\Tools"; Components: stress; Flags: ignoreversion recursesubdirs createallsubdirs
 

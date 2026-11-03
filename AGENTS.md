@@ -277,3 +277,23 @@ public interface IHostContext                       // 宿主注入 CreatePage
 # dưới cho kỹ thuật viên (chi tiết từng module); BaoCao.txt cũng chia Phần 1 người mua /
 # Phần 2 kỹ thuật viên. Các chữ bán ở module ổ/sạc đổi sang mua (mua được nguyên trạng,
 # tối đa mua có điều kiện, kiểm tra tay trước khi mua).
+
+# (17) DASHBOARD + WIZARD 1 BÀI/LẦN + SỨC KHỎE (2026-11-03, chưa test Windows):
+# PluginSdk.IHostContext thêm NavigateTo / StartWizard / ExitWizard / WizardBack /
+# WizardNext (chỉ MainWindow.HostContext implement). MainWindow thêm thanh WizardBar
+# (hàng mới giữa top bar và main, Grid.Row main thành 3): vào wizard thì khóa
+# NavList, mỗi lần chỉ 1 bài test có thể cho qua, nút Quay lại / Bài tiếp theo /
+# Dừng tất cả / Thoát wizard luôn hiện (không bị kẹt trong wizard); cho qua 1 bài
+# vẫn tự nhảy bài chưa xong tiếp theo nhờ AdvanceToNextModule cũ + OnNavSelect
+# cập nhật nút wizard. Plugin mới: Dashboard (id dashboard, order 0, Terminal,
+# đầu tiên) — tiến độ x/y + kết luận mua hiện tại (cùng logic Tổng kết, KHÔNG
+# chọn câu random riêng để khỏi 2 câu khác nhau cho cùng 1 kết luận) + nút Bắt đầu
+# / Tiếp tục phiên dang dở (vào wizard rồi nhảy bài chưa xong đầu tiên) + nhảy tới
+# config / health / summary + Mở thư mục hồ sơ; Health (id health, order 85,
+# Terminal, giữa Disk và Summary) — chỉ đọc Verdicts + IsDone, mức Đạt / Cảnh báo /
+# Chặn / Chưa test, chưa test ≠ khỏe, stress ngắn ≠ ổn định lâu dài. Wiring mới:
+# host csproj BuildPlugins + CopyPluginsToOutput + CopyPluginsToPublish, .slnx,
+# installer/setup.iss components/files. CHƯA LÀM: tab CPU-Z cho Thông tin phần cứng
+# (ConfigCheck vẫn là trang nhóm, chưa tách tab CPU/Memory/Storage/Graphics) và
+# Cài đặt (đường dẫn USB, thời lượng test — cần settings service chung trong
+# PluginSdk để Summary/Stress cùng đọc, làm riêng 1 commit, không nhét vào bản này).

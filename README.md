@@ -81,6 +81,26 @@ chuyển focus sang cửa sổ chính. Không cần bấm gì để tắt. Màu 
 theme đang dùng (tối = nền xám đậm, sáng = nền kem ấm), logo cam nổi trên
 cả hai nền.
 
+## Tổng quan + Wizard 1 bài/lần + Sức khỏe thiết bị (chưa test Windows thật)
+
+- Mở app lên là trang **Tổng quan** (đầu tiên trong menu): tiến độ đã xong x/y bài,
+  kết luận mua máy hiện tại, và các nút: Bắt đầu kiểm tra máy / Tiếp tục phiên
+  dang dở, Xem thông tin phần cứng, Xem sức khỏe thiết bị, Xem kết luận mua máy,
+  Mở thư mục hồ sơ (KetQua). Dashboard KHÔNG chọn câu nhận xét riêng — câu thân
+  thiện chỉ ở trang Tổng kết, để 2 nơi không hiện 2 câu khác nhau.
+- Nút Bắt đầu / Tiếp tục vào **chế độ wizard**: menu bên trái bị khóa, mỗi lần chỉ
+  1 bài test chính, tránh thao tác nhầm. Thanh wizard trên cùng có: Quay lại bài
+  trước, Bài tiếp theo, Dừng tất cả test nặng, Thoát wizard (thoát thì mở lại menu,
+  trạng thái test không mất). Cho qua 1 bài thì tự nhảy bài chưa xong tiếp theo;
+  dừng giữa chừng thì về Dashboard bấm Tiếp tục là nhảy đúng bài chưa xong.
+- Trang **Sức khỏe thiết bị** (giữa Đo tốc độ ổ và Tổng kết, chỉ đọc, không phải
+  bài test): đánh giá theo mức độ nghiêm trọng từ kết quả đã test — Đạt / Cảnh báo /
+  Chặn / Chưa test. Chưa test không được hiểu là khỏe; stress ngắn đạt không chứng
+  minh ổn định lâu dài.
+- Chưa làm trong bản này: tab CPU-Z cho Thông tin phần cứng và trang Cài đặt
+  (đường dẫn USB, thời lượng test) — làm riêng sau, vì Cài đặt cần 1 settings
+  service chung để Tổng kết và Tản nhiệt cùng đọc.
+
 ## Kết luận mua máy (trang Tổng kết: mua được hay không, cho cả kỹ thuật viên và người mua)
 
 - Trang Tổng kết nằm cuối thanh điều hướng, app tự nhảy tới đây khi cả 7 module

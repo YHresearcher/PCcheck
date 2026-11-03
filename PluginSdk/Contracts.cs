@@ -34,6 +34,22 @@ public interface IHostContext
     void ReportVerdict(string moduleId, ModuleVerdict verdict);
     /// <summary>任一模块结结论变化后触发（UI 线程），trang Tổng kết đăng ký để làm mới.</summary>
     event Action? VerdictChanged;
+    /// <summary>Chuyển tới 1 module theo id (Dashboard dùng để nhảy tới bài test /
+    /// thông tin phần cứng / sức khỏe / tổng kết). Trả về false nếu không có
+    /// module đó. Chỉ đổi SelectedIndex của host, không tự vào wizard.</summary>
+    bool NavigateTo(string moduleId);
+    /// <summary>Vào chế độ wizard: host khóa menu bên trái, hiện thanh wizard
+    /// (Quay lại / Bài tiếp theo / Dừng tất cả / Thoát wizard), mỗi lần chỉ
+    /// hiện 1 bài test. Thoát wizard thì mở lại menu, không mất trạng thái test.</summary>
+    void StartWizard();
+    /// <summary>Thoát chế độ wizard, mở lại menu bên trái.</summary>
+    void ExitWizard();
+    /// <summary>Wizard: quay lại bài test có thể cho qua gần nhất trước bài hiện tại.
+    /// Trả về false nếu đã ở bài đầu tiên hoặc không ở trong wizard.</summary>
+    bool WizardBack();
+    /// <summary>Wizard: tới bài test có thể cho qua gần nhất sau bài hiện tại.
+    /// Trả về false nếu đã ở bài cuối cùng hoặc không ở trong wizard.</summary>
+    bool WizardNext();
 }
 
 /// <summary>插件用到的开源组件/素材致谢（名称/用途/协议），在「插件管理」窗口随插件展示——

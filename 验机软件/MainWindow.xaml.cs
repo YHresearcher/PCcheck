@@ -30,13 +30,25 @@ public partial class MainWindow : Window
     readonly HostContext _hostContext;
     bool _syncingSwitch;
 
-    /// <summary>IHostContext 实现：模块清单在插件加载前填入，完成状态查询复用 _doneTags（不另立状态源）。</summary>
+    /// <summary>IHostContext 实现：模块清单在插件加载前填入，完成状态查询复用 _doneTags（不另立状态源）。
+    /// Wizard / điều hướng đi qua MainWindow (giữ tham chiếu owner) để Dashboard
+    /// nhảy tới bài test mà không cần biết MainWindow là gì.</summary>
     sealed class HostContext : IHostContext
     {
         readonly Func<string, bool> _isDone;
+        readonly MainWindow _owner;
         readonly List<PluginInfo> _modules = [];
         readonly Dictionary<string, ModuleVerdict> _verdicts = [];
-        public HostContext(Func<string, bool> isDone) => _isDone = isDone;
+        public HostContext(MainWindow owner, Func<string, bool> isDone)
+        {
+            _owner = owner;
+            _isDone = isDone;
+        }
+        public bool NavigateTo(string moduleId) => _owner.NavigateToModule(moduleId);
+        public void StartWizard() => _owner.StartWizardMode();
+        public void ExitWizard() => _owner.ExitWizardMode();
+        public bool WizardBack() => _owner.WizardMove(-1);
+        public bool WizardNext() => _owner.WizardMove(1);
         public IReadOnlyList<PluginInfo> Modules => _modules;
         public bool IsDone(string moduleId) => _isDone(moduleId);
         public event Action? DoneChanged;
@@ -64,7 +76,7 @@ public partial class MainWindow : Window
         SyncThemeSwitch();
 
         // 先扫清单建立模块列表（终点页插件的页面构造时就要读 IHostContext.Modules），再加载创建页面
-        _hostContext = new HostContext(tag => _doneTags.Contains(tag));
+        _hostContext = new HostContext(this, tag => _doneTags.Contains(tag));
         foreach (var x in PluginLoader.ScanInstalled())
             _hostContext.AddModule(new PluginInfo(x.Manifest.Id, x.Manifest.Name, x.Manifest.Version,
                 x.Manifest.Order, x.Manifest.Terminal));
@@ -193,6 +205,7 @@ public partial class MainWindow : Window
         // 按 ListBoxItem.Tag（插件 id）取页面实例（常驻，切换不丢状态）
         if (NavList.SelectedItem is ListBoxItem item && item.Tag is string tag && _pages.TryGetValue(tag, out var page))
             ContentHost.Content = page;
+        if (_wizardMode) UpdateWizardButtons();
     }
 
     /// <summary>模块页面通过态变化：圆点同步 + 通过时自动跳转下一未完成模块；回退时撤掉「全部完成」提示。</summary>
@@ -278,7 +291,9 @@ public partial class MainWindow : Window
     /// tiến trình tải cao (hiện tại: nướng máy Prime95/FurMark + đo tốc độ ổ).
     /// Chỉ báo "đã dừng" khi mọi plugin trả về rỗng; còn sống thì báo rõ tên,
     /// không bao giờ báo dừng giả.</summary>
-    void OnStopAllHeavyTestsClick(object sender, RoutedEventArgs e)
+    void OnStopAllHeavyTestsClick(object sender, RoutedEventArgs e) => ShowStopAllResult();
+
+    List<string> StopAllHeavyTests()
     {
         var survivors = new List<string>();
         foreach (var lp in _plugins)
@@ -289,6 +304,12 @@ public partial class MainWindow : Window
                 catch { /* 1 plugin lỗi không chặn plugin khác */ }
             }
         }
+        return survivors;
+    }
+
+    void ShowStopAllResult()
+    {
+        var survivors = StopAllHeavyTests();
         if (survivors.Count == 0)
             MessageBox.Show("Đã dừng tất cả test nặng (Prime95 / FurMark / đo tốc độ ổ).",
                 "Dừng tất cả test nặng", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -296,6 +317,79 @@ public partial class MainWindow : Window
             MessageBox.Show($"Chưa dừng được: {string.Join(", ", survivors)}.\n\nMáy vẫn đang tải cao. Mở Task Manager kiểm tra tiến trình trên rồi bấm Dừng tất cả lại, đừng tưởng máy đã hết tải.",
                 "Dừng tất cả test nặng — còn tiến trình sống", MessageBoxButton.OK, MessageBoxImage.Warning);
     }
+
+    // ═══ Wizard: 1 bài test/lần, khóa menu bên trái khi đang wizard ═══
+
+    bool _wizardMode;
+
+    bool NavigateToModule(string moduleId)
+    {
+        for (int i = 0; i < NavList.Items.Count; i++)
+        {
+            if (NavList.Items[i] is ListBoxItem item && item.Tag is string tag && tag == moduleId)
+            {
+                NavList.SelectedIndex = i;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    void StartWizardMode()
+    {
+        _wizardMode = true;
+        NavList.IsEnabled = false;
+        WizardBar.Visibility = Visibility.Visible;
+        UpdateWizardButtons();
+    }
+
+    void ExitWizardMode()
+    {
+        _wizardMode = false;
+        NavList.IsEnabled = true;
+        WizardBar.Visibility = Visibility.Collapsed;
+    }
+
+    /// <summary>Wizard di chuyển giữa các bài test có thể cho qua (không nhảy vào
+    /// trang Tổng quan / Sức khỏe / Tổng kết). Trả về false nếu đã ở đầu/cuối.
+    /// Lưu ý: chuyển trang tự dừng nướng máy / đo ổ nhờ Unloaded của từng trang,
+    /// cộng thêm nút Dừng tất cả ở thanh wizard.</summary>
+    bool WizardMove(int delta)
+    {
+        if (!_wizardMode) return false;
+        int current = NavList.SelectedIndex;
+        int next = current + delta;
+        while (next >= 0 && next < NavList.Items.Count)
+        {
+            if (NavList.Items[next] is ListBoxItem item && item.Tag is string tag && _passableTags.Contains(tag))
+            {
+                NavList.SelectedIndex = next;
+                UpdateWizardButtons();
+                return true;
+            }
+            next += delta;
+        }
+        UpdateWizardButtons();
+        return false;
+    }
+
+    void UpdateWizardButtons()
+    {
+        if (!_wizardMode) return;
+        int current = NavList.SelectedIndex;
+        bool hasPrev = false, hasNext = false;
+        for (int i = current - 1; i >= 0; i--)
+            if (NavList.Items[i] is ListBoxItem item && item.Tag is string tag && _passableTags.Contains(tag)) { hasPrev = true; break; }
+        for (int i = current + 1; i < NavList.Items.Count; i++)
+            if (NavList.Items[i] is ListBoxItem item && item.Tag is string tag && _passableTags.Contains(tag)) { hasNext = true; break; }
+        WizardBackButton.IsEnabled = hasPrev;
+        WizardNextButton.IsEnabled = hasNext;
+    }
+
+    void OnWizardBackClick(object sender, RoutedEventArgs e) => WizardMove(-1);
+    void OnWizardNextClick(object sender, RoutedEventArgs e) => WizardMove(1);
+    void OnWizardStopClick(object sender, RoutedEventArgs e) => ShowStopAllResult();
+    void OnWizardExitClick(object sender, RoutedEventArgs e) => ExitWizardMode();
 
     /// <summary>窗口图标取 exe 内嵌图标（Win32 提取，多尺寸 ico 在各 DPI 下都清晰）。</summary>
     void UpdateIcon()
