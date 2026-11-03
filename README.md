@@ -141,7 +141,9 @@ cả hai nền.
   tiêu chuẩn chính thức); CPU lỗi và GPU artifact là tick tay ở trang Tản nhiệt
   và chặn cho qua; phím liệt, điểm chết, loa rè, webcam là tick tay ở từng bài
   test, vẫn cho qua được nhưng ghi nhận lỗi; bản lề lỏng và trầy nhẹ tick tay ở
-  module Ngoại quan mới (giữa Cổng & Sạc và Đo tốc độ ổ); sạc Kém ra câu rắc rối
+  module Ngoại quan (giữa Cổng & Sạc và Đo tốc độ ổ, 15 hạng mục: vỏ, bản lề/
+  màn hình, phím/touchpad, cổng/sạc, pin/dấu vết, trầy xước; pin phồng thì chặn
+  cho qua); sạc Kém ra câu rắc rối
   nguồn điện; CPU tốt + ổ hao mòn + pin chai cùng lúc ra câu kết hợp B. Pin
   không đọc được % hoặc máy không có pin thì không báo tín hiệu, không đoán.
   Kết hợp C chưa tự chọn vì chưa có định nghĩa "cấu hình mạnh".
@@ -168,10 +170,10 @@ cả hai nền.
   - Không Chặn nhưng có Cảnh báo = **CẦN KIỂM TRA THÊM / THƯƠNG LƯỢNG**.
   - Tất cả Đạt = **CÓ THỂ MUA — MUA ĐƯỢC**.
   - Còn module chưa xong = **CHƯA ĐỦ DỮ LIỆU** (chưa kết luận mua được hay không).
-- Mỗi kết luận tổng có 5 cách nói thân thiện khác nhau, app chọn ngẫu nhiên
-  1 câu khi kết luận đổi, và giữ nguyên câu đó cho tới khi kết luận đổi hoặc
-  kỹ thuật viên bấm "Đổi cách nói". Đổi cách nói chỉ đổi câu chữ, kết luận
-  không đổi. Các câu đều giọng shop thật, câu ngắn, không hứa thêm gì ngoài
+- Mỗi kịch bản kết luận có nhiều cách nói thân thiện, app chọn ngẫu nhiên
+  1 câu khi kịch bản đổi, rồi giữ nguyên câu đó cho tới khi kịch bản đổi tiếp
+  hoặc lưu báo cáo (không còn nút đổi câu tay — câu đã chọn là câu của phiên
+  kiểm tra đó). Các câu đều giọng shop thật, câu ngắn, không hứa thêm gì ngoài
   kết luận (ví dụ câu ĐẠT không tự thêm bảo hành).
 - **KHÔNG MUA không tự sinh ra từ test**, vì test không biết chi phí sửa có đáng
   hay không (ổ chặn + sạc kém vẫn sửa được bằng cách thay linh kiện, không

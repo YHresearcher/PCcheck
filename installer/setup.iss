@@ -20,8 +20,8 @@
 #endif
 
 [Setup]
-AppName=An Tâm PC test
-AppVersion=0.0.4
+AppName=An Tâm PC Test
+AppVersion=1.1.0
 AppVerName=An Tâm PC test 0.0.4
 AppPublisher=Vi Tính An Tâm
 ; 只面向 x64 Windows（self-contained win-x64），且装到 C:\Program Files（而非 (x86)）
@@ -32,7 +32,7 @@ DefaultDirName={autopf}\AnTamPCtest
 DefaultGroupName=An Tâm PC test
 PrivilegesRequired=admin
 OutputDir=.
-OutputBaseFilename=AnTamPCtestSetup-v0.0.4-VN
+OutputBaseFilename=AnTamPCtestSetup-v1.1.0-VN
 Compression=lzma2/max
 SolidCompression=yes
 ; 块级并行压缩：多线程各压一块（压缩率略降）；独立 64 位压缩进程，规避 32 位编译器内存上限

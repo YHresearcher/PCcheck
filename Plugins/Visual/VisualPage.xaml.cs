@@ -5,10 +5,15 @@ using YanJi.PluginSdk;
 
 namespace YanJi.Plugin.Visual;
 
-/// <summary>Trang Ngoại quan: 2 ô tick tay (bản lề lỏng, trầy nhẹ). Tick thì vẫn
-/// cho qua được nhưng verdict là Cảnh báo + tín hiệu tương ứng, Tổng kết ra câu
-/// bản lề / trầy nhẹ. Không tick thì verdict Đạt. Đặt lại thì xóa tín hiệu +
-/// verdict về Chưa test, để tín hiệu cũ không dính sang lần kiểm tra sau.</summary>
+/// <summary>Trang Ngoại quan: kiểm tra bằng mắt theo nhóm (vỏ, bản lề/màn hình,
+/// phím/touchpad, cổng/sạc, pin/dấu vết, trầy xước). Tick thì vẫn cho qua được
+/// nhưng verdict là Cảnh báo + tín hiệu tương ứng, Tổng kết ra câu chuyên biệt
+/// nếu có (bản lề, trầy nhẹ) hoặc câu cảnh báo chung nếu không (vỏ nứt, phím
+/// mất, cổng móp... — các lỗi này chưa có câu riêng trong Phrasings.json nên
+/// không bịa câu, dùng câu cảnh báo chung là đủ). Ngoại lệ duy nhất: pin phồng
+/// thì CHẶN cho qua (giống ổ bị chặn và sạc Kém) vì nguy hiểm, thay pin rồi mới
+/// kiểm tra lại. Đặt lại thì xóa tín hiệu + verdict về Chưa test, để tín hiệu cũ
+/// không dính sang lần kiểm tra sau.</summary>
 public partial class VisualPage : UserControl, IModulePage
 {
     readonly IHostContext? _host;
@@ -23,14 +28,46 @@ public partial class VisualPage : UserControl, IModulePage
         InitializeComponent();
     }
 
+    /// <summary>Danh sách hạng mục: ô tick, mã tín hiệu, ghi chú hiển thị trong
+    /// verdict. Chỉ bản lề lỏng và trầy nhẹ có câu riêng trong Phrasings.json;
+    /// các mã còn lại Tổng kết sẽ về câu cảnh báo chung qua verdict Cảnh báo.</summary>
+    (CheckBox Box, string Signal, string Note)[] Items() =>
+    [
+        (CaseCrackedCheck, "caseCracked", "Vỏ nứt / vỡ góc"),
+        (CaseDentedCheck, "caseDented", "Vỏ móp / biến dạng"),
+        (HingeCheck, "hingeLoose", "Bản lề lỏng — kiểm tra kỹ vì ảnh hưởng màn hình và vỏ"),
+        (HingeStuckCheck, "hingeStuck", "Bản lề kêu / kẹt khi đóng mở"),
+        (BezelCrackedCheck, "bezelCracked", "Viền màn hình nứt / hở"),
+        (ScreenScratchesCheck, "screenScratches", "Màn hình trầy xước"),
+        (KeyMissingCheck, "keyMissing", "Phím bong / mất phím"),
+        (TouchpadWornCheck, "touchpadWorn", "Touchpad trầy / bong lớp phủ"),
+        (PortDamagedCheck, "portDamaged", "Cổng móp / gãy chân"),
+        (ChargerCableDamagedCheck, "chargerCableDamaged", "Dây sạc sứt / đầu sạc móp"),
+        (BatterySwollenCheck, "batterySwollen", "Pin phồng"),
+        (OpenedSignCheck, "openedSign", "Thiếu ốc / tem rách / dấu mở máy — kiểm tra kỹ lịch sử sửa chữa"),
+        (WaterRustCheck, "waterRust", "Dấu ố nước / rỉ sét ở khe, cổng"),
+        (ScratchesCheck, "scratchesLight", "Trầy xước nhẹ — thương lượng giá"),
+        (ScratchesHeavyCheck, "scratchesHeavy", "Trầy xước nặng / xước sâu — thương lượng giá"),
+    ];
+
     void PassButton_Click(object sender, RoutedEventArgs e)
     {
-        var signals = new List<string>();
-        if (HingeCheck.IsChecked == true) signals.Add("hingeLoose");
-        if (ScratchesCheck.IsChecked == true) signals.Add("scratchesLight");
+        var ticked = Items().Where(i => i.Box.IsChecked == true).ToList();
+        var signals = ticked.Select(i => i.Signal).ToList();
         _host?.ReportSignals("visual", signals);
-        _host?.ReportVerdict("visual", signals.Count > 0
-            ? new(ModuleVerdictLevel.CanhBao, string.Join("; ", signals.Select(s => s == "hingeLoose" ? "Bản lề lỏng — kiểm tra kỹ vì ảnh hưởng màn hình và vỏ" : "Trầy xước nhẹ — thương lượng giá")))
+        // Pin phồng thì chặn cho qua (nguy hiểm, không bán nguyên trạng), giống
+        // ổ bị chặn và sạc Kém: báo verdict Chặn + tín hiệu, không SetPassed.
+        if (BatterySwollenCheck.IsChecked == true)
+        {
+            _host?.ReportVerdict("visual", new(ModuleVerdictLevel.Chan,
+                "Pin phồng — không cho qua, thay pin rồi kiểm tra lại" +
+                (ticked.Count > 1 ? "; " + string.Join("; ", ticked.Where(i => i.Signal != "batterySwollen").Select(i => i.Note)) : "")));
+            StatusText.Text = "Pin phồng — không cho qua, thay pin rồi kiểm tra lại";
+            StatusText.SetResourceReference(TextBlock.ForegroundProperty, "ErrorBrush");
+            return;
+        }
+        _host?.ReportVerdict("visual", ticked.Count > 0
+            ? new(ModuleVerdictLevel.CanhBao, string.Join("; ", ticked.Select(i => i.Note)))
             : new(ModuleVerdictLevel.Dat, "Đã kiểm tra ngoại quan, không lỗi"));
         SetPassed(true);
         PassButton.IsEnabled = false;
@@ -38,8 +75,7 @@ public partial class VisualPage : UserControl, IModulePage
 
     void ResetButton_Click(object sender, RoutedEventArgs e)
     {
-        HingeCheck.IsChecked = false;
-        ScratchesCheck.IsChecked = false;
+        foreach (var item in Items()) item.Box.IsChecked = false;
         _host?.ReportSignals("visual", []);
         _host?.ReportVerdict("visual", new(ModuleVerdictLevel.ChuaTest, "Chưa test"));
         SetPassed(false);
@@ -51,7 +87,7 @@ public partial class VisualPage : UserControl, IModulePage
         Passed = passed;
         if (passed)
         {
-            if (HingeCheck.IsChecked == true || ScratchesCheck.IsChecked == true)
+            if (Items().Any(i => i.Box.IsChecked == true))
             {
                 StatusText.Text = "✓ Đã ghi nhận lỗi, cho qua (có lỗi ngoại quan)";
                 StatusText.SetResourceReference(TextBlock.ForegroundProperty, "AccentBrush");

@@ -27,10 +27,7 @@
         <TextBlock x:Name="AnTamNoteText" Grid.Row="3" FontSize="12" FontStyle="Italic" TextWrapping="Wrap" Margin="0,6,0,0"
                    Foreground="{DynamicResource AccentBrush}" Visibility="Collapsed"/>
         <StackPanel Grid.Row="4" Orientation="Horizontal" Margin="0,12,0,8">
-            <Button x:Name="ChangePhrasingButton" Content="Đổi cách nói" Padding="16,7"
-                    Click="ChangePhrasingButton_Click"
-                    ToolTip="Đổi sang 1 cách nói khác cho cùng 1 kết luận tổng, kết luận không đổi"/>
-            <Button x:Name="MarkLoaiButton" Content="Đánh dấu không mua máy này" Margin="8,0,0,0" Padding="16,7"
+            <Button x:Name="MarkLoaiButton" Content="Đánh dấu không mua máy này" Padding="16,7"
                     Click="MarkLoaiButton_Click"
                     ToolTip="Máy hỏng nặng, không nên mua thì bấm đây để kết luận thành KHÔNG MUA. Bấm lại để bỏ đánh dấu."/>
         </StackPanel>

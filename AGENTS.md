@@ -404,3 +404,32 @@ public interface IHostContext                       // 宿主注入 CreatePage
 # Giới hạn vẫn đúng: BIOS bị flash giả thì SMBIOS và WMI cùng nói dối giống nhau,
 # đối chiếu trong máy không bắt được — phải tra S/N trên web hãng hoặc soi tem
 # dưới đáy máy.
+
+# (22) BỎ NÚT ĐỔI CÁCH NÓI + S/N TỰ ĐIỀN + FOOTER v1.1.0 + NGOẠI QUAN 15 HẠNG MỤC (2026-11-03, chưa test Windows):
+# Nút "Đổi cách nói" đã bỏ: câu kết luận chỉ random 1 lần khi kịch bản đổi, rồi
+# cố định cho tới khi kịch bản đổi tiếp hoặc lưu báo cáo; code PickPhrasing vẫn
+# giữ _currentPhrasingIndex để biết "chưa chọn lần nào", chỉ không còn nút gọi
+# lại nó. README + SummaryPlugin doc đã sửa theo, AGENTS (19)/(20) còn nhắc nút
+# cũ là lịch sử, không phải mô tả hiện tại.
+# S/N tự điền: SmbiosService chuyển từ Plugins/ConfigCheck sang
+# PluginSdk/Services (namespace YanJi.PluginSdk.Services) để cả Đối chiếu cấu hình
+# và Tổng kết cùng dùng; HardwareInfoService đã có using namespace đó nên không
+# đổi code gọi. Trang Tổng kết Loaded 1 lần: ô S/N còn trống thì điền serial máy
+# từ SMBIOS thô; firmware không có serial thật thì để trống cho nhập tay; người
+# dùng sửa/xóa sau đó thì không điền lại (tem khác serial firmware là trường hợp
+# cảnh báo không khớp, không được tự ghi đè).
+# Thương hiệu: tên hiển thị thống nhất "An Tâm PC Test" (chữ T hoa) ở Window
+# Title, top bar, Splash; website vitinhantam.com đưa lên top bar (subtitle, cùng
+# slogan bảo hành 6 tháng); footer menu trái thành "An Tâm PC Test v1.1.0".
+# Installer AppName/ AppVersion / OutputBaseFilename theo v1.1.0; tên exe
+# AnTamPCtest.exe và zip portable AnTamPCtest-portable.zip KHÔNG đổi (tên file
+# không dấu, không khoảng trắng, tránh vỡ shortcut/link cũ).
+# Ngoại quan mở rộng từ 2 ô lên 15 hạng mục theo nhóm (vỏ nứt/móp; bản lề lỏng/
+# kêu-kẹt, viền nứt, màn trầy; phím bong, touchpad trầy; cổng móp, dây sạc sứt;
+# pin phồng, thiếu ốc/tem rách/dấu mở máy, ố nước/rỉ sét; trầy nhẹ/nặng), trang
+# cuộn được (ScrollViewer) vì nhiều ô. Chỉ bản lề lỏng và trầy nhẹ có câu riêng
+# trong Phrasings.json; các lỗi còn lại dùng câu cảnh báo chung qua verdict Cảnh
+# báo, không bịa câu riêng. Pin phồng là ngoại lệ duy nhất chặn cho qua (Chan,
+# giống ổ bị chặn và sạc Kém) vì nguy hiểm; Tổng kết khi đó về câu nghiêm trọng
+# chung (combinedD) vì chưa có câu riêng cho pin phồng. Trang Sức khỏe đã thêm
+# mô tả tiếng Việt cho 13 mã tín hiệu ngoại quan mới.

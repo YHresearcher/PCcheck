@@ -1,7 +1,7 @@
 <Window x:Class="YanJi.Views.SplashWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="An Tâm PC test" Width="480" Height="400"
+        Title="An Tâm PC Test" Width="480" Height="400"
         WindowStyle="None" AllowsTransparency="True" Background="Transparent"
         WindowStartupLocation="CenterScreen" ResizeMode="NoResize"
         ShowInTaskbar="False" Topmost="True"
@@ -18,7 +18,7 @@
             <Image Source="pack://application:,,,/Assets/logo-antam.png"
                    Width="120" Height="120" Margin="0,0,0,12"
                    RenderOptions.BitmapScalingMode="HighQuality"/>
-            <TextBlock Text="An Tâm PC test" FontSize="28" FontWeight="Bold"
+            <TextBlock Text="An Tâm PC Test" FontSize="28" FontWeight="Bold"
                        HorizontalAlignment="Center"/>
             <TextBlock Text="Vi Tính An Tâm" FontSize="15" FontWeight="SemiBold"
                        Foreground="{DynamicResource AccentBrush}"

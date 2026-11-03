@@ -1,6 +1,6 @@
 using System.Runtime.InteropServices;
 
-namespace YanJi.Plugin.ConfigCheck;
+namespace YanJi.PluginSdk.Services;
 
 /// <summary>Đọc bảng SMBIOS thô từ firmware bằng GetSystemFirmwareTable('RSMB'),
 /// KHÔNG qua WMI, KHÔNG qua registry — để sửa registry không đổi được thông tin

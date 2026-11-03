@@ -5,15 +5,17 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using YanJi.PluginSdk;
+using YanJi.PluginSdk.Services;
 
 namespace YanJi.Plugin.Summary;
 
 /// <summary>Trang Tổng kết = khu vực kết luận mua máy: xác định máy MUA ĐƯỢC HAY
 /// KHÔNG, cho cả kỹ thuật viên và người mua dùng chung — người mua chỉ cần đọc
 /// tiêu đề + câu thân thiện ở trên, kỹ thuật viên đọc chi tiết từng module ở dưới.
-/// Mỗi kết luận tổng có nhiều cách nói thân thiện chọn ngẫu nhiên. Cách nói chỉ
-/// đổi câu chữ, không đổi kết luận — bấm "Đổi cách nói" để xem câu khác, kết
-/// luận giữ nguyên. Kết luận tổng tự động: có module Chặn = KHÔNG KHUYẾN NGHỊ
+/// Mỗi kịch bản có nhiều cách nói thân thiện, nhưng chỉ chọn ngẫu nhiên 1 lần
+/// khi kịch bản đổi, rồi cố định cho tới khi kịch bản đổi tiếp hoặc lưu báo cáo
+/// (không còn nút đổi câu tay — câu đã chọn là câu của phiên kiểm tra đó).
+/// Kết luận tổng tự động: có module Chặn = KHÔNG KHUYẾN NGHỊ
 /// MUA; không Chặn nhưng có Cảnh báo = CẦN KIỂM TRA THÊM / THƯƠNG LƯỢNG; tất cả
 /// Đạt = CÓ THỂ MUA; còn lại = CHƯA ĐỦ DỮ LIỆU. KHÔNG MUA không tự sinh ra (test
 /// không biết chi phí sửa có đáng hay không) nên kỹ thuật viên tự đánh dấu bằng
@@ -24,6 +26,7 @@ public partial class SummaryPage : UserControl
     readonly Random _random = new();
     readonly PhrasingBank _bank = new();
     bool _markedLoai;
+    bool _serialAutoFilled; // S/N đã tự điền 1 lần từ SMBIOS thì không điền lại (tôn trọng chữ người dùng sửa/xóa sau đó)
     string _currentScenario = "";
     int _currentPhrasingIndex = -1;
     int _currentAnTamIndex = -1;
@@ -63,17 +66,22 @@ public partial class SummaryPage : UserControl
         _host.DoneChanged += Refresh;
         _host.VerdictChanged += Refresh;
         _host.SignalChanged += Refresh;
-        Loaded += (_, _) => Refresh();
+        Loaded += (_, _) => { Refresh(); FillSerialFromSmbios(); };
     }
 
-    void ChangePhrasingButton_Click(object sender, RoutedEventArgs e)
+    /// <summary>Tự điền ô S/N từ serial máy trong SMBIOS thô (cùng nguồn với nhóm
+    /// Máy &amp; Mainboard, không qua WMI/registry) — kỹ thuật viên khỏi gõ tay,
+    /// và tên thư mục hồ sơ sẽ đúng serial thật của máy. Chỉ điền 1 lần khi ô
+    /// còn trống; firmware không có serial thật (placeholder đã bị lọc thành
+    /// null) thì để trống cho nhập tay; người dùng sửa/xóa sau đó thì không điền
+    /// lại, vì tem dán khác serial firmware chính là trường hợp cảnh báo không
+    /// khớp cần kiểm tra tay, không được tự ghi đè.</summary>
+    void FillSerialFromSmbios()
     {
-        if (_currentScenario.Length == 0) Refresh();
-        else
-        {
-            PhrasingText.Text = PickPhrasing(_currentScenario, _currentPhrasingIndex);
-            RefreshAnTamNote(exclude: _currentAnTamIndex);
-        }
+        if (_serialAutoFilled || SerialBox.Text.Trim().Length > 0) return;
+        _serialAutoFilled = true;
+        string? serial = SmbiosService.Read()?.SystemSerial;
+        if (serial != null) SerialBox.Text = serial;
     }
 
     void MarkLoaiButton_Click(object sender, RoutedEventArgs e)
@@ -299,7 +307,8 @@ public partial class SummaryPage : UserControl
     {
         // Pool tốt: câu tốt chung + kết hợp A + câu chuyên biệt nếu có tín hiệu tốt
         // (CPU đã nướng xong không lỗi, pin còn khỏe). Tín hiệu tốt không đổi tiêu
-        // đề, chỉ thêm câu vào pool để "Đổi cách nói" có thể ra câu chuyên biệt.
+        // đề, chỉ thêm câu vào pool để lần chọn ngẫu nhiên khi kịch bản đổi có
+        // thể ra câu chuyên biệt (không còn nút đổi câu tay).
         "good" => GoodPool(),
         "driveMediaError" => _bank.DriveMediaError,
         "driveBadSector" => _bank.DriveBadSector,
