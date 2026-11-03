@@ -770,3 +770,10 @@ public interface IHostContext                       // 宿主注入 CreatePage
 # trong phần Vi Tính An Tâm của README vẫn giữ (đó là thông tin liên hệ chung của shop, không
 # phải dòng website trong khối sidebar mà user muốn xóa). Chỉ sửa XAML + README, kiểm chứng bằng
 # parse XML + assert, chưa biên dịch/chạy trên Windows thật.
+
+# (46) NÚT SIDEBAR ĐỔI THÀNH "ghé thăm shop chút nha!" (2026-11-03, chưa test Windows):
+# User yêu cầu đổi chữ nút sidebar từ "Tham quan shop" thành "ghé thăm shop chút nha!"
+# (đúng nguyên văn, kể cả chữ thường đầu câu và dấu "!"). Chỉ đổi Content của
+# VisitShopButton trong MainWindow.xaml + comment code-behind + README cho đồng bộ;
+# tên handler VisitShopButton_Click và chức năng mở vitinhantam.com giữ nguyên.
+# Các ghi chú (43)/(45) vẫn nhắc tên cũ vì đó là lịch sử lúc viết, không sửa lại.

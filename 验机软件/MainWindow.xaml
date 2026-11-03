@@ -101,12 +101,12 @@
                     <TextBlock DockPanel.Dock="Bottom" Text="An Tâm PC Test v1.1.0"
                                Foreground="{DynamicResource TextSecondaryBrush}" FontSize="10"
                                TextWrapping="Wrap" Margin="12,4,12,10"/>
-                    <Button DockPanel.Dock="Bottom" x:Name="VisitShopButton" Content="Tham quan shop"
+                    <Button DockPanel.Dock="Bottom" x:Name="VisitShopButton" Content="ghé thăm shop chút nha!"
                             Margin="12,4,12,4" Padding="8,6" Click="VisitShopButton_Click"
                             ToolTip="Mở website vitinhantam.com trong trình duyệt mặc định"/>
                     <!-- Khối địa chỉ shop trong phần mềm chính: chỉ 2 chi nhánh, cách nhau
                          1 dòng trống (Margin dưới CN1 = 12, tương đương 1 dòng chữ cỡ 10);
-                         dòng website và dòng bảo hành đã xóa theo yêu cầu (nút "Tham quan shop"
+                         dòng website và dòng bảo hành đã xóa theo yêu cầu (nút "ghé thăm shop chút nha!"
                          bên trên vẫn mở website nên không mất đường vào web).
                          2 địa chỉ đồng bộ cấu trúc viết tắt: "P." cho phường, "T." cho tỉnh,
                          "Tp." cho thành phố (CN2 "phường" đổi thành "P." cho giống CN1).
