@@ -488,3 +488,17 @@ public interface IHostContext                       // 宿主注入 CreatePage
 # (TextBlock) hiện thành 2 dòng, BaoCao.txt cũng tách thành 2 dòng, KetQua.json
 # ghi bằng Serialize nên ký tự xuống dòng được escape đúng. Fallback trong
 # PhrasingBank.cs cũng đổi sang cặp lục bát đầu tiên. Quy tắc hiện không đổi.
+
+# (27) LỤC BÁT SỬA LẠI CHO TỰ NHIÊN (2026-11-03, chưa test Windows):
+# User chê cặp 2 lục bát cũ ("mua khôn là biết, chẳng mua thua đâu") là gượng
+# — đúng: "mua thua" không phải tiếng người ta nói, do luật thanh/vần ép ra.
+# Rà lại hết 21 cặp, sửa 4 cặp bị gượng, giữ 17 cặp còn lại vì đã tự nhiên:
+# (2) "Xem cho kỹ máy rồi mua / mua khôn là hiểu, chẳng mua mù đâu" ("mua mù"
+# = mua mù quáng, tiếng shop thật); (3) "vui sau trọn đời" thành "thì sau bền
+# vui"; (12) "so sau bán với cả tình trạng luôn" (đảo thứ tự gượng) thành "so
+# luôn sau bán với tình trạng này" (so sánh A với B, A là sau bán, vẫn đủ
+# luật 6-8/thanh/vần); (20) "máy mình tường" (chữ cổ) thành "máy hiểu rồi /
+# trả tiền khi đã rõ rồi mới mua". Cả 21 cặp sau sửa vẫn qua script kiểm
+# 6-8 chữ, thanh, vần, không ngoại lệ. Bài học: luật thanh/vần lục bát nghiêm
+# ngặt ép ra chữ gượng trong câu nhắn ngắn của shop — ưu tiên câu tự nhiên
+# trước, giữ luật khi không phải trả giá bằng chữ gượng.
