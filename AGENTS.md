@@ -633,3 +633,31 @@ public interface IHostContext                       // 宿主注入 CreatePage
 # Cặp "completion" ("Mua máy chớ quá vội vàng, / An Tâm kiểm trước, nhẹ nhàng
 # xuống tay.") ĐÃ LƯU vào JSON + fallback nhưng CHƯA GẮN hiển thị vì chưa rõ
 # user muốn nó hiện khi nào — cần user chốt trigger trước khi gắn.
+
+# (38) KHO THƠ CHIA 5 NHÓM TÌNH TRẠNG, RANDOM TRONG NHÓM (2026-11-03, chưa test Windows):
+# User chốt: chia kho thơ thành Máy tốt – Máy khá – Máy cần thương lượng – Máy
+# nhiều lỗi – Không nên mua, hệ thống chọn ngẫu nhiên 1 câu trong nhóm đúng tình
+# trạng, thay vì hiện lời khuyên chung chung. Thay key JSON "anTamSituational"
+# (5 câu đơn) bằng "anTamGroups" (5 mảng, mỗi mảng 5 cặp, tổng 25 = 21 cặp chung +
+# 4 cặp tình huống, mỗi cặp dùng đúng 1 lần, không trùng, không thiếu); key cũ
+# xóa hẳn, ReadSingles trong PhrasingBank.cs xóa theo (chết code thì gỡ, không
+# để lại), loader dùng lại ReadGroup sẵn có, fallback trong code cũng là 5 mảng
+# giống hệt JSON. anTamNotes (21 cặp) giữ lại làm dự phòng khi file thiếu nhóm.
+# PHÂN NHÓM (đề xuất của trợ lý, user chưa duyệt từng câu — câu nào xếp sai thì
+# user chỉ số câu + nhóm đúng là chuyển): Máy tốt = #1 ngon+vừa túi, #8 bền+đáng
+# tiền, #20 hiểu tận tường, #21 ít tiền+máy ngon, soi; Máy khá = #3 giá rẻ+rõ gốc
+# vui lâu, #7 giữ bản kiểm, #10 hợp việc, #13 văn phòng/học hành, #15 chạy tốt;
+# Cần thương lượng = #5 rẻ+tiền sửa, #9 pin/ổ yếu+trừ hao, #12 so giá+tình trạng,
+# #18 mặc cả, price; Nhiều lỗi = #2 xem kỹ+máy lỗi, #4 vỏ bóng+phiền trong, #11
+# kiểm kỹ+khỏi tiếc, #16 bảo hành+trục trặc, manyFaults; Không nên mua = #6 qua
+# tay mấy người+rõ gốc, #14 sạc/pin/ổ+tiền bay, #17 rõ nguồn+vàng hóa thau, #19
+# bán giục+xem kỹ, skip. Ánh xạ kịch bản → nhóm: good → tốt; lỗi chức năng →
+# khá (máy vẫn dùng được, chỉ lỗi nhỏ — đổi so với (37) vốn gắn chức năng vào
+# manyFaults); warning/cảnh báo linh kiện → thương lượng; nghiêm trọng → nhiều
+# lỗi; đánh dấu không mua → không nên mua; chưa đủ dữ liệu → ẩn. Câu chỉ random
+# lại khi kịch bản đổi (Refresh chỉ gọi RefreshAnTamNote khi scenario đổi hoặc
+# chưa từng chọn), nên câu ổn định theo tình trạng, không nhảy mỗi lần Refresh;
+# câu hiện lúc lưu thì khóa vào báo cáo như cũ. Cặp "completion" ("Mua máy chớ
+# quá vội vàng, / An Tâm kiểm trước, nhẹ nhàng xuống tay.") vẫn CHƯA gắn nhóm
+# nào (không nằm trong 25 cặp trên) vì user chưa chốt trigger — còn chờ câu trả
+# lời ở (37), đừng tự gán vào nhóm tốt.

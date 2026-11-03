@@ -47,10 +47,10 @@ public partial class SummaryPage : UserControl
     /// liệt, điểm chết, loa rè, webcam, bản lề, trầy nhẹ, sạc Kém, kết hợp B);
     /// chưa có tín hiệu thì dùng câu chung của mức đó (warning / serious /
     /// incomplete / good), không đoán. Tín hiệu tốt (pin khỏe, CPU tốt) chỉ thêm
-    /// câu vào pool tốt, không đổi tiêu đề. Dòng "An Tâm nhắn bạn" gắn theo kết quả: đạt → soi, cảnh báo → bớt giá,
-    /// lỗi (chức năng / nghiêm trọng) → hơi buồn, không mua → bỏ qua; chỉ ẩn khi
-    /// chưa đủ dữ liệu. Các câu nghiêm trọng / không mua là câu cảnh báo / thất vọng
-    /// nên không làm nhẹ cảnh báo.</summary>
+    /// câu vào pool tốt, không đổi tiêu đề. Dòng "An Tâm nhắn bạn" chia theo 5 nhóm tình trạng (máy tốt / khá / cần
+    /// thương lượng / nhiều lỗi / không nên mua), chọn ngẫu nhiên 1 câu trong nhóm
+    /// đúng tình trạng; chỉ ẩn khi chưa đủ dữ liệu. Các câu nghiêm trọng / không mua
+    /// là câu cảnh báo / thất vọng nên không làm nhẹ cảnh báo.</summary>
     static readonly Dictionary<string, string> OverallTitles = new()
     {
         ["Dat"] = "CÓ THỂ MUA — MUA ĐƯỢC",
@@ -336,27 +336,29 @@ public partial class SummaryPage : UserControl
         _ => _bank.Incomplete,
     };
 
-    /// <summary>Dòng "An Tâm nhắn bạn" gắn theo kết quả (user chốt 2026-11-03):
-    /// mỗi nhóm kết quả hiện đúng 1 cặp tình huống cố định, không random pool
-    /// chung nữa. good → câu soi; warning / cảnh báo linh kiện → câu bớt giá;
-    /// lỗi chức năng + lỗi nghiêm trọng → câu hơi buồn (phát hiện lỗi, thất vọng,
-    /// không xoa dịu, không bảo mua); kỹ thuật viên đánh dấu không mua → câu bỏ
-    /// qua. Nghiêm trọng + không mua giờ ĐƯỢC hiện (trước đây ẩn) vì 2 cặp này
-    /// là câu cảnh báo/thất vọng, không phải câu vui làm nhẹ cảnh báo. Chỉ ẩn
-    /// khi chưa đủ dữ liệu. File thiếu cặp tình huống thì dự phòng bằng random
-    /// pool chung (luật cũ), không thì ẩn — không tự bịa câu.</summary>
+    /// <summary>Dòng "An Tâm nhắn bạn" chia theo nhóm tình trạng (user chốt 2026-11-03):
+    /// kho thơ chia 5 nhóm — máy tốt / máy khá / cần thương lượng / nhiều lỗi /
+    /// không nên mua — hệ thống chọn ngẫu nhiên 1 câu trong nhóm đúng tình trạng,
+    /// thay vì hiện lời khuyên chung chung. Ánh xạ: good → tốt; lỗi chức năng →
+    /// khá (máy vẫn dùng được, chỉ lỗi nhỏ); warning / cảnh báo linh kiện → cần
+    /// thương lượng; lỗi nghiêm trọng → nhiều lỗi; kỹ thuật viên đánh dấu không
+    /// mua → không nên mua. Nghiêm trọng + không mua ĐƯỢC hiện vì các câu này là
+    /// câu cảnh báo/thất vọng, không phải câu vui làm nhẹ cảnh báo. Chỉ ẩn khi
+    /// chưa đủ dữ liệu. Câu chỉ random lại khi kịch bản đổi (qua Refresh), không
+    /// random lại mỗi lần Refresh. File thiếu nhóm thì dự phòng bằng random pool
+    /// chung (luật cũ), không thì ẩn — không tự bịa câu.</summary>
     void RefreshAnTamNote(int exclude = -1)
     {
-        string? situKey = _currentScenario switch
+        string? groupKey = _currentScenario switch
         {
             "good" => "good",
-            "warning" or "combinedB" or "batteryWornOver40" or "batteryWorn20_30" or "cpuOverheat" or "scratchesLight" or "driveWear" or "driveSmartUnknown" => "price",
-            "keyboardDead" or "screenDeadPixel" or "speakerDistorted" or "webcamFail" or "hingeLoose" => "manyFaults",
+            "warning" or "combinedB" or "batteryWornOver40" or "batteryWorn20_30" or "cpuOverheat" or "scratchesLight" or "driveWear" or "driveSmartUnknown" => "negotiate",
+            "keyboardDead" or "screenDeadPixel" or "speakerDistorted" or "webcamFail" or "hingeLoose" => "fair",
             "driveMediaError" or "driveBadSector" or "cpuFail" or "gpuArtifact" or "batteryNotCharging" or "serious" => "manyFaults",
-            "notBuy" => "skip",
+            "notBuy" => "notBuy",
             _ => null,
         };
-        if (situKey == null)
+        if (groupKey == null)
         {
             // Chưa đủ dữ liệu (hoặc kịch bản lạ) → ẩn, báo cáo lưu cũng không có dòng này.
             _lastAnTamNote = "";
@@ -364,15 +366,18 @@ public partial class SummaryPage : UserControl
             AnTamNoteText.Visibility = Visibility.Collapsed;
             return;
         }
-        if (_bank.AnTamSituational.TryGetValue(situKey, out var situ) && situ.Length > 0)
+        if (_bank.AnTamGroups.TryGetValue(groupKey, out var group) && group.Length > 0)
         {
-            _currentAnTamIndex = -1;
-            _lastAnTamNote = situ;
-            AnTamNoteText.Text = $"An Tâm nhắn bạn: {situ}";
+            int idx;
+            if (group.Length == 1) idx = 0;
+            else do { idx = _random.Next(group.Length); } while (idx == exclude);
+            _currentAnTamIndex = idx;
+            _lastAnTamNote = group[idx];
+            AnTamNoteText.Text = $"An Tâm nhắn bạn: {_lastAnTamNote}";
             AnTamNoteText.Visibility = Visibility.Visible;
             return;
         }
-        // File thiếu cặp tình huống → dự phòng luật cũ: random pool chung, không thì ẩn.
+        // File thiếu nhóm → dự phòng luật cũ: random pool chung, không thì ẩn.
         if (_bank.AnTamNotes.Length == 0)
         {
             _lastAnTamNote = "";
@@ -381,11 +386,11 @@ public partial class SummaryPage : UserControl
             return;
         }
         var pool = _bank.AnTamNotes;
-        int idx;
-        if (pool.Length == 1) idx = 0;
-        else do { idx = _random.Next(pool.Length); } while (idx == exclude);
-        _currentAnTamIndex = idx;
-        _lastAnTamNote = pool[idx];
+        int idx2;
+        if (pool.Length == 1) idx2 = 0;
+        else do { idx2 = _random.Next(pool.Length); } while (idx2 == exclude);
+        _currentAnTamIndex = idx2;
+        _lastAnTamNote = pool[idx2];
         AnTamNoteText.Text = $"An Tâm nhắn bạn: {_lastAnTamNote}";
         AnTamNoteText.Visibility = Visibility.Visible;
     }

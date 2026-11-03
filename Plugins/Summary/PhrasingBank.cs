@@ -26,7 +26,7 @@ public class PhrasingBank
     public string[] Incomplete { get; private set; } = [];
     public string[] NotBuy { get; private set; } = [];
     public string[] AnTamNotes { get; private set; } = [];
-    public Dictionary<string, string> AnTamSituational { get; } = [];
+    public Dictionary<string, string[]> AnTamGroups { get; } = [];
 
     // Các pool sẵn cho tín hiệu tương lai (pin / CPU-GPU / ngoại vi / B-C).
     // Tổng kết chưa dùng chúng vì chưa có tín hiệu, nhưng loader vẫn đọc để
@@ -65,7 +65,7 @@ public class PhrasingBank
             Incomplete = Pool(root, "incomplete");
             NotBuy = Pool(root, "notBuy");
             AnTamNotes = Pool(root, "anTamNotes");
-            ReadSingles(root, "anTamSituational", AnTamSituational);
+            ReadGroup(root, "anTamGroups", AnTamGroups);
             ReadGroup(root, "battery", Battery);
             ReadGroup(root, "cpuGpu", CpuGpu);
             ReadGroup(root, "peripheral", Peripheral);
@@ -92,11 +92,11 @@ public class PhrasingBank
         Incomplete = ["Chưa đủ dữ liệu để kết luận mua hay không, test tiếp nhé."];
         NotBuy = ["Máy này không đạt chuẩn An Tâm, không mua."];
         AnTamNotes = ["Máy ngon mua được thật vui,\nGiá mà vừa túi, niềm vui thêm đầy."];
-        AnTamSituational["good"] = "Máy ngon chẳng ngại đem soi,\nCàng xem càng thích, càng coi càng mừng.";
-        AnTamSituational["manyFaults"] = "Nhìn ngoài bóng bẩy như hoa,\nKiểm xong mới biết, hóa ra hơi buồn.";
-        AnTamSituational["price"] = "Máy này chưa hẳn là tồi,\nGiá mà bớt chút, thì ngồi tính sau.";
-        AnTamSituational["skip"] = "Thấy xinh chớ vội trao tiền,\nKẻo mai ôm máy, muộn phiền ôm theo.";
-        AnTamSituational["completion"] = "Mua máy chớ quá vội vàng,\nAn Tâm kiểm trước, nhẹ nhàng xuống tay.";
+        AnTamGroups["good"] = ["Máy ngon mua được thật vui,\nGiá mà vừa túi, niềm vui thêm đầy.", "Máy bền mới đáng đồng tiền,\nGiá cao đôi chút, đỡ phiền mai sau.", "Máy ngon phải hiểu tận tường,\nRõ rồi mới trả, mới thương đồng tiền.", "Ít tiền vẫn chọn máy ngon,\nMiễn là nguồn gốc, máy còn bền lâu.", "Máy ngon chẳng ngại đem soi,\nCàng xem càng thích, càng coi càng mừng."];
+        AnTamGroups["fair"] = ["Giá rẻ chớ vội mừng vui,\nNguồn gốc cho rõ, mới vui lâu dài.", "Bản kiểm nhớ giữ về sau,\nCó khi đối chiếu, khỏi đau cái đầu.", "Máy ngon hợp việc là hay,\nCấu hình quá mạnh, có ngày phí công.", "Văn phòng cần máy chạy êm,\nHọc hành pin khỏe, nhẹ thêm đôi phần.", "Mua về chạy tốt mới vui,\nChứ còn sửa mãi, niềm vui còn gì."];
+        AnTamGroups["negotiate"] = ["Máy rẻ chớ vội hân hoan,\nTính luôn tiền sửa cho an trong lòng.", "Pin chai ổ yếu đừng quên,\nTrừ hao chi phí, nói lên giá mình.", "Chớ so mỗi giá niêm yết,\nXét thêm tình trạng mới biết đáng mua.", "Mua hàng mặc cả chẳng sai,\nChưa ưng cứ nói, chẳng ai trách mình.", "Máy này chưa hẳn là tồi,\nGiá mà bớt chút, thì ngồi tính sau."];
+        AnTamGroups["manyFaults"] = ["Xem cho kỹ trước khi mua,\nBiết đâu máy lỗi, tránh thua một đời.", "Máy xinh chớ vội xuống tiền,\nVỏ ngoài bóng bẩy, lắm phiền bên trong.", "Kiểm cho thật kỹ hôm nay,\nMai sau khỏi tiếc, đắng cay một mình.", "Bảo hành hỏi rõ từng điều,\nCó khi trục trặc, đỡ nhiều âu lo.", "Nhìn ngoài bóng bẩy như hoa,\nKiểm xong mới biết, hóa ra hơi buồn."];
+        AnTamGroups["notBuy"] = ["Máy qua tay mấy người rồi,\nHỏi cho rõ gốc, kẻo ngồi âu lo.", "Sạc pin ổ cứng coi chừng,\nThay từng món nhỏ, tiền từng ấy bay.", "Máy ngon phải rõ nguồn hàng,\nChớ tin vỏ bóng, ngỡ vàng hóa thau.", "Người bán có giục mua nhanh,\nCứ xem cho kỹ, mới đành xuống tay.", "Thấy xinh chớ vội trao tiền,\nKẻo mai ôm máy, muộn phiền ôm theo."];
     }
 
     static string[] Pool(JsonElement root, string key)
@@ -116,11 +116,4 @@ public class PhrasingBank
             target[prop.Name] = Pool(obj, prop.Name);
     }
 
-    static void ReadSingles(JsonElement root, string key, Dictionary<string, string> target)
-    {
-        if (!root.TryGetProperty(key, out var obj) || obj.ValueKind != JsonValueKind.Object) return;
-        foreach (var prop in obj.EnumerateObject())
-            if (prop.Value.ValueKind == JsonValueKind.String && prop.Value.GetString() is string s && s.Length > 0)
-                target[prop.Name] = s;
-    }
 }
