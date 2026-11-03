@@ -153,7 +153,7 @@ public partial class SummaryPage : UserControl
             txt.AppendLine($"Kết luận mua máy: {overall}" + (_markedLoai ? " (kỹ thuật viên đánh dấu không mua)" : ""));
             txt.AppendLine($"Nhận xét: {phrasing}");
             if (anTamNote.Length > 0)
-                txt.AppendLine($"An Tâm nhắn bạn: {anTamNote}");
+                txt.AppendLine($"An Tâm nhắn bạn:\n{anTamNote}");
             txt.AppendLine();
             txt.AppendLine("Phần 2 — Dành cho kỹ thuật viên (bằng chứng kỹ thuật, vì sao ra kết luận trên):");
             txt.AppendLine("Kết luận từng module:");
@@ -373,7 +373,7 @@ public partial class SummaryPage : UserControl
             else do { idx = _random.Next(group.Length); } while (idx == exclude);
             _currentAnTamIndex = idx;
             _lastAnTamNote = group[idx];
-            AnTamNoteText.Text = $"An Tâm nhắn bạn: {_lastAnTamNote}";
+            AnTamNoteText.Text = $"An Tâm nhắn bạn:\n{_lastAnTamNote}";
             AnTamNoteText.Visibility = Visibility.Visible;
             return;
         }
@@ -391,7 +391,7 @@ public partial class SummaryPage : UserControl
         else do { idx2 = _random.Next(pool.Length); } while (idx2 == exclude);
         _currentAnTamIndex = idx2;
         _lastAnTamNote = pool[idx2];
-        AnTamNoteText.Text = $"An Tâm nhắn bạn: {_lastAnTamNote}";
+        AnTamNoteText.Text = $"An Tâm nhắn bạn:\n{_lastAnTamNote}";
         AnTamNoteText.Visibility = Visibility.Visible;
     }
 

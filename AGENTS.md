@@ -677,3 +677,12 @@ public interface IHostContext                       // 宿主注入 CreatePage
 # nên thông tin bảo hành không mất khỏi app. Top bar MainWindow KHÔNG đổi trong
 # lần này (thanh top hẹp, nhét thêm 4 dòng sẽ chật cửa sổ chính) — nếu user muốn
 # khối này cả ở top bar thì nói thêm.
+
+# (40) LỜI NHẮN THƠ XUỐNG DÒNG SAU NHÃN (2026-11-03, chưa test Windows):
+# User muốn lời nhắn bằng thơ xuống dòng sau chỗ "An Tâm nhắn bạn:". Đổi cả 3
+# chỗ ghi dòng này: 2 chỗ hiện trên trang Tổng kết (nhóm tình trạng + dự phòng
+# pool chung) và 1 chỗ lưu BaoCao.txt, từ "An Tâm nhắn bạn: <cặp>" thành "An Tâm
+# nhắn bạn:\n<cặp>" — tức nhãn đứng riêng 1 dòng, cặp lục bát 2 dòng tiếp theo
+# (tổng 3 dòng). TextBlock vốn đã TextWrapping="Wrap" nên ký tự xuống dòng hiện
+# đúng, không cần sửa XAML. KetQua.json không đổi (chỉ lưu cặp thơ, không lưu
+# nhãn nên không bị ảnh hưởng).
