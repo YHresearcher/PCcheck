@@ -777,3 +777,11 @@ public interface IHostContext                       // 宿主注入 CreatePage
 # VisitShopButton trong MainWindow.xaml + comment code-behind + README cho đồng bộ;
 # tên handler VisitShopButton_Click và chức năng mở vitinhantam.com giữ nguyên.
 # Các ghi chú (43)/(45) vẫn nhắc tên cũ vì đó là lịch sử lúc viết, không sửa lại.
+
+# (47) NÚT SIDEBAR THÀNH 2 DÒNG "Ghé qua shop xíu" + "~_~" (2026-11-03, chưa test Windows):
+# User đổi tiếp chữ nút sidebar thành 2 dòng: dòng 1 "Ghé qua shop xíu", dòng 2 "~_~"
+# (đúng nguyên văn, kể cả chữ hoa đầu câu). Nút không còn Content chuỗi 1 dòng nữa mà
+# Content là StackPanel dọc gồm 2 TextBlock căn giữa, để 2 dòng luôn hiện đúng thứ tự
+# mà không dựa vào ký tự xuống dòng trong chuỗi. Tên handler VisitShopButton_Click và
+# chức năng mở vitinhantam.com giữ nguyên; comment code-behind + README đồng bộ theo.
+# Ghi chú (46) vẫn nhắc tên 1 dòng cũ vì đó là lịch sử lúc viết, không sửa lại.

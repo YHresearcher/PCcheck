@@ -399,7 +399,7 @@ public partial class MainWindow : Window
     void OnWizardStopClick(object sender, RoutedEventArgs e) => ShowStopAllResult();
     void OnWizardExitClick(object sender, RoutedEventArgs e) => ExitWizardMode();
 
-    /// <summary>Nút "ghé thăm shop chút nha!" ở sidebar (trên footer phiên bản): mở
+    /// <summary>Nút "Ghé qua shop xíu" + "~_~" ở sidebar (trên footer phiên bản): mở
     /// website chính của shop (https://www.vitinhantam.com) trong trình duyệt
     /// mặc định, bằng Process.Start + UseShellExecute. Nút ở sidebar nên luôn
     /// hiện ở mọi trang, không phụ thuộc trang Tổng kết hay kịch bản kết luận.</summary>
