@@ -142,6 +142,6 @@ dùng được khi ông chỉ có mỗi Mac bên cạnh.
 Dù build bằng cách nào, bước sau đó giống nhau: copy cả thư mục `publish`
 sang USB, giữ nguyên cấu trúc bên trong, cắm USB vào máy Windows cần test,
 bấm đúp file exe chính, bấm Yes khi hỏi quyền Admin. Nhớ 4 giới hạn đã ghi
-trong `README-VN.md`: cần Admin, máy test Windows 10 2004+/11 64-bit,
+trong `README.md.md`: cần Admin, máy test Windows 10 2004+/11 64-bit,
 driver PawnIO không đi theo USB, kết quả nằm trong `%APPDATA%\YanJi` trên
 máy test nên test xong phải copy ra USB trước khi xóa máy để bán.

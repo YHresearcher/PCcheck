@@ -9,7 +9,7 @@
 # logo #ED740C ở 验机软件/Assets/logo-antam.png + app.ico, theme Light/Dark dùng cam An Tâm (sáng #D95E00,
 # tối #ED740C), dải cam top bar + logo top bar + footer vitinhantam.com, token theme giữ nguyên 18 khóa hai bên;
 # (7) module mới "Cổng kết nối & Sạc" (Plugins/PortAdapter, id=ports, order=60): port từ Tanxe Studio
-# laptop-diagnostic-tool (MIT, ghi công trong Credits của plugin + README-VN), test sạc 10 giây + quét cổng WMI
+# laptop-diagnostic-tool (MIT, ghi công trong Credits của plugin + README.md), test sạc 10 giây + quét cổng WMI
 # + tick tay cổng vật lý; đã sửa 4 lỗi/đoán của bản gốc (BatteryStatus 2, MaxCapacity, ước tính 65 W,
 # đoán cổng USB/HDMI) — chi tiết ở đầu PortAdapterService.cs, không được "sửa lại cho giống gốc";
 # (8) kết luận ổ tự động (module Đối chiếu cấu hình, HardwareInfoService.DriveVerdict):
