@@ -5,8 +5,8 @@ using YanJi.PluginSdk;
 
 namespace YanJi.Plugin.Visual;
 
-/// <summary>Trang Ngoại quan: kiểm tra bằng mắt theo nhóm (vỏ, bản lề/màn hình,
-/// phím/touchpad, cổng/sạc, pin/dấu vết, trầy xước). Tick thì vẫn cho qua được
+/// <summary>Trang Ngoại quan: kiểm tra bằng mắt 8 hạng mục quan trọng nhất (vỏ,
+/// bản lề, màn hình, phím, cổng, pin phồng, dấu mở máy, trầy nhẹ). Tick thì vẫn cho qua được
 /// nhưng verdict là Cảnh báo + tín hiệu tương ứng, Tổng kết ra câu chuyên biệt
 /// nếu có (bản lề, trầy nhẹ) hoặc câu cảnh báo chung nếu không (vỏ nứt, phím
 /// mất, cổng móp... — các lỗi này chưa có câu riêng trong Phrasings.json nên
@@ -33,21 +33,14 @@ public partial class VisualPage : UserControl, IModulePage
     /// các mã còn lại Tổng kết sẽ về câu cảnh báo chung qua verdict Cảnh báo.</summary>
     (CheckBox Box, string Signal, string Note)[] Items() =>
     [
-        (CaseCrackedCheck, "caseCracked", "Vỏ nứt / vỡ góc"),
-        (CaseDentedCheck, "caseDented", "Vỏ móp / biến dạng"),
+        (CaseCrackedCheck, "caseCracked", "Vỏ nứt / móp / vỡ góc"),
         (HingeCheck, "hingeLoose", "Bản lề lỏng — kiểm tra kỹ vì ảnh hưởng màn hình và vỏ"),
-        (HingeStuckCheck, "hingeStuck", "Bản lề kêu / kẹt khi đóng mở"),
-        (BezelCrackedCheck, "bezelCracked", "Viền màn hình nứt / hở"),
-        (ScreenScratchesCheck, "screenScratches", "Màn hình trầy xước"),
+        (ScreenScratchesCheck, "screenScratches", "Màn hình trầy / viền nứt"),
         (KeyMissingCheck, "keyMissing", "Phím bong / mất phím"),
-        (TouchpadWornCheck, "touchpadWorn", "Touchpad trầy / bong lớp phủ"),
         (PortDamagedCheck, "portDamaged", "Cổng móp / gãy chân"),
-        (ChargerCableDamagedCheck, "chargerCableDamaged", "Dây sạc sứt / đầu sạc móp"),
         (BatterySwollenCheck, "batterySwollen", "Pin phồng"),
         (OpenedSignCheck, "openedSign", "Thiếu ốc / tem rách / dấu mở máy — kiểm tra kỹ lịch sử sửa chữa"),
-        (WaterRustCheck, "waterRust", "Dấu ố nước / rỉ sét ở khe, cổng"),
         (ScratchesCheck, "scratchesLight", "Trầy xước nhẹ — thương lượng giá"),
-        (ScratchesHeavyCheck, "scratchesHeavy", "Trầy xước nặng / xước sâu — thương lượng giá"),
     ];
 
     void PassButton_Click(object sender, RoutedEventArgs e)

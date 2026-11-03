@@ -449,3 +449,15 @@ public interface IHostContext                       // 宿主注入 CreatePage
 # bản đổi (không còn nút đổi câu tay); câu đã hiện lúc lưu sẽ khóa vào báo cáo.
 # Fallback trong PhrasingBank.cs vẫn chỉ giữ 1 câu của user (khi JSON hỏng/thiếu)
 # — không nhân bản cả pool vào C#, vì JSON mới là nguồn câu duy nhất.
+
+# (24) NGOẠI QUAN RÚT XUỐNG 8 HẠNG MỤC QUAN TRỌNG (2026-11-03, chưa test Windows):
+# 15 hạng mục ở (22) là quá nhiều nên rút xuống 8: vỏ nứt/móp/vỡ, bản lề lỏng,
+# màn hình trầy/viền nứt, phím bong/mất, cổng móp/gãy chân, pin phồng, thiếu ốc/
+# tem rách/dấu mở máy, trầy xước nhẹ. Gộp: vỏ móp gộp vào vỏ nứt, viền nứt gộp vào
+# màn hình trầy (giữ mã tín hiệu caseCracked và screenScratches, chỉ đổi ghi chú).
+# Bỏ: bản lề kêu/kẹt, touchpad trầy, dây sạc sứt, ố nước/rỉ sét, trầy nặng — ít
+# quan trọng hơn, hoặc đã có module khác bao (dây sạc thì module Cổng & Sạc đã
+# kiểm tra chức năng sạc), hoặc hiếm và khó thấy bằng mắt ngoài. Pin phồng vẫn
+# là ngoại lệ duy nhất chặn cho qua; bản lề lỏng và trầy nhẹ vẫn giữ câu riêng,
+# các lỗi còn lại vẫn dùng câu cảnh báo chung. Trang Sức khỏe đã bỏ mô tả cho
+# các mã tín hiệu không còn sản sinh nữa.

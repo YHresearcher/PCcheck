@@ -141,9 +141,9 @@ cả hai nền.
   tiêu chuẩn chính thức); CPU lỗi và GPU artifact là tick tay ở trang Tản nhiệt
   và chặn cho qua; phím liệt, điểm chết, loa rè, webcam là tick tay ở từng bài
   test, vẫn cho qua được nhưng ghi nhận lỗi; bản lề lỏng và trầy nhẹ tick tay ở
-  module Ngoại quan (giữa Cổng & Sạc và Đo tốc độ ổ, 15 hạng mục: vỏ, bản lề/
-  màn hình, phím/touchpad, cổng/sạc, pin/dấu vết, trầy xước; pin phồng thì chặn
-  cho qua); sạc Kém ra câu rắc rối
+  module Ngoại quan (giữa Cổng & Sạc và Đo tốc độ ổ, 8 hạng mục quan trọng:
+  vỏ nứt/móp, bản lề lỏng, màn hình trầy/viền nứt, phím bong, cổng móp, pin
+  phồng, dấu mở máy, trầy nhẹ; pin phồng thì chặn cho qua); sạc Kém ra câu rắc rối
   nguồn điện; CPU tốt + ổ hao mòn + pin chai cùng lúc ra câu kết hợp B. Pin
   không đọc được % hoặc máy không có pin thì không báo tín hiệu, không đoán.
   Kết hợp C chưa tự chọn vì chưa có định nghĩa "cấu hình mạnh".
