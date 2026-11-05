@@ -17,11 +17,11 @@ Bản này dịch sang tiếng Việt và tùy biến từ [BibaYanji](https://g
 
 ## Tải bản chạy được
 
-Vào mục **Releases** của repo, tải file **AnTamPCtest-portable.zip** ở Release **"latest"** (luôn là bản mới nhất từ nhánh main) về, giải nén ra USB là chạy. Link tải trực tiếp, không cần đăng nhập GitHub:
+Vào mục **Releases** của repo, tải file **AnTamPCtest-portable.zip** ở Release mới nhất về, giải nén ra USB là chạy. Link tải trực tiếp, không cần đăng nhập GitHub:
 
 https://github.com/YHresearcher/PCcheck/releases/latest/download/AnTamPCtest-portable.zip
 
-Release "latest" chỉ được cập nhật khi build thành công, nên bản lỗi không ghi đè lên bản tốt đang phát hành. Nếu Releases chưa có file (ví dụ build đang chạy hoặc vừa lỗi), cách dự phòng là vào tab **Actions**, bấm vào run **Build Windows portable** mới nhất tick xanh, kéo xuống cuối trang run, tới mục **Artifacts**, tải **AnTamPCtest-portable** về — cách này thì GitHub bắt đăng nhập tài khoản mới tải được, kể cả repo public.
+Mỗi lần push lên main mà build thành công thì workflow tạo **một Release mới** (tag `build-<số run>-<lần chạy>`, tiêu đề "An Tâm PC check — Build #<số run>", đánh dấu Latest) thay vì ghi đè lên Release cũ — các Release cũ được giữ nguyên để quay lại bản trước khi cần. Bản Release mang tag `latest` từ trước vẫn giữ nguyên, không bị xóa, nhưng không còn được cập nhật nữa. Build lỗi không tạo Release mới, nên bản tốt đang phát hành không bị ghi đè. Với pull request thì workflow chỉ build + lưu artifact để kiểm thử, không tạo Release; build chạy tay bằng workflow_dispatch cũng không tạo Release chính thức. Nếu Releases chưa có file (ví dụ build đang chạy hoặc vừa lỗi), cách dự phòng là vào tab **Actions**, bấm vào run **Build Windows portable** mới nhất tick xanh, kéo xuống cuối trang run, tới mục **Artifacts**, tải **AnTamPCtest-portable** về — cách này thì GitHub bắt đăng nhập tài khoản mới tải được, kể cả repo public.
 
 ## Chạy portable từ USB
 
@@ -40,22 +40,22 @@ flowchart LR
     C --> D[Lưu hồ sơ<br/>KetQua/SN_thời gian/]
 ```
 
-Mở app lên là trang **Tổng quan** (đầu tiên trong menu): tiến độ đã xong x/y bài, kết luận mua máy hiện tại, và các nút: Bắt đầu kiểm tra máy / Tiếp tục phiên dang dở, Xem thông tin phần cứng, Xem sức khỏe thiết bị, Xem kết luận mua máy, Mở thư mục hồ sơ (KetQua). Dashboard không chọn câu nhận xét riêng — câu thân thiện chỉ ở trang Tổng kết, để 2 nơi không hiện 2 câu khác nhau.
+Mở app lên là trang **Tổng quan**: thẻ máy (tên máy, CPU đọc từ registry, tổng RAM đọc từ hệ thống, ổ đĩa theo số ổ mà Đối chiếu cấu hình đã ghi nhận — GPU thì bấm sang xem ở Đối chiếu cấu hình), bảng kiểm tra nhanh 8 mục (Màn hình, Loa, Webcam, Bàn phím, Trackpad, Microphone, Cổng kết nối, Ngoại quan) với trạng thái thật từng mục (Đạt / Cảnh báo / Có lỗi / Chưa thử) và tiến độ "x/8 mục đã thử", thẻ Sức khỏe & Rủi ro (tiêu đề kết luận hiện tại + lý do chặn/cảnh báo đầu tiên) và thẻ shop, cùng các nút: **Kiểm tra tiếp** / **Kiểm tra chi tiết** (vào wizard ở bài chưa xong đầu tiên, xong hết thì sang Tổng kết), **Xuất báo cáo** (sang Tổng kết để lưu hồ sơ), **Xem cấu hình chi tiết** (sang Đối chiếu cấu hình), **Tham quan shop** (mở vitinhantam.com). Tổng quan không chọn câu nhận xét riêng và không hiện câu thơ "An Tâm nhắn bạn" — câu thân thiện và câu thơ chỉ ở trang Tổng kết, để 2 nơi không hiện 2 câu khác nhau; khối "An Tâm nhắn bạn" ở Tổng quan hiện lý do chặn/cảnh báo đầu tiên, không phải thơ. Trackpad chỉ được tính là đã thử khi kỹ thuật viên đã đánh dấu xác minh ở trang Ngoại quan (kể cả máy không có trackpad thì tick xác nhận không áp dụng), tránh hiện "Đạt" giả cho mục chưa sờ tay vào.
 
-Nút Bắt đầu / Tiếp tục vào **chế độ wizard**: menu bên trái bị khóa, mỗi lần chỉ 1 bài test chính, tránh thao tác nhầm. Thanh wizard trên cùng có: Quay lại bài trước, Bài tiếp theo, Dừng tất cả test nặng, Thoát wizard (thoát thì mở lại menu, trạng thái test không mất). Cho qua 1 bài thì tự nhảy bài chưa xong tiếp theo; dừng giữa chừng thì về Dashboard bấm Tiếp tục là nhảy đúng bài chưa xong.
+Nút Bắt đầu / Tiếp tục vào **chế độ wizard**: menu bên trái bị khóa, mỗi lần chỉ 1 bài test chính, tránh thao tác nhầm — bấm nút menu chính trong lúc wizard thì app nhắc thoát wizard trước chứ không nhảy trang. Thanh wizard trên cùng có: Quay lại bài trước, Bài tiếp theo, Dừng tất cả test nặng, Thoát wizard (thoát thì mở lại menu, trạng thái test không mất). Cho qua 1 bài thì tự nhảy bài chưa xong tiếp theo; dừng giữa chừng thì về Dashboard bấm Tiếp tục là nhảy đúng bài chưa xong.
 
 ## Các module, theo đúng thứ tự trong app
 
 | # | Module | Làm gì |
 |---|--------|--------|
-| 0 | Tổng quan (Dashboard) | Tiến độ, kết luận hiện tại, nút bắt đầu/tiếp tục, mở hồ sơ. Chỉ đọc, không phải bài test. |
+| 0 | Tổng quan (Dashboard) | Thẻ máy (tên máy, CPU, RAM, số ổ đã ghi nhận), bảng kiểm tra nhanh 8 mục với trạng thái thật, thẻ Sức khỏe & Rủi ro (tiêu đề kết luận + lý do đầu tiên), thẻ shop + nút Tham quan shop. Chỉ đọc, không phải bài test; nút Kiểm tra chi tiết / Kiểm tra tiếp vào wizard, Xuất báo cáo sang Tổng kết. |
 | 10 | Đối chiếu cấu hình | Tự quét CPU, card màn hình, RAM, ổ, card mạng, màn hình, pin, rồi đối chiếu từng mục với cấu hình đơn hàng. Trình bày kiểu CPU-Z: tab CPU / Memory / Storage / Graphics / Khác, số liệu thô, không phải kết luận. Nhóm Máy & Mainboard (tab Khác) đọc model/serial máy + mainboard + BIOS trực tiếp từ bảng SMBIOS thô của firmware, đối chiếu với WMI, lệch thì báo cảnh báo và bắt kiểm tra tem tay (không chặn). Serial máy và serial mainboard khác nhau là bình thường. Giới hạn: BIOS bị flash giả thì SMBIOS và WMI cùng nói dối giống nhau, khi đó tra serial trên web hãng hoặc soi tem dưới đáy máy. Trên cùng trang, ngay dưới tiêu đề, có thẻ chung Hãng / Model / S/N máy lấy từ nhóm Máy & Mainboard, khỏi phải chui vào tab Khác tìm; bấm Kiểm tra lại thì thẻ này cập nhật theo. |
 | 20 | Test bàn phím | Bàn phím ANSI 104 phím, bấm phím nào thì phím đó sáng lên, nhả ra thì chuyển xanh, đếm "đã test X / 104". Tick tay "Có phím liệt / không nhận" thì ghi nhận lỗi, vẫn cho qua được. |
 | 30 | Test điểm chết màn hình | Chọn màn hình rồi xem toàn màn hình đổi màu trắng, đỏ, xanh lá, xanh dương, đen, bấm phím bất kỳ hoặc click chuột để đổi màu, Esc để thoát. Máy nhiều màn hình thì test từng cái. Tick tay "Phát hiện điểm chết / điểm sáng" thì ghi nhận lỗi, vẫn cho qua được. |
 | 40 | Camera - Mic - Loa | Camera xem trước trực tiếp, mic có thanh mức âm + ghi / phát lại, loa phát nhạc test. Đủ 3 mục thì bấm cho qua một lần. Tick tay "Loa rè" / "Camera không hoạt động" thì ghi nhận lỗi, vẫn cho qua được. Dòng ghi công bài nhạc test giữ nguyên văn bản gốc, không được đổi. |
 | 50 | Test tản nhiệt | Nướng CPU bằng Prime95, nướng GPU bằng FurMark viết lại bằng C# / OpenTK, hoặc nướng cả hai. Có biểu đồ nhiệt độ và công suất CPU / GPU theo thời gian thực. Tick tay "CPU gặp lỗi / crash khi nướng" và "Phát hiện lỗi hiển thị GPU (artifact)" thì chặn cho qua. Nút "Dừng tất cả test nặng" dừng thật Prime95 / FurMark / đo tốc độ ổ, có kiểm chứng (kill xong phải xác nhận tiến trình đã chết, chưa chết thì quét lại theo đường dẫn Tools và báo rõ tên tiến trình còn sống, không hiện "Đã dừng" giả). Trang Tản nhiệt không cho qua khi chưa dừng được thật. Thời lượng nướng + tự dừng chỉnh ngay trên trang này (khuyến nghị 3 phút cho kiểm tra nhanh, máy nghi ngờ thì nướng lâu hơn), kèm chú thích nướng máy để làm gì. |
 | 60 | Cổng kết nối & Sạc | App tự quét cổng + test sạc 10 giây (lấy mẫu điện áp + công suất mỗi giây, cho điểm sức khỏe sạc). Cổng vật lý trên vỏ máy (HDMI, VGA, RJ45, USB-A, USB-C, đầu sạc) thì kỹ thuật viên nhìn bằng mắt và tick tay ở cuối trang. Máy có pin mà chưa test sạc hoặc sạc đánh giá Kém thì nút cho qua không cho qua. Máy bàn không có pin thì bỏ qua phần sạc. Điện áp hiển thị là điện áp ở đầu pin, không phải điện áp ra của củ sạc. |
-| 70 | Ngoại quan | 8 hạng mục quan trọng, tick tay: vỏ nứt / móp / vỡ góc, bản lề lỏng, màn hình trầy / viền nứt, phím bong / mất phím, cổng móp / gãy chân, pin phồng, thiếu ốc / tem rách / dấu mở máy, trầy xước nhẹ. Tick thì ghi nhận cảnh báo, vẫn cho qua được — trừ **pin phồng thì chặn cho qua**. |
+| 70 | Ngoại quan | 8 hạng mục quan trọng, tick tay: vỏ nứt / móp / vỡ góc, bản lề lỏng, màn hình trầy / viền nứt, phím bong / mất phím, cổng móp / gãy chân, pin phồng, thiếu ốc / tem rách / dấu mở máy, trầy xước nhẹ. Tick thì ghi nhận cảnh báo, vẫn cho qua được — trừ **pin phồng thì chặn cho qua**. Thêm 2 ô trackpad: "Đã kiểm tra trackpad (hoặc máy không có trackpad)" để Tổng quan tính mục Trackpad là đã thử, và "Trackpad không phản hồi / thao tác lỗi" thì ghi nhận cảnh báo. |
 | 80 | Đo tốc độ ổ | Đo tốc độ đọc / ghi tuần tự và ngẫu nhiên, kết quả lưu thành `KetQuaDoO.json` và `LichSuDoO.csv` trong `%APPDATA%\YanJi\disk_result`. Đo xong hiện kết luận ổ cứng ngay trên trang (thông tin ổ + sức khỏe từ Đối chiếu cấu hình + tốc độ vừa đo → chỉ đánh giá ổ tốt hay không, không phải kết luận mua máy, không chặn nút cho qua). |
 | 85 | Sức khỏe thiết bị | Chỉ đọc, không phải bài test: đánh giá theo mức độ nghiêm trọng từ kết quả đã test — Đạt / Cảnh báo / Chặn / Chưa test. Chưa test không được hiểu là khỏe; stress ngắn đạt không chứng minh ổn định lâu dài. |
 | 90 | Tổng kết | Trang cuối (Terminal, không có nút cho qua riêng): liệt kê kết luận từng module, rồi cho kết luận tổng (mua được hay không), câu thân thiện + dòng "An Tâm nhắn bạn", ô S/N + nút lưu hồ sơ. |
@@ -84,7 +84,7 @@ Kết luận tự động, tính từ kết luận từng module, **không chấ
 
 Câu kết luận không viết cố định trong C# nữa, mà đọc từ `Plugins/Summary/Phrasings.json` (đi kèm plugin Tổng kết, copy vào `plugins/summary/` khi build). File hỏng hoặc thiếu thì app dùng câu dự phòng, không crash. Sửa câu thì sửa file JSON này, không cần sửa code. Thứ tự ưu tiên: lỗi nghiêm trọng → lỗi chức năng → cảnh báo linh kiện → thiếu dữ liệu → máy đạt. Thiếu dữ liệu quan trọng thì không được xếp tốt: còn bài nào chưa test xong là về "chưa đủ dữ liệu", không về "có thể mua". Mỗi phiên chỉ random 1 câu phù hợp khi kịch bản đổi, rồi giữ nguyên câu đó cho tới khi kịch bản đổi tiếp hoặc lưu báo cáo (không còn nút đổi câu tay). Câu đã lưu vào báo cáo thì mở lại báo cáo sẽ thấy đúng câu đó, không random lại.
 
-Tín hiệu tự chọn hiện tại: pin chai tính từ % chai lớn nhất (dưới 20% khỏe, 20–dưới 40% chai vừa, từ 40% chai nặng — mốc là ví dụ, không phải tiêu chuẩn cứng); CPU quá nhiệt khi nhiệt tối đa lúc nướng từ 95°C trở lên (mốc nháp, chưa phải tiêu chuẩn chính thức); CPU lỗi và GPU artifact là tick tay ở trang Tản nhiệt và chặn cho qua; phím liệt, điểm chết, loa rè, webcam là tick tay ở từng bài test, vẫn cho qua được nhưng ghi nhận lỗi; bản lề lỏng và trầy nhẹ tick tay ở module Ngoại quan; sạc Kém ra tín hiệu rắc rối nguồn điện; CPU tốt + ổ hao mòn + pin chai cùng lúc ra câu kết hợp B. Pin không đọc được % hoặc máy không có pin thì không báo tín hiệu, không đoán. Kết hợp C chưa tự chọn vì chưa có định nghĩa "cấu hình mạnh". App chưa chấm điểm pin, nhiệt độ hay tốc độ ổ, vì shop chưa chốt ngưỡng cho các mục đó.
+Tín hiệu tự chọn hiện tại: pin chai tính từ % chai lớn nhất (dưới 20% khỏe, 20–dưới 40% chai vừa, từ 40% chai nặng — mốc là ví dụ, không phải tiêu chuẩn cứng); CPU quá nhiệt khi nhiệt tối đa lúc nướng từ 95°C trở lên (mốc nháp, chưa phải tiêu chuẩn chính thức); CPU lỗi và GPU artifact là tick tay ở trang Tản nhiệt và chặn cho qua; phím liệt, điểm chết, loa rè, webcam là tick tay ở từng bài test, vẫn cho qua được nhưng ghi nhận lỗi; bản lề lỏng, trầy nhẹ và trackpad lỗi tick tay ở module Ngoại quan; sạc Kém ra tín hiệu rắc rối nguồn điện; CPU tốt + ổ hao mòn + pin chai cùng lúc ra câu kết hợp B. Pin không đọc được % hoặc máy không có pin thì không báo tín hiệu, không đoán. Kết hợp C chưa tự chọn vì chưa có định nghĩa "cấu hình mạnh". App chưa chấm điểm pin, nhiệt độ hay tốc độ ổ, vì shop chưa chốt ngưỡng cho các mục đó.
 
 ## Dòng "An Tâm nhắn bạn" — thơ lục bát theo nhóm tình trạng
 
@@ -95,7 +95,7 @@ Dòng nhắn nhủ là cặp lục bát do chính user viết, chia 5 nhóm tìn
 - **Máy nhiều lỗi** (lỗi nghiêm trọng): vd "Nhìn ngoài bóng bẩy như hoa, / Kiểm xong mới biết, hóa ra hơi buồn."
 - **Không nên mua** (đánh dấu tay): vd "Thấy xinh chớ vội trao tiền, / Kẻo mai ôm máy, muộn phiền ôm theo."
 
-Nhãn "An Tâm nhắn bạn:" đứng riêng 1 dòng, cặp thơ 2 dòng tiếp theo, toàn bộ in đậm cho nổi. Chỉ ẩn khi chưa đủ dữ liệu. Các câu nghiêm trọng / không mua là câu cảnh báo / thất vọng nên không làm nhẹ cảnh báo. Câu hiện lúc lưu thì khóa vào báo cáo như câu kết luận.
+Nhãn "An Tâm nhắn bạn:" đứng riêng 1 dòng, cặp thơ 2 dòng tiếp theo. Câu kết luận in đậm, còn dòng nhắn này in nghiêng màu cam, chữ thường (không đậm). Chỉ ẩn khi chưa đủ dữ liệu. Các câu nghiêm trọng / không mua là câu cảnh báo / thất vọng nên không làm nhẹ cảnh báo. Câu hiện lúc lưu thì khóa vào báo cáo như câu kết luận.
 
 ## Kết luận tự động cho ổ (module Đối chiếu cấu hình)
 
@@ -127,13 +127,15 @@ Phần cổng tự động chỉ báo những gì hệ thống thật sự nhìn
 
 Ô S/N tự điền từ serial firmware của máy (SMBIOS) khi mở trang Tổng kết, nếu ô đang trống. Nếu firmware không có serial thật (hãng để sẵn chữ giữ chỗ) thì ô để trống cho gõ tay, không bịa số. Nếu bạn sửa hoặc xóa số sau đó thì nó không điền lại, để tôn trọng số gõ tay — vì tem dán khác serial firmware chính là trường hợp cần kiểm tra tay. Nếu lần đầu mở trang mà đọc không được thì lần sau mở lại trang sẽ thử lại, không khóa luôn. Số tự điền vẫn có thể sai nếu BIOS từng bị flash lại, nên vẫn cần đối chiếu tem dán.
 
-## Splash screen
+## Cửa sổ chính và Splash screen
 
-Mở app lên là thấy màn hình chờ 480×400 ở giữa màn hình, không có viền cửa sổ, không hiện trên taskbar: chỉ logo An Tâm 120px, tên **"An Tâm PC Test"**, thanh tiến trình và dòng "Đang khởi động...". Khối thông tin shop không còn nằm trên Splash nữa mà chuyển sang phần mềm chính (xem ngay dưới).
+Cửa sổ chính mặc định 1536×1024, tối thiểu 940×680. Dải cam 3px trên cùng, dưới là thanh tiện ích căn phải: nút **Dừng test nặng** (dừng Prime95 / FurMark / đo tốc độ ổ, có kiểm chứng tiến trình còn sống) và công tắc theme ☀/🌙. Thương hiệu không còn nằm ở top bar nữa mà nằm ở đầu sidebar: ảnh mascot + 2 dòng "An Tâm / PC check".
+
+Sidebar rộng 274, từ trên xuống: 7 nút chính — **Tổng quan** (về Dashboard), **Kiểm tra chi tiết** (mở danh sách bài test rồi vào wizard ở bài chưa xong đầu tiên, xong hết thì sang Tổng kết), **Phần cứng & Sức khỏe** (sang Đối chiếu cấu hình), **Báo cáo** (sang Tổng kết), **Công cụ tiện ích** (sang Đo tốc độ ổ), **Hướng dẫn** (popup 4 bước dùng app), **Giới thiệu** (popup thông tin shop + bảo hành) — rồi tới mục gập **Danh sách bài test** (mặc định gập) chứa đủ các module theo thứ tự, kèm chấm trạng thái từng bài; cuối sidebar là dòng "Đã kiểm tra xong tất cả hạng mục!" khi xong hết và dòng "An Tâm PC check • Windows". Nút ghé shop không còn ở sidebar nữa mà nằm ở thẻ shop trên trang Tổng quan ("Tham quan shop", mở vitinhantam.com); popup Giới thiệu cũng ghi đủ địa chỉ + website shop.
+
+Mở app lên là thấy màn hình chờ 480×400 ở giữa màn hình, không có viền cửa sổ, không hiện trên taskbar: chỉ logo An Tâm 120px, tên **"An Tâm PC Test"**, thanh tiến trình và dòng "Đang khởi động...". Khối thông tin shop không còn nằm trên Splash nữa mà nằm ở trang Tổng quan và popup Giới thiệu (xem trên).
 
 Splash hiện trong lúc app tải các module, tự đóng khi cửa sổ chính đã tải xong và đủ tối thiểu 1,5 giây (máy nhanh cũng không bị chớp tắt), rồi chuyển focus sang cửa sổ chính. Không cần bấm gì để tắt. Màu splash theo theme đang dùng (tối = nền xám đậm, sáng = nền kem ấm), logo cam nổi trên cả hai nền.
-
-Thanh trên cùng của cửa sổ chính có dải cam 3px, logo + tên app, dưới tên là dòng **"Công cụ kiểm tra PC/ Laptop cũ"** và dòng **"Vi tính An Tâm | Chuyên máy đã qua sử dụng, chuẩn doanh nghiệp"** màu cam. Top bar chia 2 cột (trái co giãn, phải tự rộng) nên khi khung hẹp thì chữ bên trái tự xuống dòng thay vì chèn lên nút bên phải. Cuối thanh điều hướng trái có khối địa chỉ shop (chỉ 2 chi nhánh, cách nhau 1 dòng trống, chữ tự xuống dòng theo chiều rộng sidebar cố định 200), nút **"Ghé qua shop xíu"** (dòng dưới là "~_~", mở vitinhantam.com trong trình duyệt mặc định, hiện trên mọi trang) và dòng **"An Tâm PC Test v1.1.0"**.
 
 ## Vi Tính An Tâm
 
@@ -146,14 +148,15 @@ Thanh trên cùng của cửa sổ chính có dải cam 3px, logo + tên app, d�
 
 ## Giao diện thương hiệu An Tâm
 
-- Màu cam logo: **#ED740C** (đo trực tiếp từ file logo gốc). Logo nằm ở `验机软件/Assets/logo-antam.png`, nhúng vào exe, hiện ở top bar bên trái tên app và ở splash screen.
+- Màu cam logo: **#ED740C** (đo trực tiếp từ file logo gốc). Logo nằm ở `验机软件/Assets/logo-antam.png`, nhúng vào exe, hiện ở splash screen.
 - Icon app và icon trình cài đặt là logo An Tâm, tạo từ chính file logo trên (`验机软件/app.ico`, đủ 16/32/48/64/128/256px, nền trong suốt).
+- Đầu sidebar dùng ảnh mascot nhúng sẵn trong exe (`验机软件/Assets/mascot-checklist-2026.png`), không tải từ mạng.
 - Hai theme đều dùng cam, chỉ đổi sắc độ cho đủ tương phản, không đổi tên hay số lượng token trong `Themes/Light.xaml` và `Themes/Dark.xaml`:
   - Sáng (dùng ban ngày): nền trắng, nền phụ #FFF6EC, cam #D95E00, hover #C25200, mục đang chọn #FFE7CC.
   - Tối (giao diện thương hiệu chính, nền gần đen như logo trình bày): nền #111111, nền phụ #262626, cam đúng #ED740C, hover #F5861F, mục đang chọn #3D2A1A.
 - Vì toàn bộ control đều dùng DynamicResource trỏ vào token theme nên đổi 2 file theme là toàn bộ app đổi màu theo, không cần sửa từng trang. Màu đỏ lỗi giữ nguyên #C42B1C / #FF6B5E, không dùng cam cho lỗi để khỏi nhầm.
 - Font chính là Be Vietnam Pro (nhúng vào app, giấy phép OFL-1.1, fallback Segoe UI nếu thiếu) cho chữ tiếng Việt có dấu hiển thị đúng trên mọi máy; font Consolas ở các ô log giữ nguyên.
-- Hệ thống theme lần đầu chạy theo theme của Windows, nút mặt trời / mặt trăng ở top bar đổi theme và lưu lại lựa chọn.
+- Hệ thống theme lần đầu chạy mặc định sáng (nền kem ấm), lựa chọn đã lưu được tôn trọng ở lần mở sau; nút mặt trời / mặt trăng ở thanh tiện ích trên cùng đổi theme và lưu lại lựa chọn.
 
 ## Build trên máy Windows có .NET SDK 10
 
@@ -165,7 +168,7 @@ dotnet publish FurMark/FurMark.csproj -p:PublishProfile=FolderProfile
 dotnet publish 验机软件/验机软件.csproj -p:PublishProfile=FolderProfile
 ```
 
-Thư mục `publish` thu được là gói tự chứa, máy test không cần cài .NET. Gói publish đã lược bỏ các thư mục ngôn ngữ runtime không dùng (fr, cs, de...) để zip nhẹ hơn — app chỉ dùng tiếng Việt nên không cần chúng.
+Thư mục `publish` thu được là gói tự chứa, máy test không cần cài .NET. Bản zip trên Releases đã lược bỏ các thư mục ngôn ngữ runtime không dùng (fr, cs, de...) nhờ bước xóa của workflow, để zip nhẹ hơn — app chỉ dùng tiếng Việt nên không cần chúng; nếu publish tay trên máy mình mà vẫn thấy các thư mục đó thì xóa tay cũng an toàn.
 
 Muốn đóng gói trình cài đặt thì chạy tiếp bằng Inno Setup 6:
 
@@ -183,7 +186,7 @@ Nếu đang xài Mac, đọc file `Huong_dan_build_tren_Mac.md` trong repo này 
 2. **Máy test cần Windows 10 bản 2004 trở lên hoặc Windows 11, bản 64-bit.**
 3. **Driver PawnIO không đi theo USB.** Driver này là driver nhân, để đọc nhiệt và công suất CPU lúc nướng máy. Nó phải cài riêng trên từng máy test, không cài thì app vẫn chạy, chỉ mất 2 đường nhiệt và công suất CPU trong lúc nướng.
 4. **Trạng thái thô của các module nằm trong `%APPDATA%\YanJi` trên máy test, không nằm trên USB.** Điểm ổ nằm trong `%APPDATA%\YanJi\disk_result`. Nhưng hồ sơ phiên đã lưu (BaoCao.txt + KetQua.json + bản sao KetQuaDoO.json) thì nằm trong thư mục `KetQua` của app (tức là trên USB nếu chạy portable từ USB) — test xong bấm lưu hồ sơ trước khi giao máy, rồi xóa thư mục `%APPDATA%\YanJi` trên máy test nếu cần.
-5. **Các thay đổi mới nhất chưa kiểm chứng trên máy Windows thật.** Bản build từ GitHub Actions biên dịch được, nhưng các tính năng mới thêm gần đây (wizard, dashboard, sức khỏe thiết bị, nhóm thơ, khối thông tin splash...) vẫn cần chạy thử trên laptop Windows thật mới khẳng định được.
+5. **Các thay đổi mới nhất chưa kiểm chứng trên máy Windows thật.** Bản build từ GitHub Actions chỉ chứng minh biên dịch/đóng gói được, không chứng minh thao tác giao diện hay hành vi phần cứng. Các tính năng mới thêm gần đây (Tổng quan + sidebar mới, wizard, sức khỏe thiết bị, nhóm thơ, kết luận ổ trên trang đo tốc độ...) vẫn cần chạy thử trên laptop Windows thật mới khẳng định được — checklist kiểm thử trong repo: `docs/WINDOWS-QA-v2.md` (cửa sổ 1536×1024 / 1366×768 / 980×680, Light/Dark, sidebar, wizard, dừng test nặng, số liệu thật không bịa).
 
 ## Ghi công và giấy phép
 
