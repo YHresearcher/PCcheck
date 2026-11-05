@@ -10,10 +10,9 @@ using YanJi.PluginSdk;
 
 namespace YanJi.Plugin.Dashboard;
 
-/// <summary>Trang Tổng quan: tiến độ + kết luận mua hiện tại + nút nhảy.
-/// Kết luận mua tính đúng logic trang Tổng kết (Chặn = Không khuyến nghị mua,
-/// Cảnh báo = Cần kiểm tra thêm, tất cả Đạt = Có thể mua, còn lại = Chưa đủ
-/// dữ liệu), nhưng KHÔNG chọn câu nhận xét random ở đây — câu đó chỉ ở Tổng kết.
+/// <summary>Trang Tổng quan: tiến độ + nút nhảy.
+/// Kết luận mua và thẻ Sức khỏe & Rủi ro đã dời sang trang Tổng kết (Báo cáo)
+/// 2026-11-05 — Dashboard chỉ còn thẻ máy, kết quả nhanh và nút hành động.
 /// Nút Bắt đầu / Tiếp tục: vào wizard rồi nhảy tới bài chưa xong đầu tiên
 /// (chưa xong bài nào thì là bài đầu tiên); đó chính là "tiếp tục phiên dang dở"
 /// ở mức phiên test trong app (phiên đã lưu ra USB thì xem lại ở thư mục hồ sơ).</summary>
@@ -218,45 +217,5 @@ public partial class DashboardPage : UserControl
             ? $"Ổ đĩa: {_host.DriveSummaries.Count} ổ được ghi nhận • Xem thông tin chi tiết"
             : "SSD / HDD: Chưa có dữ liệu kiểm tra";
 
-        ModuleVerdictLevel autoLevel;
-        var grades = new List<ModuleVerdictLevel>();
-        string reason = "";
-        foreach (var m in passable)
-        {
-            ModuleVerdictLevel grade;
-            string note;
-            if (_host.Verdicts.TryGetValue(m.Id, out var v)) { grade = v.Level; note = v.Note; }
-            else if (_host.IsDone(m.Id)) { grade = ModuleVerdictLevel.Dat; note = "Đã cho qua"; }
-            else { grade = ModuleVerdictLevel.ChuaTest; note = "Chưa cho qua"; }
-            grades.Add(grade);
-            if (grade == ModuleVerdictLevel.Chan && reason.Length == 0) reason = note;
-            else if (grade == ModuleVerdictLevel.CanhBao && reason.Length == 0) reason = note;
-        }
-        if (grades.Any(g => g == ModuleVerdictLevel.Chan)) autoLevel = ModuleVerdictLevel.Chan;
-        else if (grades.Any(g => g == ModuleVerdictLevel.CanhBao)) autoLevel = ModuleVerdictLevel.CanhBao;
-        else if (total > 0 && grades.All(g => g == ModuleVerdictLevel.Dat)) autoLevel = ModuleVerdictLevel.Dat;
-        else autoLevel = ModuleVerdictLevel.ChuaTest;
-
-        (OverallText.Text, OverallText.Foreground) = autoLevel switch
-        {
-            ModuleVerdictLevel.Chan => ("KHÔNG KHUYẾN NGHỊ MUA", Application.Current?.TryFindResource("ErrorBrush") as Brush ?? Brushes.Red),
-            ModuleVerdictLevel.CanhBao => ("CẦN KIỂM TRA THÊM / THƯƠNG LƯỢNG", Application.Current?.TryFindResource("AccentBrush") as Brush ?? Brushes.Orange),
-            ModuleVerdictLevel.Dat => ("CÓ THỂ MUA — MUA ĐƯỢC", Brushes.ForestGreen),
-            _ => ("CHƯA ĐỦ DỮ LIỆU — CHƯA KẾT LUẬN ĐƯỢC", Application.Current?.TryFindResource("TextSecondaryBrush") as Brush ?? Brushes.Gray),
-        };
-        ReasonText.Text = autoLevel switch
-        {
-            ModuleVerdictLevel.Chan => $"Lý do chặn đầu tiên: {reason}" + (done < total ? $" • Còn {total - done} mục chưa hoàn thành." : ""),
-            ModuleVerdictLevel.CanhBao => $"Cảnh báo đầu tiên: {reason}" + (done < total ? $" • Còn {total - done} mục chưa hoàn thành." : ""),
-            ModuleVerdictLevel.Dat => "Tất cả bài test đã qua, chưa phát hiện vấn đề đáng kể. Câu nhận xét thân thiện đầy đủ ở trang Tổng kết.",
-            _ => "Còn bài test chưa xong, hoặc phiên bị dừng giữa chừng — chưa đủ dữ liệu để kết luận mua hay không.",
-        };
-        RiskText.Text = autoLevel switch
-        {
-            ModuleVerdictLevel.Chan => $"⚠ Lỗi nghiêm trọng: {reason}. Mở Báo cáo để xem đầy đủ.",
-            ModuleVerdictLevel.CanhBao => $"⚠ Cần lưu ý: {reason}. Nên kiểm tra và thương lượng.",
-            ModuleVerdictLevel.Dat => "Các bài kiểm tra được ghi nhận hoàn tất. Không thay thế kiểm tra kỹ thuật chuyên sâu.",
-            _ => "Chưa đủ kết quả. Các mục chưa kiểm tra không được xem là đạt."
-        };
     }
 }

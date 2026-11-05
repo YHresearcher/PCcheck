@@ -48,11 +48,10 @@
                         Click="StartButton_Click" Padding="14,9"/>
             </Grid>
 
-            <!-- Một cột duy nhất: thẻ máy + kết quả nhanh lên trước, phần chẩn đoán
-                 và thẻ shop xuống dưới (không chia 2 cột nữa, khỏi chật ở màn hẹp). -->
+            <!-- Một cột duy nhất: thẻ máy + kết quả nhanh + nút hành động.
+                 Thẻ Sức khỏe & Rủi ro đã dời sang trang Báo cáo (2026-11-05). -->
             <Grid x:Name="DashboardBody" Grid.Row="1">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
@@ -147,53 +146,6 @@
                     </Border>
                 </StackPanel>
 
-                <StackPanel x:Name="DashboardRight" Grid.Column="0" Grid.Row="1">
-                    <!-- Ở PC, khu tương ứng MDM là Sức khỏe và Rủi ro thiết bị. -->
-                    <Border Style="{StaticResource ReferenceCard}">
-                        <StackPanel>
-                            <TextBlock Text="🛡  Sức khỏe &amp; Rủi ro thiết bị"
-                                       Style="{StaticResource CardHeading}" Margin="0,0,0,12"/>
-                            <Border Background="{DynamicResource NavSelectedBrush}"
-                                    CornerRadius="12" Padding="12" Margin="0,0,0,12">
-                                <TextBlock x:Name="OverallText" Text="CHƯA ĐỦ DỮ LIỆU"
-                                           FontSize="16" FontWeight="Bold" TextWrapping="Wrap"
-                                           Foreground="{DynamicResource AccentBrush}"/>
-                            </Border>
-                            <Border Background="{DynamicResource SubtleBgBrush}"
-                                    CornerRadius="12" Padding="12" Margin="0,0,0,14">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <Image Grid.Column="0" Source="pack://application:,,,/Assets/mascot-new.png"
-                                           Width="140" Height="105" Stretch="Uniform"
-                                           Margin="0,0,12,0" VerticalAlignment="Center"/>
-                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                        <TextBlock Text="An Tâm nhắn bạn" FontWeight="Bold" FontSize="15"/>
-                                        <TextBlock x:Name="ReasonText" TextWrapping="Wrap"
-                                                   FontSize="12" Margin="0,5,0,0"/>
-                                    </StackPanel>
-                                </Grid>
-                            </Border>
-                            <TextBlock Text="✦  Nên kiểm tra kỹ trước khi quyết định:"
-                                       FontSize="14" FontWeight="Bold" Margin="0,0,0,10"/>
-                            <TextBlock Text="1   Ổ cứng, SMART và tuổi thọ pin"
-                                       FontWeight="SemiBold" FontSize="12" Margin="0,0,0,5"/>
-                            <TextBlock Text="Dữ liệu không đọc được không được xem là đạt."
-                                       Style="{StaticResource Muted}" Margin="20,0,0,12"/>
-                            <TextBlock Text="2   Nhiệt độ, CPU/GPU và cổng kết nối"
-                                       FontWeight="SemiBold" FontSize="12" Margin="0,0,0,5"/>
-                            <TextBlock Text="Test nặng cần theo dõi; một bài test ngắn không bảo đảm ổn định lâu dài."
-                                       Style="{StaticResource Muted}" Margin="20,0,0,12"/>
-                            <TextBlock x:Name="RiskText" Style="{StaticResource Muted}"
-                                       Text="Chưa có cảnh báo được ghi nhận; các bài test chưa làm vẫn cần kiểm tra."/>
-                            <Button Content="Xem báo cáo &amp; cảnh báo →" Click="SummaryButton_Click"
-                                    HorizontalAlignment="Left" Margin="0,12,0,0" Padding="12,8"/>
-                        </StackPanel>
-                    </Border>
-
-                </StackPanel>
             </Grid>
         </Grid>
     </ScrollViewer>

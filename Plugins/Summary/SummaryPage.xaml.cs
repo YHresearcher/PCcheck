@@ -491,6 +491,32 @@ public partial class SummaryPage : UserControl
             RefreshAnTamNote();
         }
         MarkLoaiButton.Content = _markedLoai ? "Bỏ đánh dấu không mua" : "Đánh dấu không mua máy này";
+
+        // Hộp "Lý do chính" trong thẻ Sức khỏe & Rủi ro (dời từ Dashboard):
+        // lý do chặn đầu tiên, không có thì cảnh báo đầu tiên — cùng logic
+        // Dashboard cũ (đếm done/total theo grades), nhưng câu chữ sửa cho
+        // đúng ngữ cảnh trang Báo cáo (không còn "mở Báo cáo", "ở trang Tổng kết").
+        string reason = "";
+        foreach (var r in rows)
+        {
+            if (r.Grade == "Chặn") { reason = r.Note; break; }
+        }
+        if (reason.Length == 0)
+            foreach (var r in rows)
+            {
+                if (r.Grade == "Cảnh báo") { reason = r.Note; break; }
+            }
+        int doneCount = grades.Count(g => g != ModuleVerdictLevel.ChuaTest);
+        int totalCount = grades.Count;
+        HealthReasonText.Text = _markedLoai
+            ? "Kỹ thuật viên đánh dấu không mua máy này."
+            : titleKey switch
+            {
+                "Sua" => $"Lý do chặn đầu tiên: {reason}" + (doneCount < totalCount ? $" • Còn {totalCount - doneCount} mục chưa hoàn thành." : ""),
+                "CanhBao" => $"Cảnh báo đầu tiên: {reason}" + (doneCount < totalCount ? $" • Còn {totalCount - doneCount} mục chưa hoàn thành." : ""),
+                "Dat" => "Tất cả bài test đã qua, chưa phát hiện vấn đề đáng kể.",
+                _ => "Còn bài test chưa xong, hoặc phiên bị dừng giữa chừng — chưa đủ dữ liệu để kết luận mua hay không.",
+            };
     }
 
     static string GradeText(ModuleVerdictLevel level) => level switch

@@ -9,6 +9,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
@@ -26,7 +27,37 @@
              Code-behind đặt Visibility = Collapsed khi không được hiện. -->
         <TextBlock x:Name="AnTamNoteText" Grid.Row="3" FontSize="12" FontStyle="Italic" TextWrapping="Wrap" Margin="0,6,0,0"
                    Foreground="{DynamicResource AccentBrush}" Visibility="Collapsed"/>
-        <StackPanel Grid.Row="4" Orientation="Horizontal" Margin="0,12,0,8">
+        <!-- Thẻ Sức khỏe & Rủi ro, dời từ Dashboard sang đây (2026-11-05).
+             Chỉ giữ hộp lý do chính (mascot + lý do chặn/cảnh báo đầu tiên):
+             banner kết luận KHÔNG dời theo vì trang này đã có OverallText ở trên,
+             danh sách rủi ro cố định + dòng trạng thái đã bỏ theo ý user,
+             nút "Xem báo cáo" bỏ vì đang ở ngay trang Báo cáo.
+             Nhãn hộp đổi thành "Lý do chính" để khỏi trùng dòng
+             "An Tâm nhắn bạn" (câu thơ) ở trên cùng trang. -->
+        <Border Grid.Row="4" Style="{StaticResource CardBorder}" Margin="0,0,0,12" Padding="14">
+            <StackPanel>
+                <TextBlock Text="🛡  Sức khỏe &amp; Rủi ro thiết bị"
+                           FontSize="16" FontWeight="Bold" Margin="0,0,0,12"/>
+                <Border Background="{DynamicResource SubtleBgBrush}"
+                        CornerRadius="12" Padding="12">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Image Grid.Column="0" Source="pack://application:,,,/Assets/mascot-new.png"
+                               Width="140" Height="105" Stretch="Uniform"
+                               Margin="0,0,12,0" VerticalAlignment="Center"/>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Text="Lý do chính" FontWeight="Bold" FontSize="15"/>
+                            <TextBlock x:Name="HealthReasonText" TextWrapping="Wrap"
+                                       FontSize="12" Margin="0,5,0,0"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+            </StackPanel>
+        </Border>
+        <StackPanel Grid.Row="5" Orientation="Horizontal" Margin="0,12,0,8">
             <Button x:Name="MarkLoaiButton" Content="Đánh dấu không mua máy này" Padding="16,7"
                     Click="MarkLoaiButton_Click"
                     ToolTip="Máy hỏng nặng, không nên mua thì bấm đây để kết luận thành KHÔNG MUA. Bấm lại để bỏ đánh dấu."/>
@@ -35,7 +66,7 @@
         <!-- Lưu hồ sơ phiên: 1 máy = 1 thư mục riêng trên USB, không ghi đè.
              Thư mục: <thư mục app>\KetQua\<S/N>_<yyyyMMdd_HHmmss>\ (xem SummaryPage.SaveSessionButton_Click).
              S/N để trống vẫn lưu được, tên thư mục dùng KhongCoSN, để máy mất tem vẫn có hồ sơ. -->
-        <StackPanel Grid.Row="5" Margin="0,0,0,8">
+        <StackPanel Grid.Row="6" Margin="0,0,0,8">
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="S/N máy:" VerticalAlignment="Center" FontWeight="SemiBold"/>
                 <TextBox x:Name="SerialBox" Width="220" Margin="8,0,0,0" Padding="6,4"
@@ -48,7 +79,7 @@
                        Foreground="{DynamicResource TextSecondaryBrush}"/>
         </StackPanel>
 
-        <ScrollViewer Grid.Row="6" VerticalScrollBarVisibility="Auto">
+        <ScrollViewer Grid.Row="7" VerticalScrollBarVisibility="Auto">
             <StackPanel>
                 <TextBlock Text="Dành cho kỹ thuật viên — chi tiết từng module (vì sao ra kết luận trên)" FontWeight="SemiBold" FontSize="13" Margin="0,0,0,6"/>
                 <ItemsControl x:Name="ModuleList">
