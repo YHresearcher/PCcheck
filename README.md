@@ -9,7 +9,7 @@
 [![Platform: Windows](https://img.shields.io/badge/Platform-Windows-0078D6.svg)]
 [![.NET 10](https://img.shields.io/badge/.NET-10-512BD4.svg)]
 
-**Công cụ kiểm tra PC / Laptop cũ — Vi tính An Tâm | Chuyên máy đã qua sử dụng, chuẩn doanh nghiệp**
+**Công cụ kiểm tra PC / Laptop cũ — Bán bằng tâm để bạn an tâm**
 
 Tool test máy tính cũ trước khi bán, của cửa hàng Vi Tính An Tâm. Tool trả lời 1 câu duy nhất: **máy này MUA ĐƯỢC HAY KHÔNG**, dùng chung cho cả kỹ thuật viên lẫn người mua — người mua chỉ cần đọc tiêu đề + câu thân thiện ở trang Tổng kết là đủ, kỹ thuật viên đọc chi tiết từng module ở dưới để biết vì sao.
 
