@@ -215,12 +215,35 @@ public partial class ConfigCheckPage : UserControl, YanJi.PluginSdk.IModulePage
         double remaining = 100 - _batteryWear;
         BatteryFillColumn.Width = new GridLength(remaining, GridUnitType.Star);
         BatteryEmptyColumn.Width = new GridLength(_batteryWear, GridUnitType.Star);
-        BatteryFill.Fill = _batteryWear < 20 ? Brushes.ForestGreen
-            : _batteryWear < 40 ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#DE870F"))
-            : new SolidColorBrush((Color)ColorConverter.ConvertFromString("#D33D42"));
+        Color baseColor = _batteryWear < 20 ? Colors.ForestGreen
+            : _batteryWear < 40 ? (Color)ColorConverter.ConvertFromString("#DE870F")
+            : (Color)ColorConverter.ConvertFromString("#D33D42");
+        BatteryFill.Fill = BandBrush(baseColor);
         BatteryNoteText.Text = $"Còn {remaining:0.#}% dung lượng • {_batteryNote}";
         BatteryCard.Visibility = Visibility.Visible;
     }
+
+    /// <summary>Gradient dọc cho fill viên pin (sáng trên -> màu gốc -> đậm dưới)
+    /// để pin nhìn nổi 3D thay vì mảng màu phẳng (cùng vệt bóng + bóng mờ ở XAML).</summary>
+    static LinearGradientBrush BandBrush(Color baseColor)
+    {
+        var brush = new LinearGradientBrush { StartPoint = new Point(0, 0), EndPoint = new Point(0, 1) };
+        brush.GradientStops.Add(new GradientStop(Lighten(baseColor, 0.5), 0));
+        brush.GradientStops.Add(new GradientStop(baseColor, 0.5));
+        brush.GradientStops.Add(new GradientStop(Darken(baseColor, 0.3), 1));
+        brush.Freeze();
+        return brush;
+    }
+
+    static Color Lighten(Color c, double amount) => Color.FromRgb(
+        (byte)(c.R + (255 - c.R) * amount),
+        (byte)(c.G + (255 - c.G) * amount),
+        (byte)(c.B + (255 - c.B) * amount));
+
+    static Color Darken(Color c, double amount) => Color.FromRgb(
+        (byte)(c.R * (1 - amount)),
+        (byte)(c.G * (1 - amount)),
+        (byte)(c.B * (1 - amount)));
 
     /// <summary>Báo cáo kết luận module cho trang Tổng kết. Quét xong mà chưa bấm cho qua
     /// thì chưa phải Đạt, kể cả khi ổ sạch (vì kỹ thuật viên chưa đối chiếu với đơn hàng);

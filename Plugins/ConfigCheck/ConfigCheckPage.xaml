@@ -122,31 +122,45 @@
              bị mất vì luôn rơi vào tab Khác, không bị lọc bỏ. -->
         <!-- Hình viên pin thể hiện độ chai (thay cho việc chỉ đọc chữ "Độ chai X %"
              trong nhóm Pin ở tab Khác): mức đầy = dung lượng còn lại, màu theo mốc
-             chai (<20% xanh, 20–<40% cam, ≥40% đỏ). Chỉ hiện khi đọc được % chai;
-             máy không pin / không đọc được thì ẩn, không đoán. -->
+             chai (<20% xanh, 20–<40% cam, ≥40% đỏ). Viên pin chỉ rộng 1/3 thẻ,
+             chữ nằm bên phải; hiệu ứng 3D bằng gradient + bóng mờ + vệt bóng.
+             Chỉ hiện khi đọc được % chai; máy không pin / không đọc được thì ẩn. -->
         <Border x:Name="BatteryCard" Grid.Row="4" Style="{StaticResource CardBorder}"
                 Margin="0,0,0,12" Padding="14" Visibility="Collapsed">
             <StackPanel>
                 <TextBlock Text="🔋  Pin — độ chai" FontWeight="SemiBold" FontSize="13" Margin="0,0,0,10"/>
-                <Grid Height="40" Margin="0,0,0,8">
+                <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="2*"/>
                     </Grid.ColumnDefinitions>
-                    <Border Grid.Column="0" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="2"
-                            CornerRadius="6" Padding="3">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition x:Name="BatteryFillColumn" Width="100*"/>
-                                <ColumnDefinition x:Name="BatteryEmptyColumn" Width="0*"/>
-                            </Grid.ColumnDefinitions>
-                            <Rectangle x:Name="BatteryFill" Grid.Column="0" RadiusX="3" RadiusY="3"/>
-                        </Grid>
-                    </Border>
-                    <Border Grid.Column="1" Background="{DynamicResource BorderBrush}"
-                            CornerRadius="0,4,4,0" Margin="0,12,0,12"/>
+                    <Grid Grid.Column="0" Height="40" VerticalAlignment="Center">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="10"/>
+                        </Grid.ColumnDefinitions>
+                        <Border Grid.Column="0" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="2"
+                                Background="{DynamicResource SurfaceBgBrush}"
+                                CornerRadius="6" Padding="3">
+                            <Border.Effect>
+                                <DropShadowEffect ShadowDepth="2" BlurRadius="4" Opacity="0.3"/>
+                            </Border.Effect>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition x:Name="BatteryFillColumn" Width="100*"/>
+                                    <ColumnDefinition x:Name="BatteryEmptyColumn" Width="0*"/>
+                                </Grid.ColumnDefinitions>
+                                <Rectangle x:Name="BatteryFill" Grid.Column="0" RadiusX="3" RadiusY="3"/>
+                                <Rectangle Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Top" Height="12"
+                                           Margin="2,2,2,0" Fill="White" Opacity="0.25" RadiusX="3" RadiusY="3"/>
+                            </Grid>
+                        </Border>
+                        <Border Grid.Column="1" Background="{DynamicResource BorderBrush}"
+                                CornerRadius="0,4,4,0" Margin="0,12,0,12"/>
+                    </Grid>
+                    <TextBlock Grid.Column="1" x:Name="BatteryNoteText" TextWrapping="Wrap" FontSize="12"
+                               VerticalAlignment="Center" Margin="14,0,0,0"/>
                 </Grid>
-                <TextBlock x:Name="BatteryNoteText" TextWrapping="Wrap" FontSize="12"/>
             </StackPanel>
         </Border>
         <TabControl Grid.Row="5">
