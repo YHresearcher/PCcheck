@@ -85,7 +85,7 @@
                     <Border Style="{StaticResource ReferenceCard}">
                         <StackPanel>
                             <DockPanel LastChildFill="False" Margin="0,0,0,10">
-                                <TextBlock DockPanel.Dock="Left" Text="❔  Kết quả kiểm tra nhanh"
+                                <TextBlock DockPanel.Dock="Left" Text="Kết quả kiểm tra nhanh"
                                            Style="{StaticResource CardHeading}"/>
                                 <Border DockPanel.Dock="Right" Background="{DynamicResource NavSelectedBrush}"
                                         CornerRadius="16" Padding="10,6">
