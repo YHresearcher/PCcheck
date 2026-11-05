@@ -68,12 +68,13 @@
                     BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,1,0">
                 <DockPanel LastChildFill="True">
                     <StackPanel DockPanel.Dock="Top" Margin="14,20,14,14">
-                        <StackPanel Orientation="Horizontal" Margin="0,0,0,26">
-                            <Image Source="pack://application:,,,/Assets/logo-antam.png"
-                                   Width="58" Height="58" Margin="0,0,10,0" Stretch="Uniform"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,14">
+                            <Image Source="pack://application:,,,/Assets/mascot-checklist-2026.png"
+                                   Width="124" Height="100" Margin="0,0,8,0"
+                                   Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality"/>
                             <StackPanel VerticalAlignment="Center">
-                                <TextBlock Text="An Tâm" FontSize="22" FontWeight="Bold"/>
-                                <TextBlock Text="PC check" FontSize="20" FontWeight="Bold"/>
+                                <TextBlock Text="An Tâm" FontSize="19" FontWeight="Bold"/>
+                                <TextBlock Text="PC check" FontSize="19" FontWeight="Bold"/>
                             </StackPanel>
                         </StackPanel>
                         <Button x:Name="NavOverview" Content="⌂    Tổng quan" Click="SidebarOverview_Click"
@@ -101,17 +102,8 @@
                                 Padding="14,11"/>
                     </StackPanel>
                     <StackPanel DockPanel.Dock="Bottom" Margin="18,8,18,17">
-                        <!-- Brand mascot placeholder: no test outcomes implied. -->
-                        <Border x:Name="MascotBrand" Background="{DynamicResource NavSelectedBrush}" CornerRadius="22"
-                                Padding="16" Margin="18,0,18,14">
-                            <StackPanel HorizontalAlignment="Center">
-                                <Image Source="pack://application:,,,/Assets/antam-mascot.png"
-                                       Width="158" Height="112" Stretch="Uniform" Margin="0,0,0,3"/>
-                                <TextBlock Text="An Tâm luôn bên bạn 🧡" FontSize="11"
-                                           FontWeight="SemiBold" TextWrapping="Wrap"
-                                           HorizontalAlignment="Center"/>
-                            </StackPanel>
-                        </Border>
+                        <!-- Mascot checklist chỉ xuất hiện ở header, theo bản thiết kế đã duyệt. -->
+                        <Border x:Name="MascotBrand" Height="0" Visibility="Collapsed"/>
                         <TextBlock x:Name="AllDoneHint" Text="🎉 Đã kiểm tra xong tất cả hạng mục!"
                                    Foreground="{DynamicResource AccentBrush}" FontSize="11"
                                    TextWrapping="Wrap" Margin="0,0,0,8" Visibility="Collapsed"/>
