@@ -32,20 +32,6 @@ public partial class DashboardPage : UserControl
         Loaded += (_, _) => Refresh();
     }
 
-    void DashboardBody_SizeChanged(object sender, SizeChangedEventArgs e)
-    {
-        // WPF desktop co giãn: 2 cột rộng, 1 cột khi cửa sổ hẹp.
-        // Không bắt người dùng kéo thanh cuộn ngang mới đọc được phần kết luận.
-        bool stacked = e.NewSize.Width < 820;
-        DashboardBody.ColumnDefinitions[0].Width = stacked ? new GridLength(1, GridUnitType.Star)
-            : new GridLength(1.12, GridUnitType.Star);
-        DashboardBody.ColumnDefinitions[1].Width = stacked ? new GridLength(0) : new GridLength(14);
-        DashboardBody.ColumnDefinitions[2].Width = stacked ? new GridLength(0)
-            : new GridLength(0.88, GridUnitType.Star);
-        Grid.SetColumn(DashboardRight, stacked ? 0 : 2);
-        Grid.SetRow(DashboardRight, stacked ? 1 : 0);
-    }
-
     void StartButton_Click(object sender, RoutedEventArgs e)
     {
         var passable = _host.Modules.Where(m => !m.Terminal).OrderBy(m => m.Order).ToList();
