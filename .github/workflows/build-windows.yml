@@ -1,13 +1,10 @@
-# Build An Tâm PC test trên máy chủ Windows của GitHub, không cần máy Windows ở nhà.
-# Cách dùng: push repo này lên GitHub, chờ build xong, tải file
-# AnTamPCtest-portable.zip ở mục Releases (Release "latest", luôn là bản mới nhất
-# từ nhánh main) về, giải nén ra USB là chạy được trên máy Windows. Tải ở Releases
-# không cần đăng nhập GitHub, khác với artifact ở Actions (cần đăng nhập).
-# Artifact "AnTamPCtest-portable" vẫn giữ lại làm bản dự phòng cho dev.
-# Chạy tự động mỗi lần push lên main (để push bằng deploy key cũng tự build được,
-# không cần gọi API workflow_dispatch), và vẫn bấm tay chạy lại được khi cần.
-# Release "latest" chỉ được cập nhật khi build thành công, nên bản lỗi không
-# ghi đè lên bản tốt đang phát hành.
+# Build An Tâm PC check trên GitHub Actions (Windows).
+# Mỗi lần PUSH lên main và BUILD THÀNH CÔNG: tạo Release MỚI với tag
+# build-<run_number>-<run_attempt>, đánh dấu Latest. Không ghi đè release cũ.
+# Với pull_request: chỉ build + artifact để kiểm thử, không tạo Release.
+# workflow_dispatch dùng để build thử thủ công, không tạo Release chính thức.
+# File portable cùng tên AnTamPCtest-portable.zip để link Latest ổn định.
+# Bản đang phát hành trước đây với tag "latest" được giữ nguyên (không xóa).
 name: Build Windows portable
 
 on:
@@ -76,17 +73,23 @@ jobs:
         # để giải nén ra là chạy ngay, không phải chui thêm 1 cấp thư mục.
         run: Compress-Archive -Path publish\* -DestinationPath AnTamPCtest-portable.zip -Force
 
-      - name: Tạo / cập nhật Release "latest"
+      - name: Phát hành phiên bản MỚI — không ghi đè bản cũ
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        # Release "latest" là 1 Release duy nhất, cập nhật liên tục, không tạo
-        # Release mới mỗi lần push (tránh spam danh sách Releases).
-        # Link tải ổn định, không cần đăng nhập:
-        # https://github.com/YHresearcher/PCcheck/releases/latest/download/AnTamPCtest-portable.zip
-        # gh CLI có sẵn trên runner, xác thực bằng GITHUB_TOKEN của workflow.
         env:
           GH_TOKEN: ${{ github.token }}
+        shell: pwsh
         run: |
-          gh release upload latest AnTamPCtest-portable.zip --clobber 2>$null
-          if ($LASTEXITCODE -ne 0) {
-            gh release create latest AnTamPCtest-portable.zip --title "An Tâm PC test — bản mới nhất" --notes "Bản portable mới nhất từ nhánh main, commit ${{ github.sha }}. Tải file AnTamPCtest-portable.zip, giải nén ra USB là chạy trên máy Windows (cần quyền Admin)."
-          }
+          $ErrorActionPreference = 'Stop'
+          $tag = "build-${{ github.run_number }}-${{ github.run_attempt }}"
+          $name = "An Tâm PC check — Build #${{ github.run_number }}"
+          $notes = @"
+          Bản Windows Portable được build thành công từ nhánh main.
+
+          - Commit: ${{ github.sha }}
+          - Workflow run: #${{ github.run_number }} (lần chạy ${{ github.run_attempt }})
+          - Tải AnTamPCtest-portable.zip, giải nén rồi chạy AnTamPCtest.exe trên Windows.
+          - Nếu máy chưa cấp quyền Admin, một số cảm biến / SMART có thể không khả dụng.
+          - Các release cũ được giữ nguyên để có thể quay lại bản trước.
+          "@
+          gh release create $tag "AnTamPCtest-portable.zip" --target "${{ github.sha }}" --title $name --notes $notes --latest
+          if ($LASTEXITCODE -ne 0) { throw "Không tạo được Release $tag" }
