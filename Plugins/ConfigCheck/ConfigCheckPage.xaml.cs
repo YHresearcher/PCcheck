@@ -15,6 +15,7 @@ public partial class ConfigCheckPage : UserControl, YanJi.PluginSdk.IModulePage
     bool _autoStarted; // 页面常驻机制下 Loaded 可能重入（切走再切回），自动检测只触发一次
     HardwareReport? _lastReport; // Báo cáo lần thu thập gần nhất, để nút cho qua kiểm tra ổ bị chặn
     string _batteryNote = ""; // Ghi chú pin từ lần thu thập gần nhất (vd "Pin chai 45%")
+    double _batteryWear = -1; // % chai lớn nhất (vd 45), -1 = không đọc được / không có pin
     IReadOnlyList<string> _batterySignals = []; // Tín hiệu pin hiện tại (xem ComputeBatterySignals)
     readonly IHostContext? _host; // Để báo cáo kết luận module cho trang Tổng kết (có thể null khi test riêng)
 
@@ -49,6 +50,9 @@ public partial class ConfigCheckPage : UserControl, YanJi.PluginSdk.IModulePage
         DetectProgress.Value = 0;
         SetTabGroups(null);
         SetIdentity(null);
+        _batteryWear = -1;
+        _batteryNote = "";
+        SetBatteryGauge();
         PhaseText.SetResourceReference(TextBlock.ForegroundProperty, "TextSecondaryBrush");
         try
         {
@@ -60,7 +64,8 @@ public partial class ConfigCheckPage : UserControl, YanJi.PluginSdk.IModulePage
             });
             var report = await Task.Run(() => HardwareInfoService.Collect(progress));
             _lastReport = report;
-            (_batterySignals, _batteryNote) = ComputeBatterySignals(report);
+            (_batterySignals, _batteryNote, _batteryWear) = ComputeBatterySignals(report);
+            SetBatteryGauge();
             _host?.ReportSignals("config", _batterySignals);
             ReportConfigVerdict();
             _host?.ReportDriveSummaries(report.Drives);
@@ -178,10 +183,10 @@ public partial class ConfigCheckPage : UserControl, YanJi.PluginSdk.IModulePage
     /// nặng. Pin không đọc được % hoặc máy không có pin (desktop) thì KHÔNG báo
     /// tín hiệu — không đoán, và không dùng câu "không đọc được pin" cho desktop
     /// (câu đó chỉ đúng khi biết chắc đây là laptop, mà app chưa biết dạng máy).</summary>
-    static (IReadOnlyList<string>, string) ComputeBatterySignals(HardwareReport report)
+    static (IReadOnlyList<string>, string, double) ComputeBatterySignals(HardwareReport report)
     {
         var pinGroup = report.Groups.FirstOrDefault(g => g.Title == "Pin");
-        if (pinGroup == null) return ([], "");
+        if (pinGroup == null) return ([], "", -1);
         double worstWear = -1;
         foreach (var e in pinGroup.Entries.Where(e => e.Name.StartsWith("Độ chai")))
         {
@@ -191,10 +196,30 @@ public partial class ConfigCheckPage : UserControl, YanJi.PluginSdk.IModulePage
                 System.Globalization.CultureInfo.InvariantCulture, out double wear))
                 worstWear = Math.Max(worstWear, wear);
         }
-        if (worstWear < 0) return ([], "");
-        if (worstWear < 20) return (["batteryHealthy"], $"Pin chai {worstWear:0.#}% — còn khỏe");
-        if (worstWear < 40) return (["batteryWorn20_30"], $"Pin chai {worstWear:0.#}% — tính thời lượng thực tế và chi phí thay pin");
-        return (["batteryWornOver40"], $"Pin chai {worstWear:0.#}% — tính chi phí thay pin trước khi mua");
+        if (worstWear < 0) return ([], "", -1);
+        if (worstWear < 20) return (["batteryHealthy"], $"Pin chai {worstWear:0.#}% — còn khỏe", worstWear);
+        if (worstWear < 40) return (["batteryWorn20_30"], $"Pin chai {worstWear:0.#}% — tính thời lượng thực tế và chi phí thay pin", worstWear);
+        return (["batteryWornOver40"], $"Pin chai {worstWear:0.#}% — tính chi phí thay pin trước khi mua", worstWear);
+    }
+
+    /// <summary>Hình viên pin thể hiện độ chai: mức đầy = dung lượng còn lại
+    /// (100 - % chai), màu theo mốc chai (<20% xanh, 20–<40% cam, ≥40% đỏ).
+    /// Chỉ hiện khi đọc được % chai; máy không pin / không đọc được thì ẩn.</summary>
+    void SetBatteryGauge()
+    {
+        if (_batteryWear < 0)
+        {
+            BatteryCard.Visibility = Visibility.Collapsed;
+            return;
+        }
+        double remaining = 100 - _batteryWear;
+        BatteryFillColumn.Width = new GridLength(remaining, GridUnitType.Star);
+        BatteryEmptyColumn.Width = new GridLength(_batteryWear, GridUnitType.Star);
+        BatteryFill.Fill = _batteryWear < 20 ? Brushes.ForestGreen
+            : _batteryWear < 40 ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#DE870F"))
+            : new SolidColorBrush((Color)ColorConverter.ConvertFromString("#D33D42"));
+        BatteryNoteText.Text = $"Còn {remaining:0.#}% dung lượng • {_batteryNote}";
+        BatteryCard.Visibility = Visibility.Visible;
     }
 
     /// <summary>Báo cáo kết luận module cho trang Tổng kết. Quét xong mà chưa bấm cho qua

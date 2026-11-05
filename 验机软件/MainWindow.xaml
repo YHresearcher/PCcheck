@@ -36,7 +36,7 @@
 
         <!-- ═══ Thanh wizard: chỉ hiện khi vào chế độ kiểm tra tập trung (Dashboard
              bấm Bắt đầu / Tiếp tục). Menu bên trái bị khóa lúc này để mỗi lần chỉ
-             có 1 bài test chính, tránh thao tác nhầm; nút Thoát wizard luôn hiện
+             có 1 bài test chính, tránh thao tác nhầm; nút Ngưng kiểm tra luôn hiện
              để không bị kẹt trong wizard. ═══ -->
         <Border x:Name="WizardBar" Grid.Row="2" Background="{DynamicResource SubtleBgBrush}"
                 BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1"
@@ -46,7 +46,7 @@
                 <Button x:Name="WizardBackButton" Content="← Quay lại bài trước" Click="OnWizardBackClick" Padding="12,4" Margin="16,0,0,0"/>
                 <Button x:Name="WizardNextButton" Content="Bài tiếp theo →" Click="OnWizardNextClick" Padding="12,4" Margin="8,0,0,0"/>
                 <Button Content="Dừng tất cả test nặng" Click="OnWizardStopClick" Padding="12,4" Margin="8,0,0,0"/>
-                <Button Content="Thoát wizard" Click="OnWizardExitClick" Padding="12,4" Margin="8,0,0,0"
+                <Button Content="Ngưng kiểm tra" Click="OnWizardExitClick" Padding="12,4" Margin="8,0,0,0"
                         ToolTip="Thoát chế độ tập trung, mở lại menu bên trái. Trạng thái test đã xong không mất."/>
             </StackPanel>
         </Border>

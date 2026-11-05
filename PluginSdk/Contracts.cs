@@ -72,8 +72,8 @@ public interface IHostContext
     /// module đó. Chỉ đổi SelectedIndex của host, không tự vào wizard.</summary>
     bool NavigateTo(string moduleId);
     /// <summary>Vào chế độ wizard: host khóa menu bên trái, hiện thanh wizard
-    /// (Quay lại / Bài tiếp theo / Dừng tất cả / Thoát wizard), mỗi lần chỉ
-    /// hiện 1 bài test. Thoát wizard thì mở lại menu, không mất trạng thái test.</summary>
+    /// (Quay lại / Bài tiếp theo / Dừng tất cả / Ngưng kiểm tra), mỗi lần chỉ
+    /// hiện 1 bài test. Ngưng kiểm tra thì mở lại menu, không mất trạng thái test.</summary>
     void StartWizard();
     /// <summary>Dừng các bài test tải nặng và trả tên tiến trình còn sống để cảnh báo.</summary>
     IReadOnlyList<string> StopAllHeavyTests();

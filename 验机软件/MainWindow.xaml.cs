@@ -225,7 +225,7 @@ public partial class MainWindow : Window
     {
         if (_wizardMode)
         {
-            MessageBox.Show("Bạn đang ở chế độ kiểm tra. Hãy bấm 'Thoát wizard' ở thanh trên để đổi trang nha.",
+            MessageBox.Show("Bạn đang ở chế độ kiểm tra. Hãy bấm 'Ngưng kiểm tra' ở thanh trên để đổi trang nha.",
                 "An Tâm PC check", MessageBoxButton.OK, MessageBoxImage.Information);
             return false;
         }
