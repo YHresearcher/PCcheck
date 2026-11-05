@@ -67,6 +67,11 @@
             <Border Grid.Column="0" Background="{DynamicResource SubtleBgBrush}"
                     BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,1,0">
                 <DockPanel LastChildFill="True">
+                    <!-- NavList giữ lại nhưng ẩn: wizard, tự nhảy bài, chấm trạng thái
+                         và import plugin vẫn dùng nó làm trạng thái chọn; chỉ bỏ phần
+                         hiển thị "Danh sách bài test" khỏi sidebar theo yêu cầu. -->
+                    <ListBox x:Name="NavList" SelectionChanged="OnNavSelect"
+                             BorderThickness="0" Background="Transparent" Visibility="Collapsed"/>
                     <StackPanel DockPanel.Dock="Top" Margin="14,20,14,14">
                         <StackPanel Orientation="Horizontal" Margin="0,0,0,14">
                             <Image Source="pack://application:,,,/Assets/mascot-checklist-2026.png"
@@ -93,13 +98,6 @@
                         <Button x:Name="NavTools" Content="⚒    Công cụ tiện ích" Click="SidebarTools_Click"
                                 HorizontalContentAlignment="Left" FontSize="14"
                                 Padding="14,11" Margin="0,0,0,5"/>
-                        <Separator Margin="0,12,0,12"/>
-                        <Button Content="?    Hướng dẫn" Click="SidebarHelp_Click"
-                                HorizontalContentAlignment="Left" FontSize="14"
-                                Padding="14,11" Margin="0,0,0,5"/>
-                        <Button Content="ⓘ    Giới thiệu" Click="SidebarAbout_Click"
-                                HorizontalContentAlignment="Left" FontSize="14"
-                                Padding="14,11"/>
                     </StackPanel>
                     <StackPanel DockPanel.Dock="Bottom" Margin="18,8,18,17">
                         <!-- Mascot checklist chỉ xuất hiện ở header, theo bản thiết kế đã duyệt. -->
@@ -110,14 +108,44 @@
                         <TextBlock Text="An Tâm PC check • Windows" FontSize="10"
                                    Foreground="{DynamicResource TextSecondaryBrush}"/>
                     </StackPanel>
-                    <!-- Giữ NavList động để wizard, plugin import và chấm trạng thái hoạt động nguyên vẹn. -->
+                    <!-- Thẻ shop dời từ Dashboard sang sidebar (nội dung giữ nguyên,
+                         chỉ thu gọn cho vừa chiều rộng sidebar). -->
                     <ScrollViewer VerticalScrollBarVisibility="Auto"
                                   HorizontalScrollBarVisibility="Disabled">
-                        <Expander x:Name="TestsExpander" Header="Danh sách bài test"
-                                  IsExpanded="False" Margin="10,0,10,8">
-                            <ListBox x:Name="NavList" SelectionChanged="OnNavSelect"
-                                     BorderThickness="0" Background="Transparent"/>
-                        </Expander>
+                        <Border Background="{DynamicResource SurfaceBgBrush}"
+                                BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                                CornerRadius="14" Padding="12">
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                                    <Image Source="pack://application:,,,/Assets/logo-antam.png"
+                                           Width="32" Height="32" Stretch="Uniform" Margin="0,0,8,0"/>
+                                    <TextBlock Text="Vi tính An Tâm" FontWeight="Bold"
+                                               FontSize="17" VerticalAlignment="Center"/>
+                                </StackPanel>
+                                <Border Background="{DynamicResource NavSelectedBrush}"
+                                        CornerRadius="10" Padding="8,6" Margin="0,0,0,10">
+                                    <TextBlock Text="Bảo hành 6 tháng nguyên máy"
+                                               Foreground="{DynamicResource AccentBrush}"
+                                               FontWeight="SemiBold" FontSize="11"
+                                               HorizontalAlignment="Center" TextAlignment="Center"
+                                               TextWrapping="Wrap"/>
+                                </Border>
+                                <TextBlock Text="⌖  Chi nhánh 1: 52 Nguyễn Cửu Vân, P. Long An, T. Tây Ninh"
+                                           Foreground="{DynamicResource TextSecondaryBrush}"
+                                           FontSize="11" TextWrapping="Wrap" Margin="0,0,0,8"/>
+                                <TextBlock Text="⌖  Chi nhánh 2: 218/3 đường số 11, phường Thủ Đức, TP. Hồ Chí Minh"
+                                           Foreground="{DynamicResource TextSecondaryBrush}"
+                                           FontSize="11" TextWrapping="Wrap" Margin="0,0,0,8"/>
+                                <TextBlock Text="◎  vitinhantam.com"
+                                           Foreground="{DynamicResource TextSecondaryBrush}"
+                                           FontSize="11" Margin="0,0,0,12"/>
+                                <Button Content="↗  Tham quan shop" Click="VisitShopButton_Click"
+                                        HorizontalAlignment="Stretch" Padding="10,8"
+                                        Foreground="{DynamicResource AccentBrush}"
+                                        BorderBrush="{DynamicResource AccentBrush}"
+                                        Background="{DynamicResource SurfaceBgBrush}"/>
+                            </StackPanel>
+                        </Border>
                     </ScrollViewer>
                 </DockPanel>
             </Border>

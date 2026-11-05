@@ -53,19 +53,6 @@ public partial class DashboardPage : UserControl
         }
     }
 
-    void ShopButton_Click(object sender, RoutedEventArgs e)
-    {
-        try
-        {
-            Process.Start(new ProcessStartInfo("https://vitinhantam.com") { UseShellExecute = true });
-        }
-        catch (Exception ex)
-        {
-            MessageBox.Show($"Chưa mở được website: {ex.Message}", "Tham quan shop",
-                MessageBoxButton.OK, MessageBoxImage.Warning);
-        }
-    }
-
     void StopButton_Click(object sender, RoutedEventArgs e)
     {
         var survivors = _host.StopAllHeavyTests();

@@ -61,11 +61,11 @@
                     <Border Style="{StaticResource ReferenceCard}">
                         <Grid>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="145"/>
+                                <ColumnDefinition Width="213"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <Image Grid.Column="0" Source="pack://application:,,,/Assets/laptop-preview-2026.png"
-                                   Width="145" Height="144" Stretch="Uniform"
+                                   Width="200" Height="190" Stretch="Uniform"
                                    RenderOptions.BitmapScalingMode="HighQuality" Margin="0,0,13,0"/>
                             <StackPanel Grid.Column="1" VerticalAlignment="Center">
                                 <TextBlock x:Name="MachineText" Text="PC / Laptop đang kiểm tra"
@@ -193,37 +193,6 @@
                         </StackPanel>
                     </Border>
 
-                    <Border Style="{StaticResource ReferenceCard}">
-                        <StackPanel>
-                            <Grid Margin="0,0,0,12">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-                                <StackPanel Orientation="Horizontal">
-                                    <Image Source="pack://application:,,,/Assets/logo-antam.png"
-                                           Width="40" Height="40" Stretch="Uniform" Margin="0,0,8,0"/>
-                                    <TextBlock Text="Vi tính An Tâm" FontWeight="Bold"
-                                               FontSize="21" VerticalAlignment="Center"/>
-                                </StackPanel>
-                                <Border Grid.Column="1" Background="{DynamicResource NavSelectedBrush}"
-                                        CornerRadius="10" Padding="8,6" VerticalAlignment="Center">
-                                    <TextBlock Text="Bảo hành 6 tháng nguyên máy" Foreground="{DynamicResource AccentBrush}"
-                                               FontWeight="SemiBold" FontSize="12"/>
-                                </Border>
-                            </Grid>
-                            <TextBlock Text="⌖  Chi nhánh 1: 52 Nguyễn Cửu Vân, P. Long An, T. Tây Ninh"
-                                       Style="{StaticResource Muted}" Margin="0,0,0,10"/>
-                            <TextBlock Text="⌖  Chi nhánh 2: 218/3 đường số 11, phường Thủ Đức, TP. Hồ Chí Minh"
-                                       Style="{StaticResource Muted}" Margin="0,0,0,10"/>
-                            <TextBlock Text="◎  vitinhantam.com" Style="{StaticResource Muted}" Margin="0,0,0,14"/>
-                            <Button Content="↗  Tham quan shop" Click="ShopButton_Click"
-                                    HorizontalAlignment="Stretch"
-                                    Padding="15,11" Foreground="{DynamicResource AccentBrush}"
-                                    BorderBrush="{DynamicResource AccentBrush}"
-                                    Background="{DynamicResource SurfaceBgBrush}"/>
-                        </StackPanel>
-                    </Border>
                 </StackPanel>
             </Grid>
         </Grid>
