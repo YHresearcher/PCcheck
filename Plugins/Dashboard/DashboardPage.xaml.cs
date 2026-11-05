@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Media;
 using System.Collections.Generic;
 using YanJi.PluginSdk;
@@ -25,7 +26,22 @@ public partial class DashboardPage : UserControl
         InitializeComponent();
         _host.DoneChanged += Refresh;
         _host.VerdictChanged += Refresh;
+        _host.DriveSummariesChanged += Refresh;
         Loaded += (_, _) => Refresh();
+    }
+
+    void DashboardBody_SizeChanged(object sender, SizeChangedEventArgs e)
+    {
+        // WPF desktop co giãn: 2 cột rộng, 1 cột khi cửa sổ hẹp.
+        // Không bắt người dùng kéo thanh cuộn ngang mới đọc được phần kết luận.
+        bool stacked = e.NewSize.Width < 820;
+        DashboardBody.ColumnDefinitions[0].Width = stacked ? new GridLength(1, GridUnitType.Star)
+            : new GridLength(1.12, GridUnitType.Star);
+        DashboardBody.ColumnDefinitions[1].Width = stacked ? new GridLength(0) : new GridLength(14);
+        DashboardBody.ColumnDefinitions[2].Width = stacked ? new GridLength(0)
+            : new GridLength(0.88, GridUnitType.Star);
+        Grid.SetColumn(DashboardRight, stacked ? 0 : 2);
+        Grid.SetRow(DashboardRight, stacked ? 1 : 0);
     }
 
     void StartButton_Click(object sender, RoutedEventArgs e)
@@ -66,7 +82,7 @@ public partial class DashboardPage : UserControl
     {
         var survivors = _host.StopAllHeavyTests();
         if (survivors.Count == 0)
-            MessageBox.Show("Đã dừng các bài kiểm tra tải nặng. Bạn vẫn có thể tiếp tục kiểm tra thủ công nha!",
+            MessageBox.Show("Không phát hiện tiến trình test nặng nào còn chạy. Nếu đang kiểm tra thủ công, bạn vẫn có thể tiếp tục nha!",
                 "An Tâm PC check", MessageBoxButton.OK, MessageBoxImage.Information);
         else
             MessageBox.Show($"Còn tiến trình chưa dừng: {string.Join(", ", survivors)}. Hãy kiểm tra Task Manager nhé.",
@@ -132,6 +148,7 @@ public partial class DashboardPage : UserControl
             tests.Add(new TestLine(IconFor(m.Id), m.Name, label, color));
         }
         QuickTestList.ItemsSource = tests;
+        MachineText.Text = $"Thiết bị: {Environment.MachineName}";
         StorageText.Text = _host.DriveSummaries.Count > 0
             ? $"Ổ đĩa: {_host.DriveSummaries.Count} ổ được ghi nhận • Xem thông tin chi tiết"
             : "SSD / HDD: Chưa có dữ liệu kiểm tra";
@@ -164,8 +181,8 @@ public partial class DashboardPage : UserControl
         };
         ReasonText.Text = autoLevel switch
         {
-            ModuleVerdictLevel.Chan => $"Lý do chặn đầu tiên: {reason}",
-            ModuleVerdictLevel.CanhBao => $"Cảnh báo đầu tiên: {reason}",
+            ModuleVerdictLevel.Chan => $"Lý do chặn đầu tiên: {reason}" + (done < total ? $" • Còn {total - done} mục chưa hoàn thành." : ""),
+            ModuleVerdictLevel.CanhBao => $"Cảnh báo đầu tiên: {reason}" + (done < total ? $" • Còn {total - done} mục chưa hoàn thành." : ""),
             ModuleVerdictLevel.Dat => "Tất cả bài test đã qua, chưa phát hiện vấn đề đáng kể. Câu nhận xét thân thiện đầy đủ ở trang Tổng kết.",
             _ => "Còn bài test chưa xong, hoặc phiên bị dừng giữa chừng — chưa đủ dữ liệu để kết luận mua hay không.",
         };

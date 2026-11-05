@@ -50,9 +50,9 @@
         </Style>
     </UserControl.Resources>
 
-    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
                   Background="{DynamicResource WindowBgBrush}">
-        <Grid Margin="22" MinWidth="810">
+        <Grid Margin="22">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -73,7 +73,11 @@
                         Click="StartButton_Click" VerticalAlignment="Center"/>
             </Grid>
 
-            <Grid Grid.Row="1">
+            <Grid x:Name="DashboardBody" Grid.Row="1" SizeChanged="DashboardBody_SizeChanged">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1.12*"/>
                     <ColumnDefinition Width="14"/>
@@ -87,7 +91,7 @@
                             <TextBlock Text="Thông số máy được đọc ở mục Đối chiếu cấu hình."
                                        Style="{StaticResource DashboardMuted}" Margin="0,8,0,12"/>
                             <TextBlock x:Name="MachineText" FontSize="16" FontWeight="SemiBold"
-                                       Text="PC / Laptop đang kiểm tra" TextWrapping="Wrap"/>
+                                       Text="Đang nhận diện thiết bị..." TextWrapping="Wrap"/>
                             <TextBlock x:Name="StorageText" Text="SSD / HDD: Chưa đọc"
                                        Style="{StaticResource DashboardMuted}" Margin="0,8,0,0"/>
                             <Button Content="Xem thông tin phần cứng →" Click="HardwareButton_Click"
@@ -134,7 +138,7 @@
                     </Border>
                 </StackPanel>
 
-                <StackPanel Grid.Column="2">
+                <StackPanel x:Name="DashboardRight" Grid.Column="2" Grid.Row="0">
                     <Border Style="{StaticResource DashboardCard}">
                         <StackPanel>
                             <TextBlock Text="🛡  Đánh giá mua máy" Style="{StaticResource DashboardTitle}"/>
