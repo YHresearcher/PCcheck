@@ -243,11 +243,21 @@ public partial class MainWindow : Window
             return;
         }
         TestsExpander.IsExpanded = true;
-        string first = _hostContext.Modules.Where(m => !m.Terminal)
-            .OrderBy(m => m.Order).FirstOrDefault(m => !_doneTags.Contains(m.Id))?.Id
-            ?? _hostContext.Modules.Where(m => !m.Terminal)
-                .OrderBy(m => m.Order).FirstOrDefault()?.Id ?? "summary";
-        NavigateToModule(first);
+        var tests = _hostContext.Modules.Where(m => !m.Terminal).OrderBy(m => m.Order).ToList();
+        if (tests.Count == 0)
+        {
+            MessageBox.Show("Chưa có bài test nào được cài đặt.", "Kiểm tra chi tiết",
+                MessageBoxButton.OK, MessageBoxImage.Information);
+            return;
+        }
+        if (tests.All(m => _doneTags.Contains(m.Id)))
+        {
+            NavigateToModule("summary");
+            return;
+        }
+        string first = tests.First(m => !_doneTags.Contains(m.Id)).Id;
+        StartWizardMode();
+        if (!NavigateToModule(first)) ExitWizardMode();
     }
 
     void SidebarHardware_Click(object sender, RoutedEventArgs e) => NavigateFromSidebar("config");
