@@ -166,8 +166,9 @@
                             <Border Background="{DynamicResource SubtleBgBrush}"
                                     CornerRadius="12" Padding="12" Margin="0,0,0,14">
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="🧡" FontSize="31" Margin="0,0,12,0"
-                                               VerticalAlignment="Center"/>
+                                    <Image Source="pack://application:,,,/Assets/antam-mascot.png"
+                                           Width="105" Height="90" Stretch="Uniform"
+                                           Margin="0,0,12,0" VerticalAlignment="Center"/>
                                     <StackPanel>
                                         <TextBlock Text="An Tâm nhắn bạn" FontWeight="Bold" FontSize="15"/>
                                         <TextBlock x:Name="ReasonText" TextWrapping="Wrap"
