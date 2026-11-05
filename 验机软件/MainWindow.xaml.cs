@@ -112,7 +112,8 @@ public partial class MainWindow : Window
         AddHandler(PreviewKeyDownEvent, new KeyEventHandler(OnGlobalPreviewKeyDown), handledEventsToo: true);
         AddHandler(PreviewKeyUpEvent, new KeyEventHandler(OnGlobalPreviewKeyUp), handledEventsToo: true);
 
-        Loaded += (_, _) => UpdateIcon();
+        Loaded += (_, _) => { UpdateIcon(); AdjustSidebarForHeight(); };
+        SizeChanged += (_, _) => AdjustSidebarForHeight();
         // 关窗兜底：通知各插件做清理（如散热测试停烤机进程；页面 Unloaded / App.Exit / Job 对象之外再加一层）
         Closed += (_, _) =>
         {
@@ -217,12 +218,116 @@ public partial class MainWindow : Window
         TextAlignment = TextAlignment.Center,
     };
 
+    // Menu chính theo thiết kế tham chiếu; NavList động vẫn tồn tại bên trong
+    // expander để giữ nguyên wizard, thông báo trạng thái và các plugin đã cài.
+    bool NavigateFromSidebar(string moduleId)
+    {
+        if (_wizardMode)
+        {
+            MessageBox.Show("Bạn đang ở chế độ kiểm tra. Hãy bấm 'Thoát wizard' ở thanh trên để đổi trang nha.",
+                "An Tâm PC check", MessageBoxButton.OK, MessageBoxImage.Information);
+            return false;
+        }
+        return NavigateToModule(moduleId);
+    }
+
+    void SidebarOverview_Click(object sender, RoutedEventArgs e)
+    {
+        if (NavigateFromSidebar("dashboard")) TestsExpander.IsExpanded = false;
+    }
+
+    void SidebarInspection_Click(object sender, RoutedEventArgs e)
+    {
+        if (_wizardMode)
+        {
+            TestsExpander.IsExpanded = true;
+            return;
+        }
+        TestsExpander.IsExpanded = true;
+        var tests = _hostContext.Modules.Where(m => !m.Terminal).OrderBy(m => m.Order).ToList();
+        if (tests.Count == 0)
+        {
+            MessageBox.Show("Chưa có bài test nào được cài đặt.", "Kiểm tra chi tiết",
+                MessageBoxButton.OK, MessageBoxImage.Information);
+            return;
+        }
+        if (tests.All(m => _doneTags.Contains(m.Id)))
+        {
+            NavigateToModule("summary");
+            return;
+        }
+        string first = tests.First(m => !_doneTags.Contains(m.Id)).Id;
+        StartWizardMode();
+        if (!NavigateToModule(first)) ExitWizardMode();
+    }
+
+    void SidebarHardware_Click(object sender, RoutedEventArgs e) => NavigateFromSidebar("config");
+    void SidebarReport_Click(object sender, RoutedEventArgs e) => NavigateFromSidebar("summary");
+    void SidebarTools_Click(object sender, RoutedEventArgs e)
+    {
+        if (!NavigateFromSidebar("disk")) return;
+        TestsExpander.IsExpanded = true;
+    }
+
+    void SidebarHelp_Click(object sender, RoutedEventArgs e)
+    {
+        if (_wizardMode) { NavigateFromSidebar("dashboard"); return; }
+        MessageBox.Show(
+            "1. Bấm Kiểm tra chi tiết để bắt đầu hoặc tiếp tục.\n" +
+            "2. Kiểm tra từng mục rồi xác nhận kết quả.\n" +
+            "3. Xem Sức khỏe và Báo cáo để đánh giá rủi ro.\n" +
+            "4. Lưu hồ sơ trước khi chuyển sang máy khác.\n\n" +
+            "Dừng test nặng ở thanh trên khi cần; chưa test không đồng nghĩa đã đạt.",
+            "Hướng dẫn sử dụng", MessageBoxButton.OK, MessageBoxImage.Information);
+    }
+
+    void SidebarAbout_Click(object sender, RoutedEventArgs e)
+    {
+        if (_wizardMode) { NavigateFromSidebar("dashboard"); return; }
+        MessageBox.Show(
+            "An Tâm PC check • Vi tính An Tâm\n" +
+            "Công cụ hỗ trợ đánh giá PC/Laptop cũ trước khi mua.\n\n" +
+            "Chi nhánh 1: 52 Nguyễn Cửu Vân, P. Long An, T. Tây Ninh\n" +
+            "Chi nhánh 2: 218/3 đường số 11, phường Thủ Đức, TP. Hồ Chí Minh\n" +
+            "Website: https://vitinhantam.com\n" +
+            "Bảo hành 6 tháng nguyên máy (đối với máy thuộc chính sách shop).",
+            "Giới thiệu", MessageBoxButton.OK, MessageBoxImage.Information);
+    }
+
+    void AdjustSidebarForHeight()
+    {
+        // Màn hình laptop thấp: ưu tiên không gian danh sách test, mascot chỉ ẩn
+        // trong sidebar (không mất asset, vẫn có trên dashboard).
+        MascotBrand.Visibility = ActualHeight < 850
+            ? Visibility.Collapsed : Visibility.Visible;
+    }
+
     void OnNavSelect(object sender, SelectionChangedEventArgs e)
     {
-        // 按 ListBoxItem.Tag（插件 id）取页面实例（常驻，切换不丢状态）
+        // Theo dõi trang hiện tại để sidebar không giữ Tổng quan sáng khi đang test.
         if (NavList.SelectedItem is ListBoxItem item && item.Tag is string tag && _pages.TryGetValue(tag, out var page))
+        {
             ContentHost.Content = page;
+            SyncPrimaryNav(tag);
+        }
         if (_wizardMode) UpdateWizardButtons();
+    }
+
+    void SyncPrimaryNav(string id)
+    {
+        var buttons = new[] { NavOverview, NavInspection, NavHardware, NavReport, NavTools };
+        foreach (var button in buttons)
+            button.SetResourceReference(Control.BackgroundProperty, "SubtleBgBrush");
+
+        Button selected = id switch
+        {
+            "dashboard" => NavOverview,
+            "config" or "health" => NavHardware,
+            "summary" => NavReport,
+            "disk" => _wizardMode ? NavInspection : NavTools,
+            _ => NavInspection
+        };
+        selected.SetResourceReference(Control.BackgroundProperty, "NavSelectedBrush");
     }
 
     /// <summary>模块页面通过态变化：圆点同步 + 通过时自动跳转下一未完成模块；回退时撤掉「全部完成」提示。</summary>
@@ -349,6 +454,7 @@ public partial class MainWindow : Window
 
     void StartWizardMode()
     {
+        TestsExpander.IsExpanded = true;
         _wizardMode = true;
         NavList.IsEnabled = false;
         WizardBar.Visibility = Visibility.Visible;

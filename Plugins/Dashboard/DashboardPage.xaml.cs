@@ -2,7 +2,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
+using Microsoft.Win32;
+using System.Runtime.InteropServices;
 using System.Windows.Media;
 using System.Collections.Generic;
 using YanJi.PluginSdk;
@@ -98,6 +99,41 @@ public partial class DashboardPage : UserControl
         "disk" => "▥", _ => "○"
     };
 
+    static string ReadCpuName()
+    {
+        try
+        {
+            return Registry.GetValue(
+                @"HKEY_LOCAL_MACHINE\HARDWARE\DESCRIPTION\System\CentralProcessor\0",
+                "ProcessorNameString", null)?.ToString()?.Trim() ?? "Chưa đọc được";
+        }
+        catch { return "Chưa đọc được"; }
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    struct MemoryStatus
+    {
+        public uint Length;
+        public uint MemoryLoad;
+        public ulong TotalPhysical, AvailablePhysical, TotalPageFile, AvailablePageFile;
+        public ulong TotalVirtual, AvailableVirtual, AvailableExtendedVirtual;
+    }
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    static extern bool GlobalMemoryStatusEx(ref MemoryStatus status);
+
+    static string ReadPhysicalMemory()
+    {
+        try
+        {
+            var status = new MemoryStatus { Length = (uint)Marshal.SizeOf<MemoryStatus>() };
+            return GlobalMemoryStatusEx(ref status)
+                ? $"{status.TotalPhysical / 1073741824.0:0.#} GB"
+                : "Chưa đọc được";
+        }
+        catch { return "Chưa đọc được"; }
+    }
+
     void HardwareButton_Click(object sender, RoutedEventArgs e) => _host.NavigateTo("config");
     void HealthButton_Click(object sender, RoutedEventArgs e) => _host.NavigateTo("health");
     void SummaryButton_Click(object sender, RoutedEventArgs e) => _host.NavigateTo("summary");
@@ -125,7 +161,7 @@ public partial class DashboardPage : UserControl
         ProgressText.Text = total > 0
             ? $"{done}/{total} mục đã xong"
             : "Chưa có mục kiểm tra";
-        ProgressBar.Value = total > 0 ? 100.0 * done / total : 0;
+
         var tests = new List<TestLine>();
         foreach (var m in passable)
         {
@@ -149,6 +185,9 @@ public partial class DashboardPage : UserControl
         }
         QuickTestList.ItemsSource = tests;
         MachineText.Text = $"Thiết bị: {Environment.MachineName}";
+        CpuText.Text = "CPU: " + ReadCpuName();
+        RamText.Text = "RAM: " + ReadPhysicalMemory();
+        GpuText.Text = "GPU: Xem mục Đối chiếu cấu hình";
         StorageText.Text = _host.DriveSummaries.Count > 0
             ? $"Ổ đĩa: {_host.DriveSummaries.Count} ổ được ghi nhận • Xem thông tin chi tiết"
             : "SSD / HDD: Chưa có dữ liệu kiểm tra";
@@ -186,8 +225,12 @@ public partial class DashboardPage : UserControl
             ModuleVerdictLevel.Dat => "Tất cả bài test đã qua, chưa phát hiện vấn đề đáng kể. Câu nhận xét thân thiện đầy đủ ở trang Tổng kết.",
             _ => "Còn bài test chưa xong, hoặc phiên bị dừng giữa chừng — chưa đủ dữ liệu để kết luận mua hay không.",
         };
-        StartCaption.Text = done == 0 ? "BẮT ĐẦU"
-            : done < total ? "TIẾP TỤC"
-            : "XEM TỔNG KẾT";
+        RiskText.Text = autoLevel switch
+        {
+            ModuleVerdictLevel.Chan => $"⚠ Lỗi nghiêm trọng: {reason}. Mở Báo cáo để xem đầy đủ.",
+            ModuleVerdictLevel.CanhBao => $"⚠ Cần lưu ý: {reason}. Nên kiểm tra và thương lượng.",
+            ModuleVerdictLevel.Dat => "Các bài kiểm tra được ghi nhận hoàn tất. Không thay thế kiểm tra kỹ thuật chuyên sâu.",
+            _ => "Chưa đủ kết quả. Các mục chưa kiểm tra không được xem là đạt."
+        };
     }
 }

@@ -1,8 +1,8 @@
 <Window x:Class="YanJi.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="An Tâm PC check" Width="1320" Height="870"
-        MinWidth="980" MinHeight="680"
+        Title="An Tâm PC check" Width="1536" Height="1024"
+        MinWidth="940" MinHeight="680"
         Background="{DynamicResource WindowBgBrush}"
         FontFamily="/Fonts/#Be Vietnam Pro, Segoe UI, Microsoft YaHei UI"
         TextElement.Foreground="{DynamicResource TextBrush}">
@@ -17,44 +17,21 @@
         <!-- ═══ Dải cam thương hiệu An Tâm trên cùng ═══ -->
         <Border Grid.Row="0" Background="{DynamicResource AccentBrush}"/>
 
-        <!-- ═══ Top bar: logo + tên app + bên phải nút Dừng tất cả test nặng + công tắc theme ═══ -->
-        <Border Grid.Row="1" Background="{DynamicResource SubtleBgBrush}"
+        <!-- Compact utility strip: thương hiệu hiển thị duy nhất trong sidebar. -->
+        <Border Grid.Row="1" Background="{DynamicResource WindowBgBrush}"
                 BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1"
-                Padding="14,8">
-            <!-- Top bar chia 2 cột (trái co giãn + phải tự rộng) để khi khung hẹp
-                 thì chữ bên trái tự xuống dòng thay vì chèn lên nút bên phải như trước
-                 (trước đây 2 StackPanel cùng nằm 1 ô Grid, không có cột, nên hẹp là chồng nhau).
-                 Cột chữ cũng là Grid (logo Auto + chữ *) chứ không phải StackPanel ngang,
-                 vì StackPanel ngang đo chữ với chiều rộng vô hạn nên TextWrapping không có tác dụng. -->
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <Grid Grid.Column="0" VerticalAlignment="Center">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <Image Grid.Column="0" Source="pack://application:,,,/Assets/logo-antam.png"
-                           Width="36" Height="36" Margin="0,0,10,0"
-                           RenderOptions.BitmapScalingMode="HighQuality"/>
-                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                        <TextBlock Text="An Tâm PC check" FontSize="14" FontWeight="SemiBold"/>
-                        <TextBlock Text="Công cụ kiểm tra PC/ Laptop cũ" FontSize="10" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap"/>
-                        <TextBlock Text="Vi tính An Tâm | Chuyên máy đã qua sử dụng, chuẩn doanh nghiệp" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource AccentBrush}" TextWrapping="Wrap"/>
-                    </StackPanel>
-                </Grid>
-                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                    <Button Content="Dừng tất cả test nặng" Click="OnStopAllHeavyTestsClick" Padding="12,4" Margin="0,0,12,0"
-                            ToolTip="Dừng thật Prime95 / FurMark / đo tốc độ ổ (kill có kiểm chứng, không chỉ dừng giao diện). Nếu còn tiến trình sống sẽ báo rõ tên để kiểm tra Task Manager."/>
-                    <TextBlock Text="☀" FontSize="14" Margin="0,0,4,0"/>
-                    <ToggleButton x:Name="ThemeSwitch" Style="{StaticResource ThemeSwitch}"
-                                  ToolTip="Đổi giao diện tối / sáng"
-                                  Checked="OnThemeSwitch" Unchecked="OnThemeSwitch"/>
-                    <TextBlock Text="🌙" FontSize="14" Margin="4,0,0,0"/>
-                </StackPanel>
-            </Grid>
+                Padding="12,4">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right"
+                        VerticalAlignment="Center">
+                <Button Content="Dừng test nặng" Click="OnStopAllHeavyTestsClick" Padding="10,4"
+                        Margin="0,0,12,0"
+                        ToolTip="Dừng Prime95 / FurMark / đo tốc độ ổ, kiểm tra tiến trình còn sống."/>
+                <TextBlock Text="☀" FontSize="13" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                <ToggleButton x:Name="ThemeSwitch" Style="{StaticResource ThemeSwitch}"
+                              ToolTip="Đổi giao diện tối / sáng"
+                              Checked="OnThemeSwitch" Unchecked="OnThemeSwitch"/>
+                <TextBlock Text="🌙" FontSize="13" Margin="5,0,0,0" VerticalAlignment="Center"/>
+            </StackPanel>
         </Border>
 
         <!-- ═══ Thanh wizard: chỉ hiện khi vào chế độ kiểm tra tập trung (Dashboard
@@ -77,7 +54,7 @@
         <!-- ═══ 主区：左导航 + 内容 ═══ -->
         <Grid Grid.Row="3">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="228"/>
+                <ColumnDefinition Width="274"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
@@ -89,46 +66,67 @@
                  插件增删见「插件管理」按钮（zip 导入即载；删除/覆盖走待处理操作 + 自动重启）。 -->
             <Border Grid.Column="0" Background="{DynamicResource SubtleBgBrush}"
                     BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,1,0">
-                <DockPanel>
-                    <TextBlock DockPanel.Dock="Top" Text="Hạng mục kiểm tra máy"
-                               Foreground="{DynamicResource TextSecondaryBrush}"
-                               FontSize="11" Margin="12,10,12,4"/>
-                    <TextBlock DockPanel.Dock="Bottom" x:Name="AllDoneHint" Text="🎉 Đã kiểm tra xong tất cả hạng mục"
-                               Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11"
-                               TextWrapping="Wrap" Margin="12,4,12,10" Visibility="Collapsed"/>
-                    <TextBlock DockPanel.Dock="Bottom" Text="An Tâm PC check"
-                               Foreground="{DynamicResource TextSecondaryBrush}" FontSize="10"
-                               TextWrapping="Wrap" Margin="12,4,12,10"/>
-                    <!-- Nút ghé shop màu cam thương hiệu (nền + viền Accent, chữ trắng, SemiBold)
-                         để nổi hơn nút mặc định; hover vẫn theo theme chung (NavHover + viền cam). -->
-                    <Button DockPanel.Dock="Bottom" x:Name="VisitShopButton"
-                            Background="{DynamicResource AccentBrush}" BorderBrush="{DynamicResource AccentBrush}"
-                            Foreground="White" FontWeight="SemiBold"
-                            Margin="12,4,12,4" Padding="8,6" Click="VisitShopButton_Click"
-                            ToolTip="Mở website vitinhantam.com trong trình duyệt mặc định">
-                        <StackPanel>
-                            <TextBlock Text="Ghé qua shop xíu" HorizontalAlignment="Center"/>
-                            <TextBlock Text="~_~" HorizontalAlignment="Center"/>
+                <DockPanel LastChildFill="True">
+                    <StackPanel DockPanel.Dock="Top" Margin="14,20,14,14">
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,26">
+                            <Image Source="pack://application:,,,/Assets/logo-antam.png"
+                                   Width="58" Height="58" Margin="0,0,10,0" Stretch="Uniform"/>
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Text="An Tâm" FontSize="22" FontWeight="Bold"/>
+                                <TextBlock Text="PC check" FontSize="20" FontWeight="Bold"/>
+                            </StackPanel>
                         </StackPanel>
-                    </Button>
-                    <!-- Khối địa chỉ shop trong phần mềm chính: chỉ 2 chi nhánh, cách nhau
-                         1 dòng trống (Margin dưới CN1 = 12, tương đương 1 dòng chữ cỡ 10);
-                         dòng website và dòng bảo hành đã xóa theo yêu cầu (nút ghé shop
-                         bên trên vẫn mở website nên không mất đường vào web).
-                         2 địa chỉ đồng bộ cấu trúc viết tắt: "P." cho phường, "T." cho tỉnh,
-                         "Tp." cho thành phố (CN2 "phường" đổi thành "P." cho giống CN1).
-                         Sidebar rộng cố định 200 nên chữ tự xuống dòng, khung hẹp cũng không vỡ.
-                         Thứ tự khai báo Bottom ngược với thứ tự nhìn thấy: khối này khai sau nút
-                         nên khi hiển thị nó nằm TRÊN nút, dưới NavList. -->
-                    <StackPanel DockPanel.Dock="Bottom" Margin="12,8,12,4">
-                        <TextBlock Text="Chi nhánh 1: 52 Nguyễn Cửu Vân, P. Long An, T. Tây Ninh"
-                                   Foreground="{DynamicResource TextSecondaryBrush}" FontSize="10"
-                                   TextWrapping="Wrap" Margin="0,0,0,12"/>
-                        <TextBlock Text="Chi nhánh 2: 218/3 đường số 11, P. Thủ Đức, Tp. HCM"
-                                   Foreground="{DynamicResource TextSecondaryBrush}" FontSize="10"
-                                   TextWrapping="Wrap"/>
+                        <Button x:Name="NavOverview" Content="⌂    Tổng quan" Click="SidebarOverview_Click"
+                                HorizontalContentAlignment="Left" FontSize="15" FontWeight="SemiBold"
+                                Padding="14,12" Margin="0,0,0,5"
+                                Background="{DynamicResource NavSelectedBrush}"/>
+                        <Button x:Name="NavInspection" Content="▣    Kiểm tra chi tiết" Click="SidebarInspection_Click"
+                                HorizontalContentAlignment="Left" FontSize="14"
+                                Padding="14,11" Margin="0,0,0,5"/>
+                        <Button x:Name="NavHardware" Content="▥    Phần cứng &amp; Sức khỏe" Click="SidebarHardware_Click"
+                                HorizontalContentAlignment="Left" FontSize="14"
+                                Padding="14,11" Margin="0,0,0,5"/>
+                        <Button x:Name="NavReport" Content="▤    Báo cáo" Click="SidebarReport_Click"
+                                HorizontalContentAlignment="Left" FontSize="14"
+                                Padding="14,11" Margin="0,0,0,5"/>
+                        <Button x:Name="NavTools" Content="⚒    Công cụ tiện ích" Click="SidebarTools_Click"
+                                HorizontalContentAlignment="Left" FontSize="14"
+                                Padding="14,11" Margin="0,0,0,5"/>
+                        <Separator Margin="0,12,0,12"/>
+                        <Button Content="?    Hướng dẫn" Click="SidebarHelp_Click"
+                                HorizontalContentAlignment="Left" FontSize="14"
+                                Padding="14,11" Margin="0,0,0,5"/>
+                        <Button Content="ⓘ    Giới thiệu" Click="SidebarAbout_Click"
+                                HorizontalContentAlignment="Left" FontSize="14"
+                                Padding="14,11"/>
                     </StackPanel>
-                    <ListBox x:Name="NavList" SelectionChanged="OnNavSelect" Margin="4,0,4,4"/>
+                    <StackPanel DockPanel.Dock="Bottom" Margin="18,8,18,17">
+                        <!-- Brand mascot placeholder: no test outcomes implied. -->
+                        <Border x:Name="MascotBrand" Background="{DynamicResource NavSelectedBrush}" CornerRadius="22"
+                                Padding="16" Margin="18,0,18,14">
+                            <StackPanel HorizontalAlignment="Center">
+                                <Image Source="pack://application:,,,/Assets/antam-mascot.png"
+                                       Width="158" Height="112" Stretch="Uniform" Margin="0,0,0,3"/>
+                                <TextBlock Text="An Tâm luôn bên bạn 🧡" FontSize="11"
+                                           FontWeight="SemiBold" TextWrapping="Wrap"
+                                           HorizontalAlignment="Center"/>
+                            </StackPanel>
+                        </Border>
+                        <TextBlock x:Name="AllDoneHint" Text="🎉 Đã kiểm tra xong tất cả hạng mục!"
+                                   Foreground="{DynamicResource AccentBrush}" FontSize="11"
+                                   TextWrapping="Wrap" Margin="0,0,0,8" Visibility="Collapsed"/>
+                        <TextBlock Text="An Tâm PC check • Windows" FontSize="10"
+                                   Foreground="{DynamicResource TextSecondaryBrush}"/>
+                    </StackPanel>
+                    <!-- Giữ NavList động để wizard, plugin import và chấm trạng thái hoạt động nguyên vẹn. -->
+                    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                                  HorizontalScrollBarVisibility="Disabled">
+                        <Expander x:Name="TestsExpander" Header="Danh sách bài test"
+                                  IsExpanded="False" Margin="10,0,10,8">
+                            <ListBox x:Name="NavList" SelectionChanged="OnNavSelect"
+                                     BorderThickness="0" Background="Transparent"/>
+                        </Expander>
+                    </ScrollViewer>
                 </DockPanel>
             </Border>
 
