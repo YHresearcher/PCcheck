@@ -88,6 +88,7 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+        FitWindowToScreen();
         ThemeManager.ApplyTitleBar(this);
         ThemeManager.ThemeChanged += SyncThemeSwitch;
         SyncThemeSwitch();
@@ -261,6 +262,19 @@ public partial class MainWindow : Window
     void SidebarTools_Click(object sender, RoutedEventArgs e)
     {
         NavigateFromSidebar("disk");
+    }
+
+    /// <summary>Mở app vừa màn hình: khung bung ra ~92% diện tích làm việc,
+    /// thấy đủ full chiều rộng mà không tràn màn hình nhỏ; cỡ thiết kế
+    /// trong XAML (1536x1024) làm trần, MinWidth/MinHeight làm sàn.</summary>
+    void FitWindowToScreen()
+    {
+        var area = SystemParameters.WorkArea;
+        double maxW = Width, maxH = Height; // cỡ thiết kế trong XAML
+        Width = Math.Max(MinWidth, Math.Min(maxW, area.Width * 0.92));
+        Height = Math.Max(MinHeight, Math.Min(maxH, area.Height * 0.92));
+        Left = area.Left + (area.Width - Width) / 2;
+        Top = area.Top + (area.Height - Height) / 2;
     }
 
     void AdjustSidebarForHeight()
