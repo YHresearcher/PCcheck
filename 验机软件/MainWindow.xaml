@@ -116,7 +116,8 @@
                                 BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
                                 CornerRadius="14" Padding="12">
                             <StackPanel>
-                                <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,10"
+                                            HorizontalAlignment="Center">
                                     <Image Source="pack://application:,,,/Assets/logo-antam.png"
                                            Width="32" Height="32" Stretch="Uniform" Margin="0,0,8,0"/>
                                     <TextBlock Text="Vi tính An Tâm" FontWeight="Bold"
@@ -124,7 +125,7 @@
                                 </StackPanel>
                                 <Border Background="{DynamicResource NavSelectedBrush}"
                                         CornerRadius="10" Padding="8,6" Margin="0,0,0,10">
-                                    <TextBlock Text="Bảo hành 6 tháng nguyên máy"
+                                    <TextBlock Text="Bán bằng tâm để bạn yên tâm"
                                                Foreground="{DynamicResource AccentBrush}"
                                                FontWeight="SemiBold" FontSize="11"
                                                HorizontalAlignment="Center" TextAlignment="Center"
