@@ -27,6 +27,7 @@ public partial class DashboardPage : UserControl
         InitializeComponent();
         _host.DoneChanged += Refresh;
         _host.VerdictChanged += Refresh;
+        _host.SignalChanged += Refresh;
         _host.DriveSummariesChanged += Refresh;
         Loaded += (_, _) => Refresh();
     }
@@ -90,7 +91,32 @@ public partial class DashboardPage : UserControl
                 "Cần kiểm tra thêm", MessageBoxButton.OK, MessageBoxImage.Warning);
     }
 
-    public sealed record TestLine(string Icon, string Name, string Status, Brush StatusBrush);
+    public sealed record TestLine(
+        string Icon, string Name, string Status, Brush StatusBrush,
+        Brush RowBrush, Brush IconBrush, Brush IconBackground, string Indicator, string Detail);
+
+    static Brush HexBrush(string hex)
+    {
+        var b = new SolidColorBrush((Color)ColorConverter.ConvertFromString(hex));
+        b.Freeze();
+        return b;
+    }
+
+    // Các hàng đúng thứ tự và màu của bản thiết kế đã duyệt.
+    // AV bao gồm 3 phép kiểm tra (loa / webcam / microphone) trong 1 plugin.
+    // Trackpad chỉ được tính sau khi kỹ thuật viên đánh dấu xác minh ở Ngoại quan.
+    static readonly (string Id, string Name, string Icon, string Row, string IconBg, string Fg)[] Rows =
+    [
+        ("screen",   "Màn hình",      "▣", "#E5F4FF", "#D2EAFF", "#1688ED"),
+        ("av",       "Loa",           "♫", "#EEECFF", "#E1E0FF", "#536BFF"),
+        ("av",       "Webcam",        "▣", "#F1E5FF", "#E5D2FF", "#8645E8"),
+        ("keyboard", "Bàn phím",      "⌨", "#FFE7F2", "#FFD5EC", "#E83B9B"),
+        ("trackpad", "Trackpad",      "▭", "#DFF8F0", "#C8F1E4", "#08BA87"),
+        ("av",       "Microphone",    "♩", "#E6F8E7", "#D2F3D5", "#12AF37"),
+        ("ports",    "Cổng kết nối",  "ϟ", "#FFE9E3", "#FFDAD0", "#F26427"),
+        ("visual",   "Ngoại quan",    "▦", "#FFF2D4", "#FFE8B0", "#E8A600")
+    ];
+
 
     static string IconFor(string id) => id.ToLowerInvariant() switch
     {
@@ -163,10 +189,23 @@ public partial class DashboardPage : UserControl
             : "Chưa có mục kiểm tra";
 
         var tests = new List<TestLine>();
-        foreach (var m in passable)
+        bool trackpadVerified = _host.IsDone("visual")
+            && _host.Signals.TryGetValue("visual", out var visualSignals)
+            && visualSignals.Contains("trackpadTested");
+        bool trackpadFailed = _host.Signals.TryGetValue("visual", out var tpSignals)
+            && tpSignals.Contains("trackpadFail");
+
+        foreach (var spec in Rows)
         {
-            var grade = _host.Verdicts.TryGetValue(m.Id, out var v) ? v.Level
-                : _host.IsDone(m.Id) ? ModuleVerdictLevel.Dat : ModuleVerdictLevel.ChuaTest;
+            ModuleVerdictLevel grade;
+            if (spec.Id == "trackpad")
+                grade = !trackpadVerified ? ModuleVerdictLevel.ChuaTest
+                    : trackpadFailed ? ModuleVerdictLevel.CanhBao : ModuleVerdictLevel.Dat;
+            else if (_host.Verdicts.TryGetValue(spec.Id, out var verdict))
+                grade = verdict.Level;
+            else
+                grade = _host.IsDone(spec.Id) ? ModuleVerdictLevel.Dat : ModuleVerdictLevel.ChuaTest;
+
             string label = grade switch
             {
                 ModuleVerdictLevel.Dat => "Đạt",
@@ -176,14 +215,28 @@ public partial class DashboardPage : UserControl
             };
             Brush color = grade switch
             {
-                ModuleVerdictLevel.Dat => Brushes.ForestGreen,
-                ModuleVerdictLevel.Chan => Application.Current?.TryFindResource("ErrorBrush") as Brush ?? Brushes.Red,
-                ModuleVerdictLevel.CanhBao => Application.Current?.TryFindResource("AccentBrush") as Brush ?? Brushes.Orange,
-                _ => Application.Current?.TryFindResource("TextSecondaryBrush") as Brush ?? Brushes.Gray
+                ModuleVerdictLevel.Dat => HexBrush("#18AD4D"),
+                ModuleVerdictLevel.CanhBao => HexBrush("#DE870F"),
+                ModuleVerdictLevel.Chan => HexBrush("#D33D42"),
+                _ => HexBrush("#888080")
             };
-            tests.Add(new TestLine(IconFor(m.Id), m.Name, label, color));
+            string indicator = grade switch
+            {
+                ModuleVerdictLevel.Dat => "●",
+                ModuleVerdictLevel.CanhBao => "!",
+                ModuleVerdictLevel.Chan => "✕",
+                _ => "○"
+            };
+            string detail = spec.Id == "trackpad"
+                ? "Đánh dấu đã kiểm tra trackpad ở trang Ngoại quan trước khi ghi nhận."
+                : spec.Id == "av" ? "Trạng thái dùng chung từ module Camera - Mic - Loa."
+                : "Trạng thái thực tế do module kiểm tra ghi nhận.";
+
+            tests.Add(new TestLine(spec.Icon, spec.Name, label, color,
+                HexBrush(spec.Row), HexBrush(spec.Fg), HexBrush(spec.IconBg), indicator, detail));
         }
         QuickTestList.ItemsSource = tests;
+        ProgressText.Text = $"{tests.Count(t => t.Status != "Chưa thử")}/{tests.Count} mục đã thử";
         MachineText.Text = $"Thiết bị: {Environment.MachineName}";
         CpuText.Text = "CPU: " + ReadCpuName();
         RamText.Text = "RAM: " + ReadPhysicalMemory();
