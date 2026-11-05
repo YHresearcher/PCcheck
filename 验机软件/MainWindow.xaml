@@ -127,7 +127,8 @@
                         <Border Background="{DynamicResource NavSelectedBrush}" CornerRadius="22"
                                 Padding="16" Margin="18,0,18,14">
                             <StackPanel HorizontalAlignment="Center">
-                                <TextBlock Text="💻" FontSize="65" HorizontalAlignment="Center"/>
+                                <Image Source="pack://application:,,,/Assets/antam-mascot.png"
+                                       Width="158" Height="112" Stretch="Uniform" Margin="0,0,0,3"/>
                                 <TextBlock Text="An Tâm luôn bên bạn 🧡" FontSize="11"
                                            FontWeight="SemiBold" TextWrapping="Wrap"
                                            HorizontalAlignment="Center"/>
