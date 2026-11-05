@@ -168,6 +168,12 @@
     <!-- 烤机工具负载：Tools/prime95/（手工放入的 prime95.exe）与 Tools/furmark/（FurMark 工程构建后自动拷贝）
          与 Tools/pawnio/，整体随输出拷贝到 exe 同级 Tools/ 下（散热测试插件按 AppContext.BaseDirectory 定位） -->
     <None Update="Tools\**\*" CopyToOutputDirectory="PreserveNewest" />
+    <!-- File tao shortcut Desktop cho ban portable: nam ngay canh exe trong
+         publish/zip, chay 1 lan la co shortcut ngoai Desktop, khoi mo thu
+         muc chay exe; ban cai dat thi Inno Setup da tu tao shortcut roi -->
+    <Content Include="Tao-shortcut-Desktop.bat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>
