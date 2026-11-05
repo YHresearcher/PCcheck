@@ -295,10 +295,30 @@ public partial class MainWindow : Window
 
     void OnNavSelect(object sender, SelectionChangedEventArgs e)
     {
-        // 按 ListBoxItem.Tag（插件 id）取页面实例（常驻，切换不丢状态）
+        // Theo dõi trang hiện tại để sidebar không giữ Tổng quan sáng khi đang test.
         if (NavList.SelectedItem is ListBoxItem item && item.Tag is string tag && _pages.TryGetValue(tag, out var page))
+        {
             ContentHost.Content = page;
+            SyncPrimaryNav(tag);
+        }
         if (_wizardMode) UpdateWizardButtons();
+    }
+
+    void SyncPrimaryNav(string id)
+    {
+        var buttons = new[] { NavOverview, NavInspection, NavHardware, NavReport, NavTools };
+        foreach (var button in buttons)
+            button.SetResourceReference(Control.BackgroundProperty, "SubtleBgBrush");
+
+        Button selected = id switch
+        {
+            "dashboard" => NavOverview,
+            "config" or "health" => NavHardware,
+            "summary" => NavReport,
+            "disk" => _wizardMode ? NavInspection : NavTools,
+            _ => NavInspection
+        };
+        selected.SetResourceReference(Control.BackgroundProperty, "NavSelectedBrush");
     }
 
     /// <summary>模块页面通过态变化：圆点同步 + 通过时自动跳转下一未完成模块；回退时撤掉「全部完成」提示。</summary>
