@@ -102,7 +102,7 @@
                     </StackPanel>
                     <StackPanel DockPanel.Dock="Bottom" Margin="18,8,18,17">
                         <!-- Brand mascot placeholder: no test outcomes implied. -->
-                        <Border Background="{DynamicResource NavSelectedBrush}" CornerRadius="22"
+                        <Border x:Name="MascotBrand" Background="{DynamicResource NavSelectedBrush}" CornerRadius="22"
                                 Padding="16" Margin="18,0,18,14">
                             <StackPanel HorizontalAlignment="Center">
                                 <Image Source="pack://application:,,,/Assets/antam-mascot.png"
