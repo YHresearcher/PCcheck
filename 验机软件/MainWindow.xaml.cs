@@ -112,7 +112,8 @@ public partial class MainWindow : Window
         AddHandler(PreviewKeyDownEvent, new KeyEventHandler(OnGlobalPreviewKeyDown), handledEventsToo: true);
         AddHandler(PreviewKeyUpEvent, new KeyEventHandler(OnGlobalPreviewKeyUp), handledEventsToo: true);
 
-        Loaded += (_, _) => UpdateIcon();
+        Loaded += (_, _) => { UpdateIcon(); AdjustSidebarForHeight(); };
+        SizeChanged += (_, _) => AdjustSidebarForHeight();
         // 关窗兜底：通知各插件做清理（如散热测试停烤机进程；页面 Unloaded / App.Exit / Job 对象之外再加一层）
         Closed += (_, _) =>
         {
@@ -291,6 +292,14 @@ public partial class MainWindow : Window
             "Website: https://vitinhantam.com\n" +
             "Bảo hành 6 tháng nguyên máy (đối với máy thuộc chính sách shop).",
             "Giới thiệu", MessageBoxButton.OK, MessageBoxImage.Information);
+    }
+
+    void AdjustSidebarForHeight()
+    {
+        // Màn hình laptop thấp: ưu tiên không gian danh sách test, mascot chỉ ẩn
+        // trong sidebar (không mất asset, vẫn có trên dashboard).
+        MascotBrand.Visibility = ActualHeight < 850
+            ? Visibility.Collapsed : Visibility.Visible;
     }
 
     void OnNavSelect(object sender, SelectionChangedEventArgs e)
