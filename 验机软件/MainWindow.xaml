@@ -17,43 +17,21 @@
         <!-- ═══ Dải cam thương hiệu An Tâm trên cùng ═══ -->
         <Border Grid.Row="0" Background="{DynamicResource AccentBrush}"/>
 
-        <!-- ═══ Top bar: logo + tên app + bên phải nút Dừng tất cả test nặng + công tắc theme ═══ -->
-        <Border Grid.Row="1" Background="{DynamicResource SubtleBgBrush}"
+        <!-- Compact utility strip: thương hiệu hiển thị duy nhất trong sidebar. -->
+        <Border Grid.Row="1" Background="{DynamicResource WindowBgBrush}"
                 BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1"
-                Padding="12,5">
-            <!-- Top bar chia 2 cột (trái co giãn + phải tự rộng) để khi khung hẹp
-                 thì chữ bên trái tự xuống dòng thay vì chèn lên nút bên phải như trước
-                 (trước đây 2 StackPanel cùng nằm 1 ô Grid, không có cột, nên hẹp là chồng nhau).
-                 Cột chữ cũng là Grid (logo Auto + chữ *) chứ không phải StackPanel ngang,
-                 vì StackPanel ngang đo chữ với chiều rộng vô hạn nên TextWrapping không có tác dụng. -->
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <Grid Grid.Column="0" VerticalAlignment="Center">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <Image Grid.Column="0" Source="pack://application:,,,/Assets/logo-antam.png"
-                           Width="29" Height="29" Margin="0,0,8,0"
-                           RenderOptions.BitmapScalingMode="HighQuality"/>
-                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                        <TextBlock Text="An Tâm PC check" FontSize="14" FontWeight="SemiBold"/>
-                        <TextBlock Text="Đồng hành cùng bạn chọn máy an tâm" FontSize="10" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap"/>
-                    </StackPanel>
-                </Grid>
-                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                    <Button Content="Dừng tất cả test nặng" Click="OnStopAllHeavyTestsClick" Padding="12,4" Margin="0,0,12,0"
-                            ToolTip="Dừng thật Prime95 / FurMark / đo tốc độ ổ (kill có kiểm chứng, không chỉ dừng giao diện). Nếu còn tiến trình sống sẽ báo rõ tên để kiểm tra Task Manager."/>
-                    <TextBlock Text="☀" FontSize="14" Margin="0,0,4,0"/>
-                    <ToggleButton x:Name="ThemeSwitch" Style="{StaticResource ThemeSwitch}"
-                                  ToolTip="Đổi giao diện tối / sáng"
-                                  Checked="OnThemeSwitch" Unchecked="OnThemeSwitch"/>
-                    <TextBlock Text="🌙" FontSize="14" Margin="4,0,0,0"/>
-                </StackPanel>
-            </Grid>
+                Padding="12,4">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right"
+                        VerticalAlignment="Center">
+                <Button Content="Dừng test nặng" Click="OnStopAllHeavyTestsClick" Padding="10,4"
+                        Margin="0,0,12,0"
+                        ToolTip="Dừng Prime95 / FurMark / đo tốc độ ổ, kiểm tra tiến trình còn sống."/>
+                <TextBlock Text="☀" FontSize="13" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                <ToggleButton x:Name="ThemeSwitch" Style="{StaticResource ThemeSwitch}"
+                              ToolTip="Đổi giao diện tối / sáng"
+                              Checked="OnThemeSwitch" Unchecked="OnThemeSwitch"/>
+                <TextBlock Text="🌙" FontSize="13" Margin="5,0,0,0" VerticalAlignment="Center"/>
+            </StackPanel>
         </Border>
 
         <!-- ═══ Thanh wizard: chỉ hiện khi vào chế độ kiểm tra tập trung (Dashboard
