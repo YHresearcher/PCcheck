@@ -76,20 +76,20 @@
                                 <TextBlock Text="PC check" FontSize="20" FontWeight="Bold"/>
                             </StackPanel>
                         </StackPanel>
-                        <Button Content="⌂    Tổng quan" Click="SidebarOverview_Click"
+                        <Button x:Name="NavOverview" Content="⌂    Tổng quan" Click="SidebarOverview_Click"
                                 HorizontalContentAlignment="Left" FontSize="15" FontWeight="SemiBold"
                                 Padding="14,12" Margin="0,0,0,5"
                                 Background="{DynamicResource NavSelectedBrush}"/>
-                        <Button Content="▣    Kiểm tra chi tiết" Click="SidebarInspection_Click"
+                        <Button x:Name="NavInspection" Content="▣    Kiểm tra chi tiết" Click="SidebarInspection_Click"
                                 HorizontalContentAlignment="Left" FontSize="14"
                                 Padding="14,11" Margin="0,0,0,5"/>
-                        <Button Content="▥    Phần cứng &amp; Sức khỏe" Click="SidebarHardware_Click"
+                        <Button x:Name="NavHardware" Content="▥    Phần cứng &amp; Sức khỏe" Click="SidebarHardware_Click"
                                 HorizontalContentAlignment="Left" FontSize="14"
                                 Padding="14,11" Margin="0,0,0,5"/>
-                        <Button Content="▤    Báo cáo" Click="SidebarReport_Click"
+                        <Button x:Name="NavReport" Content="▤    Báo cáo" Click="SidebarReport_Click"
                                 HorizontalContentAlignment="Left" FontSize="14"
                                 Padding="14,11" Margin="0,0,0,5"/>
-                        <Button Content="⚒    Công cụ tiện ích" Click="SidebarTools_Click"
+                        <Button x:Name="NavTools" Content="⚒    Công cụ tiện ích" Click="SidebarTools_Click"
                                 HorizontalContentAlignment="Left" FontSize="14"
                                 Padding="14,11" Margin="0,0,0,5"/>
                         <Separator Margin="0,12,0,12"/>
