@@ -21,6 +21,10 @@
 
         <TextBlock Text="Phím, cổng, pin &amp; dấu vết" FontWeight="SemiBold" Margin="0,0,0,4"/>
         <CheckBox x:Name="KeyMissingCheck" Content="Phím bong / mất phím" Margin="0,0,0,4"/>
+        <CheckBox x:Name="TrackpadVerifiedCheck" Content="Đã kiểm tra trackpad (hoặc máy không có trackpad)"
+                  Margin="0,0,0,4" ToolTip="Chỉ chọn sau khi đã thử rê, nhấp, thao tác trackpad; PC không có trackpad thì chọn để xác nhận không áp dụng."/>
+        <CheckBox x:Name="TrackpadFailCheck" Content="Trackpad không phản hồi / thao tác lỗi"
+                  Margin="0,0,0,4" ToolTip="Tick khi trackpad có lỗi, kết quả sẽ được ghi nhận là cảnh báo."/>
         <CheckBox x:Name="PortDamagedCheck" Content="Cổng móp / gãy chân" Margin="0,0,0,4"/>
         <CheckBox x:Name="BatterySwollenCheck" Content="Pin phồng (vỏ / bàn phím đội lên) — chặn cho qua" Margin="0,0,0,4"
                   ToolTip="Pin phồng là nguy hiểm, không bán nguyên trạng: tick thì bị chặn cho qua giống ổ bị chặn, thay pin rồi kiểm tra lại"/>
