@@ -75,6 +75,8 @@ public interface IHostContext
     /// (Quay lại / Bài tiếp theo / Dừng tất cả / Thoát wizard), mỗi lần chỉ
     /// hiện 1 bài test. Thoát wizard thì mở lại menu, không mất trạng thái test.</summary>
     void StartWizard();
+    /// <summary>Dừng các bài test tải nặng và trả tên tiến trình còn sống để cảnh báo.</summary>
+    IReadOnlyList<string> StopAllHeavyTests();
     /// <summary>Thoát chế độ wizard, mở lại menu bên trái.</summary>
     void ExitWizard();
     /// <summary>Wizard: quay lại bài test có thể cho qua gần nhất trước bài hiện tại.

@@ -47,6 +47,7 @@ public partial class MainWindow : Window
         }
         public bool NavigateTo(string moduleId) => _owner.NavigateToModule(moduleId);
         public void StartWizard() => _owner.StartWizardMode();
+        public IReadOnlyList<string> StopAllHeavyTests() => _owner.StopAllHeavyTests();
         public void ExitWizard() => _owner.ExitWizardMode();
         public bool WizardBack() => _owner.WizardMove(-1);
         public bool WizardNext() => _owner.WizardMove(1);

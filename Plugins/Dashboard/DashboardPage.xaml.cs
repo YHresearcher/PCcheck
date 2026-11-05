@@ -3,6 +3,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Collections.Generic;
 using YanJi.PluginSdk;
 
 namespace YanJi.Plugin.Dashboard;
@@ -48,6 +49,39 @@ public partial class DashboardPage : UserControl
         }
     }
 
+    void ShopButton_Click(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            Process.Start(new ProcessStartInfo("https://vitinhantam.com") { UseShellExecute = true });
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Chưa mở được website: {ex.Message}", "Tham quan shop",
+                MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+    }
+
+    void StopButton_Click(object sender, RoutedEventArgs e)
+    {
+        var survivors = _host.StopAllHeavyTests();
+        if (survivors.Count == 0)
+            MessageBox.Show("Đã dừng các bài kiểm tra tải nặng. Bạn vẫn có thể tiếp tục kiểm tra thủ công nha!",
+                "An Tâm PC check", MessageBoxButton.OK, MessageBoxImage.Information);
+        else
+            MessageBox.Show($"Còn tiến trình chưa dừng: {string.Join(", ", survivors)}. Hãy kiểm tra Task Manager nhé.",
+                "Cần kiểm tra thêm", MessageBoxButton.OK, MessageBoxImage.Warning);
+    }
+
+    public sealed record TestLine(string Icon, string Name, string Status, Brush StatusBrush);
+
+    static string IconFor(string id) => id.ToLowerInvariant() switch
+    {
+        "config" => "▣", "keyboard" => "⌨", "screen" => "▤",
+        "av" => "♫", "stress" => "◉", "port" => "⌁", "visual" => "◈",
+        "disk" => "▥", _ => "○"
+    };
+
     void HardwareButton_Click(object sender, RoutedEventArgs e) => _host.NavigateTo("config");
     void HealthButton_Click(object sender, RoutedEventArgs e) => _host.NavigateTo("health");
     void SummaryButton_Click(object sender, RoutedEventArgs e) => _host.NavigateTo("summary");
@@ -73,8 +107,34 @@ public partial class DashboardPage : UserControl
         int done = passable.Count(m => _host.IsDone(m.Id));
         int total = passable.Count;
         ProgressText.Text = total > 0
-            ? $"Tiến độ kiểm tra: đã xong {done}/{total} bài test."
-            : "Chưa có bài test nào được cài.";
+            ? $"{done}/{total} mục đã xong"
+            : "Chưa có mục kiểm tra";
+        ProgressBar.Value = total > 0 ? 100.0 * done / total : 0;
+        var tests = new List<TestLine>();
+        foreach (var m in passable)
+        {
+            var grade = _host.Verdicts.TryGetValue(m.Id, out var v) ? v.Level
+                : _host.IsDone(m.Id) ? ModuleVerdictLevel.Dat : ModuleVerdictLevel.ChuaTest;
+            string label = grade switch
+            {
+                ModuleVerdictLevel.Dat => "Đạt",
+                ModuleVerdictLevel.CanhBao => "Cảnh báo",
+                ModuleVerdictLevel.Chan => "Có lỗi",
+                _ => "Chưa thử"
+            };
+            Brush color = grade switch
+            {
+                ModuleVerdictLevel.Dat => Brushes.ForestGreen,
+                ModuleVerdictLevel.Chan => Application.Current?.TryFindResource("ErrorBrush") as Brush ?? Brushes.Red,
+                ModuleVerdictLevel.CanhBao => Application.Current?.TryFindResource("AccentBrush") as Brush ?? Brushes.Orange,
+                _ => Application.Current?.TryFindResource("TextSecondaryBrush") as Brush ?? Brushes.Gray
+            };
+            tests.Add(new TestLine(IconFor(m.Id), m.Name, label, color));
+        }
+        QuickTestList.ItemsSource = tests;
+        StorageText.Text = _host.DriveSummaries.Count > 0
+            ? $"Ổ đĩa: {_host.DriveSummaries.Count} ổ được ghi nhận • Xem thông tin chi tiết"
+            : "SSD / HDD: Chưa có dữ liệu kiểm tra";
 
         ModuleVerdictLevel autoLevel;
         var grades = new List<ModuleVerdictLevel>();
@@ -109,8 +169,8 @@ public partial class DashboardPage : UserControl
             ModuleVerdictLevel.Dat => "Tất cả bài test đã qua, chưa phát hiện vấn đề đáng kể. Câu nhận xét thân thiện đầy đủ ở trang Tổng kết.",
             _ => "Còn bài test chưa xong, hoặc phiên bị dừng giữa chừng — chưa đủ dữ liệu để kết luận mua hay không.",
         };
-        StartButton.Content = done == 0 ? "Bắt đầu kiểm tra máy"
-            : done < total ? $"Tiếp tục phiên dang dở (còn {total - done} bài)"
-            : "Xem kết luận mua máy";
+        StartCaption.Text = done == 0 ? "BẮT ĐẦU"
+            : done < total ? "TIẾP TỤC"
+            : "XEM TỔNG KẾT";
     }
 }
