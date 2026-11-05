@@ -16,7 +16,7 @@ public static class ThemeManager
     /// <summary>主题变更（切换后由 MainWindow 同步开关状态等）。</summary>
     public static event Action? ThemeChanged;
 
-    public static void ApplyInitial() => Apply(Settings.DarkTheme ?? SystemPrefersDark(), persist: false);
+    public static void ApplyInitial() => Apply(Settings.DarkTheme ?? false, persist: false);
 
     public static void Set(bool dark) => Apply(dark, persist: true);
 
