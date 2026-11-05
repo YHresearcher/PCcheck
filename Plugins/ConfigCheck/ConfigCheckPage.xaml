@@ -122,7 +122,7 @@
              bị mất vì luôn rơi vào tab Khác, không bị lọc bỏ. -->
         <!-- Hình viên pin thể hiện độ chai (thay cho việc chỉ đọc chữ "Độ chai X %"
              trong nhóm Pin ở tab Khác): mức đầy = dung lượng còn lại, màu theo mốc
-             chai (<20% xanh, 20–<40% cam, ≥40% đỏ). Viên pin chỉ rộng 1/3 thẻ,
+             chai (<20% xanh, 20–<40% cam, ≥40% đỏ). Viên pin chỉ rộng 1/6 thẻ,
              chữ nằm bên phải; hiệu ứng 3D bằng gradient + bóng mờ + vệt bóng.
              Chỉ hiện khi đọc được % chai; máy không pin / không đọc được thì ẩn. -->
         <Border x:Name="BatteryCard" Grid.Row="4" Style="{StaticResource CardBorder}"
@@ -132,7 +132,7 @@
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="1*"/>
-                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="5*"/>
                     </Grid.ColumnDefinitions>
                     <Grid Grid.Column="0" Height="40" VerticalAlignment="Center">
                         <Grid.ColumnDefinitions>
