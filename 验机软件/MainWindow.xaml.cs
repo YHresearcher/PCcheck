@@ -317,7 +317,10 @@ public partial class MainWindow : Window
     {
         var buttons = new[] { NavOverview, NavInspection, NavHardware, NavReport, NavTools };
         foreach (var button in buttons)
+        {
             button.SetResourceReference(Control.BackgroundProperty, "SubtleBgBrush");
+            button.SetResourceReference(Control.ForegroundProperty, "TextBrush");
+        }
 
         Button selected = id switch
         {
@@ -327,7 +330,9 @@ public partial class MainWindow : Window
             "disk" => _wizardMode ? NavInspection : NavTools,
             _ => NavInspection
         };
-        selected.SetResourceReference(Control.BackgroundProperty, "NavSelectedBrush");
+        // Theo ảnh duyệt: menu đang chọn phải nổi bật bằng nền cam và chữ trắng.
+        selected.SetResourceReference(Control.BackgroundProperty, "AccentBrush");
+        selected.Foreground = Brushes.White;
     }
 
     /// <summary>模块页面通过态变化：圆点同步 + 通过时自动跳转下一未完成模块；回退时撤掉「全部完成」提示。</summary>

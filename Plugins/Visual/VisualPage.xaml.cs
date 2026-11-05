@@ -37,6 +37,7 @@ public partial class VisualPage : UserControl, IModulePage
         (HingeCheck, "hingeLoose", "Bản lề lỏng — kiểm tra kỹ vì ảnh hưởng màn hình và vỏ"),
         (ScreenScratchesCheck, "screenScratches", "Màn hình trầy / viền nứt"),
         (KeyMissingCheck, "keyMissing", "Phím bong / mất phím"),
+        (TrackpadFailCheck, "trackpadFail", "Trackpad không hoạt động hoặc thao tác lỗi"),
         (PortDamagedCheck, "portDamaged", "Cổng móp / gãy chân"),
         (BatterySwollenCheck, "batterySwollen", "Pin phồng"),
         (OpenedSignCheck, "openedSign", "Thiếu ốc / tem rách / dấu mở máy — kiểm tra kỹ lịch sử sửa chữa"),
@@ -47,6 +48,8 @@ public partial class VisualPage : UserControl, IModulePage
     {
         var ticked = Items().Where(i => i.Box.IsChecked == true).ToList();
         var signals = ticked.Select(i => i.Signal).ToList();
+        if (TrackpadVerifiedCheck.IsChecked == true || TrackpadFailCheck.IsChecked == true)
+            signals.Add("trackpadTested");
         _host?.ReportSignals("visual", signals);
         // Pin phồng thì chặn cho qua (nguy hiểm, không bán nguyên trạng), giống
         // ổ bị chặn và sạc Kém: báo verdict Chặn + tín hiệu, không SetPassed.
@@ -69,6 +72,7 @@ public partial class VisualPage : UserControl, IModulePage
     void ResetButton_Click(object sender, RoutedEventArgs e)
     {
         foreach (var item in Items()) item.Box.IsChecked = false;
+        TrackpadVerifiedCheck.IsChecked = false;
         _host?.ReportSignals("visual", []);
         _host?.ReportVerdict("visual", new(ModuleVerdictLevel.ChuaTest, "Chưa test"));
         SetPassed(false);
