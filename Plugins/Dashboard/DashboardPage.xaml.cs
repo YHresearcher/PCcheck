@@ -56,11 +56,9 @@ public partial class DashboardPage : UserControl
     {
         var survivors = _host.StopAllHeavyTests();
         if (survivors.Count == 0)
-            MessageBox.Show("Không phát hiện tiến trình test nặng nào còn chạy. Nếu đang kiểm tra thủ công, bạn vẫn có thể tiếp tục nha!",
-                "An Tâm PC check", MessageBoxButton.OK, MessageBoxImage.Information);
+            Dialogs.Info(Window.GetWindow(this), "Không phát hiện tiến trình test nặng nào còn chạy. Nếu đang kiểm tra thủ công, bạn vẫn có thể tiếp tục nha!");
         else
-            MessageBox.Show($"Còn tiến trình chưa dừng: {string.Join(", ", survivors)}. Hãy kiểm tra Task Manager nhé.",
-                "Cần kiểm tra thêm", MessageBoxButton.OK, MessageBoxImage.Warning);
+            Dialogs.Warn(Window.GetWindow(this), $"Còn tiến trình chưa dừng: {string.Join(", ", survivors)}. Hãy kiểm tra Task Manager nhé.");
     }
 
     public sealed record TestLine(
@@ -146,8 +144,7 @@ public partial class DashboardPage : UserControl
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Không mở được thư mục hồ sơ ({dir}): {ex.Message}",
-                "Mở thư mục hồ sơ", MessageBoxButton.OK, MessageBoxImage.Warning);
+            Dialogs.Warn(Window.GetWindow(this), $"Không mở được thư mục hồ sơ ({dir}): {ex.Message}");
         }
     }
 

@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Threading;
+using YanJi.PluginSdk;
 using YanJi.Views;
 
 namespace YanJi;
@@ -67,8 +68,7 @@ public partial class App : Application
             string logPath = Path.Combine(Path.GetTempPath(), "YanJi-crash.log");
             try { File.WriteAllText(logPath, args.Exception.ToString()); }
             catch { /* 日志失败不致命 */ }
-            MessageBox.Show(args.Exception.Message + $"\n\nNhật ký chi tiết: {logPath}", "Lỗi chưa được xử lý",
-                MessageBoxButton.OK, MessageBoxImage.Error);
+            Dialogs.Error(null, args.Exception.Message + $"\n\nNhật ký chi tiết: {logPath}");
             args.Handled = true;
         };
     }

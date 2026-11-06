@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using Microsoft.Win32;
+using YanJi.PluginSdk;
 using YanJi.Services;
 
 namespace YanJi.Views;
@@ -91,16 +92,14 @@ public partial class PluginManagerWindow : Window
 
     void OnDeleteClick(PluginManifest m)
     {
-        if (MessageBox.Show(this, $"Xóa module “{m.Name}” phải không?",
-                "Xóa module", MessageBoxButton.OKCancel, MessageBoxImage.Warning) != MessageBoxResult.OK)
+        if (!Dialogs.Confirm(this, $"Xóa module “{m.Name}” phải không?"))
             return;
         if (IsPluginLoaded(m.Id))
         {
             // 运行中的插件 dll 被进程锁定，排队待删除并自动重启（启动时在插件加载前执行，无锁）
             PluginPackageService.QueuePendingOp("delete", m.Id);
-            if (MessageBox.Show(this,
-                    $"“{m.Name}” đang chạy, việc xóa sẽ hoàn tất sau khi khởi động lại chương trình.\nKhởi động lại ngay bây giờ? (Chọn “Không” thì lần mở sau mới có hiệu lực)",
-                    "Xóa cần khởi động lại", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+            if (Dialogs.Ask(this,
+                    $"“{m.Name}” đang chạy, việc xóa sẽ hoàn tất sau khi khởi động lại chương trình.\nKhởi động lại ngay bây giờ? (Chọn “Không” thì lần mở sau mới có hiệu lực)"))
                 MainWindow.RestartApp();
         }
         else
@@ -112,7 +111,7 @@ public partial class PluginManagerWindow : Window
             }
             catch (Exception ex)
             {
-                MessageBox.Show(this, "Xóa thất bại: " + ex.Message, "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                Dialogs.Error(this, "Xóa thất bại: " + ex.Message);
             }
         }
     }
@@ -140,14 +139,12 @@ public partial class PluginManagerWindow : Window
         }
         var skipIds = new HashSet<string>();
         if (runningIds.Count > 0 &&
-            MessageBox.Show(this,
-                $"Các module sau đang chạy, việc ghi đè sẽ hoàn tất sau khi khởi động lại: {string.Join(", ", runningIds.Distinct())}\nTiếp tục không? (Chọn “Không” thì bỏ qua các module này)",
-                "Ghi đè cần khởi động lại", MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes)
+            !Dialogs.Ask(this,
+                $"Các module sau đang chạy, việc ghi đè sẽ hoàn tất sau khi khởi động lại: {string.Join(", ", runningIds.Distinct())}\nTiếp tục không? (Chọn “Không” thì bỏ qua các module này)"))
             skipIds.UnionWith(runningIds);
         if (existIds.Count > 0 &&
-            MessageBox.Show(this,
-                $"Các module sau đã có sẵn, nhập vào sẽ ghi đè: {string.Join(", ", existIds.Distinct())}. Tiếp tục không? (Chọn “Hủy” thì bỏ qua các module này)",
-                "Xác nhận ghi đè", MessageBoxButton.OKCancel, MessageBoxImage.Question) != MessageBoxResult.OK)
+            !Dialogs.Confirm(this,
+                $"Các module sau đã có sẵn, nhập vào sẽ ghi đè: {string.Join(", ", existIds.Distinct())}. Tiếp tục không? (Chọn “Hủy” thì bỏ qua các module này)"))
             skipIds.UnionWith(existIds);
 
         // 解压大插件包耗时（GPU 包约 7GB），整个批量过程走后台线程 + 进度窗口（防 UI 卡死焦虑）
@@ -204,12 +201,11 @@ public partial class PluginManagerWindow : Window
         if (staged.Count > 0) sb.AppendLine($"Đã xếp hàng ghi đè {staged.Distinct().Count()} module (có hiệu lực sau khi khởi động lại): {string.Join(", ", staged.Distinct())}");
         if (failed.Count > 0) sb.AppendLine($"Thất bại {failed.Count} module:\n" + string.Join("\n", failed));
         if (sb.Length == 0) sb.Append("Không có module nào để nhập.");
-        MessageBox.Show(this, sb.ToString().TrimEnd(), "Kết quả nhập module", MessageBoxButton.OK,
-            failed.Count > 0 ? MessageBoxImage.Warning : MessageBoxImage.Information);
+        if (failed.Count > 0) Dialogs.Warn(this, sb.ToString().TrimEnd());
+        else Dialogs.Info(this, sb.ToString().TrimEnd());
 
         if (staged.Count > 0 &&
-            MessageBox.Show(this, "Việc ghi đè sẽ hoàn tất sau khi khởi động lại chương trình. Khởi động lại ngay bây giờ? (Chọn “Không” thì lần mở sau mới có hiệu lực)",
-                "Cần khởi động lại", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+            Dialogs.Ask(this, "Việc ghi đè sẽ hoàn tất sau khi khởi động lại chương trình. Khởi động lại ngay bây giờ? (Chọn “Không” thì lần mở sau mới có hiệu lực)"))
             MainWindow.RestartApp();
     }
 

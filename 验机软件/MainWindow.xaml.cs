@@ -225,8 +225,7 @@ public partial class MainWindow : Window
     {
         if (_wizardMode)
         {
-            MessageBox.Show("Bạn đang ở chế độ kiểm tra. Hãy bấm 'Ngưng kiểm tra' ở thanh trên để đổi trang nha.",
-                "An Tâm PC check", MessageBoxButton.OK, MessageBoxImage.Information);
+            Dialogs.Info(this, "Bạn đang ở chế độ kiểm tra. Hãy bấm 'Dừng tất cả kiểm tra' ở thanh trên để đổi trang nha.");
             return false;
         }
         return NavigateToModule(moduleId);
@@ -243,8 +242,7 @@ public partial class MainWindow : Window
         var tests = _hostContext.Modules.Where(m => !m.Terminal).OrderBy(m => m.Order).ToList();
         if (tests.Count == 0)
         {
-            MessageBox.Show("Chưa có bài test nào được cài đặt.", "Kiểm tra chi tiết",
-                MessageBoxButton.OK, MessageBoxImage.Information);
+            Dialogs.Info(this, "Chưa có bài test nào được cài đặt.");
             return;
         }
         if (tests.All(m => _doneTags.Contains(m.Id)))
@@ -416,11 +414,9 @@ public partial class MainWindow : Window
     {
         var survivors = StopAllHeavyTests();
         if (survivors.Count == 0)
-            MessageBox.Show("Đã dừng tất cả test nặng (Prime95 / FurMark / đo tốc độ ổ).",
-                "Dừng tất cả test nặng", MessageBoxButton.OK, MessageBoxImage.Information);
+            Dialogs.Info(this, "Đã dừng tất cả test nặng (Prime95 / FurMark / đo tốc độ ổ).");
         else
-            MessageBox.Show($"Chưa dừng được: {string.Join(", ", survivors)}.\n\nMáy vẫn đang tải cao. Mở Task Manager kiểm tra tiến trình trên rồi bấm Dừng tất cả lại, đừng tưởng máy đã hết tải.",
-                "Dừng tất cả test nặng — còn tiến trình sống", MessageBoxButton.OK, MessageBoxImage.Warning);
+            Dialogs.Warn(this, $"Chưa dừng được: {string.Join(", ", survivors)}.\n\nMáy vẫn đang tải cao. Mở Task Manager kiểm tra tiến trình trên rồi bấm Dừng tất cả lại, đừng tưởng máy đã hết tải.");
     }
 
     // ═══ Wizard: 1 bài test/lần, khóa menu bên trái khi đang wizard ═══
@@ -508,8 +504,7 @@ public partial class MainWindow : Window
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Chưa mở được website: {ex.Message}", "Tham quan shop",
-                MessageBoxButton.OK, MessageBoxImage.Warning);
+            Dialogs.Warn(this, $"Chưa mở được website: {ex.Message}");
         }
     }
 

@@ -15,7 +15,7 @@
 ## Nút và workflow
 - [ ] Mới mở app: không chạy stress/disk benchmark, 0/8 chưa thử
 - [ ] Kiểm tra chi tiết mở wizard ở bài chưa hoàn thành đầu tiên
-- [ ] Quay lại/Bài tiếp theo/Ngưng kiểm tra không làm mất kết quả đã ghi
+- [ ] Quay lại/Bài tiếp theo/Dừng tất cả kiểm tra không làm mất kết quả đã ghi
 - [ ] Sidebar không phá khóa điều hướng khi wizard đang chạy
 - [ ] Sau một bài pass, tự tiến bài tiếp theo; tiến độ Dashboard khớp dữ liệu
 - [ ] Nút Xuất báo cáo mở trang Tổng kết; lưu TXT/JSON và mở lại được
