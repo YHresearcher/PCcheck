@@ -34,6 +34,7 @@ public partial class SummaryPage : UserControl
     List<ModuleRow> _lastRows = [];
     string _lastOverallTitle = "";
     string _lastAnTamNote = "";
+    string _lastAnTamLang = Lang.CurrentLanguage; // ngôn ngữ lúc câu An Tâm đang hiện được chọn
 
     /// <summary>1 dòng kết luận từng module hiển thị trong danh sách.</summary>
     public record ModuleRow(string Name, string Grade, string Note);
@@ -345,17 +346,39 @@ public partial class SummaryPage : UserControl
     /// chưa đủ dữ liệu. Câu chỉ random lại khi kịch bản đổi (qua Refresh), không
     /// random lại mỗi lần Refresh. File thiếu nhóm thì dự phòng bằng random pool
     /// chung (luật cũ), không thì ẩn — không tự bịa câu.</summary>
+    string? AnTamGroupKey() => _currentScenario switch
+    {
+        "good" => "good",
+        "warning" or "combinedB" or "batteryWornOver40" or "batteryWorn20_30" or "cpuOverheat" or "scratchesLight" or "driveWear" or "driveSmartUnknown" => "negotiate",
+        "keyboardDead" or "screenDeadPixel" or "speakerDistorted" or "webcamFail" or "hingeLoose" => "fair",
+        "driveMediaError" or "driveBadSector" or "cpuFail" or "gpuArtifact" or "batteryNotCharging" or "serious" => "manyFaults",
+        "notBuy" => "notBuy",
+        _ => null,
+    };
+
+    void ShowAnTamNote()
+    {
+        AnTamNoteText.Text = $"{Lang.Get("Sum.AnTamNoteLabel")}\n{_lastAnTamNote}";
+        AnTamNoteText.Visibility = Visibility.Visible;
+    }
+
+    /// <summary>Đổi ngôn ngữ: giữ nguyên câu đang hiện (cùng chỉ số trong nhóm),
+    /// chỉ đổi sang bản dịch — để khi bấm EN/VI, câu đang đọc hiện đúng bản dịch
+    /// của nó chứ không nhảy sang câu khác. Nhóm EN song song tuyệt đối với nhóm
+    /// VI nên cùng chỉ số = cùng câu.</summary>
+    void RefreshAnTamNoteLanguage()
+    {
+        if (_lastAnTamNote.Length == 0 || _currentAnTamIndex < 0) return;
+        string? groupKey = AnTamGroupKey();
+        string[]? pool = groupKey != null ? _bank.AnTamGroup(groupKey) : _bank.AnTamNotePool();
+        if (pool == null || _currentAnTamIndex >= pool.Length) return;
+        _lastAnTamNote = pool[_currentAnTamIndex];
+        ShowAnTamNote();
+    }
+
     void RefreshAnTamNote(int exclude = -1)
     {
-        string? groupKey = _currentScenario switch
-        {
-            "good" => "good",
-            "warning" or "combinedB" or "batteryWornOver40" or "batteryWorn20_30" or "cpuOverheat" or "scratchesLight" or "driveWear" or "driveSmartUnknown" => "negotiate",
-            "keyboardDead" or "screenDeadPixel" or "speakerDistorted" or "webcamFail" or "hingeLoose" => "fair",
-            "driveMediaError" or "driveBadSector" or "cpuFail" or "gpuArtifact" or "batteryNotCharging" or "serious" => "manyFaults",
-            "notBuy" => "notBuy",
-            _ => null,
-        };
+        string? groupKey = AnTamGroupKey();
         if (groupKey == null)
         {
             // Chưa đủ dữ liệu (hoặc kịch bản lạ) → ẩn, báo cáo lưu cũng không có dòng này.
@@ -364,33 +387,31 @@ public partial class SummaryPage : UserControl
             AnTamNoteText.Visibility = Visibility.Collapsed;
             return;
         }
-        if (_bank.AnTamGroups.TryGetValue(groupKey, out var group) && group.Length > 0)
+        if (_bank.AnTamGroup(groupKey) is { Length: > 0 } group)
         {
             int idx;
             if (group.Length == 1) idx = 0;
             else do { idx = _random.Next(group.Length); } while (idx == exclude);
             _currentAnTamIndex = idx;
             _lastAnTamNote = group[idx];
-            AnTamNoteText.Text = $"An Tâm nhắn bạn:\n{_lastAnTamNote}";
-            AnTamNoteText.Visibility = Visibility.Visible;
+            ShowAnTamNote();
             return;
         }
         // File thiếu nhóm → dự phòng luật cũ: random pool chung, không thì ẩn.
-        if (_bank.AnTamNotes.Length == 0)
+        var pool = _bank.AnTamNotePool();
+        if (pool.Length == 0)
         {
             _lastAnTamNote = "";
             AnTamNoteText.Text = "";
             AnTamNoteText.Visibility = Visibility.Collapsed;
             return;
         }
-        var pool = _bank.AnTamNotes;
         int idx2;
         if (pool.Length == 1) idx2 = 0;
         else do { idx2 = _random.Next(pool.Length); } while (idx2 == exclude);
         _currentAnTamIndex = idx2;
         _lastAnTamNote = pool[idx2];
-        AnTamNoteText.Text = $"An Tâm nhắn bạn:\n{_lastAnTamNote}";
-        AnTamNoteText.Visibility = Visibility.Visible;
+        ShowAnTamNote();
     }
 
     void Refresh()
@@ -496,6 +517,14 @@ public partial class SummaryPage : UserControl
         {
             PhrasingText.Text = PickPhrasing(scenario, -1);
             RefreshAnTamNote();
+        }
+        // Đổi ngôn ngữ: giữ nguyên câu An Tâm đang hiện (cùng chỉ số), chỉ đổi
+        // sang bản dịch — đặt sau khối kịch bản để khi kịch bản cũng đổi thì câu
+        // mới đã chọn đúng ngôn ngữ rồi, gọi lại cũng chỉ vẽ lại cùng câu.
+        if (_lastAnTamLang != Lang.CurrentLanguage)
+        {
+            _lastAnTamLang = Lang.CurrentLanguage;
+            RefreshAnTamNoteLanguage();
         }
         MarkLoaiButton.Content = _markedLoai ? Lang.Get("Sum.UnmarkLoai") : Lang.Get("Sum.MarkLoai");
 

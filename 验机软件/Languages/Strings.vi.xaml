@@ -116,6 +116,7 @@
     <system:String x:Key="Sum.Save.FolderFailed">Lưu hồ sơ thất bại: không tạo được thư mục {0}: {1}. Thử kiểm tra USB còn ghi được không, rồi bấm Lưu lại.</system:String>
     <system:String x:Key="Sum.Save.Done">Đã lưu hồ sơ vào {0}.{1} Lưu xong mới test máy tiếp theo, vì kết quả đo ổ của máy sau sẽ ghi đè file gốc.</system:String>
     <system:String x:Key="Sum.Save.Failed">Lưu hồ sơ thất bại: {0}. Thử kiểm tra USB còn ghi được không, rồi bấm Lưu lại.</system:String>
+    <system:String x:Key="Sum.AnTamNoteLabel">An Tâm nhắn bạn:</system:String>
     <system:String x:Key="Sum.FreeSpaceWarn"> Cảnh báo: ổ chứa hồ sơ còn {0:0} MB trống.</system:String>
 
     <!-- Nút popup riêng của app -->

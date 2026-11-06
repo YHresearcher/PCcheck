@@ -116,6 +116,7 @@
     <system:String x:Key="Sum.Save.FolderFailed">Could not save the session: folder {0} could not be created: {1}. Check the USB is still writable, then press Save again.</system:String>
     <system:String x:Key="Sum.Save.Done">Session saved to {0}.{1} Only test the next machine after saving, because the next drive benchmark overwrites the source file.</system:String>
     <system:String x:Key="Sum.Save.Failed">Could not save the session: {0}. Check the USB is still writable, then press Save again.</system:String>
+    <system:String x:Key="Sum.AnTamNoteLabel">An Tâm says:</system:String>
     <system:String x:Key="Sum.FreeSpaceWarn"> Warning: the drive holding the sessions has only {0:0} MB free.</system:String>
 
     <!-- App dialog buttons -->

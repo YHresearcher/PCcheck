@@ -1,5 +1,6 @@
 using System.IO;
 using System.Text.Json;
+using YanJi.PluginSdk;
 
 namespace YanJi.Plugin.Summary;
 
@@ -27,6 +28,25 @@ public class PhrasingBank
     public string[] NotBuy { get; private set; } = [];
     public string[] AnTamNotes { get; private set; } = [];
     public Dictionary<string, string[]> AnTamGroups { get; } = [];
+    // Bản dịch EN của 21 câu + 5 nhóm (anTamNotesEn / anTamGroupsEn trong JSON):
+    // lục bát 6-8 + vần không dịch được sang tiếng Anh, bản EN giữ y nghĩa +
+    // dạng 2 dòng + giọng shop ấm. Nhóm EN song song tuyệt đối với nhóm VI
+    // (cùng thứ tự, cùng độ dài) để cùng chỉ số = cùng câu khi đổi ngôn ngữ.
+    public string[] AnTamNotesEn { get; private set; } = [];
+    public Dictionary<string, string[]> AnTamGroupsEn { get; } = [];
+
+    /// <summary>Pool "An Tâm nhắn bạn" theo ngôn ngữ đang chọn: bản EN nếu có
+    /// đủ, không thì bản VI (không crash, không trống).</summary>
+    public string[] AnTamNotePool() =>
+        Lang.CurrentLanguage == "en" && AnTamNotesEn.Length > 0 ? AnTamNotesEn : AnTamNotes;
+
+    /// <summary>Nhóm câu theo kịch bản, theo ngôn ngữ đang chọn; EN thiếu nhóm
+    /// thì dùng nhóm VI (cùng thứ tự, cùng độ dài).</summary>
+    public string[]? AnTamGroup(string key)
+    {
+        if (Lang.CurrentLanguage == "en" && AnTamGroupsEn.TryGetValue(key, out var en) && en.Length > 0) return en;
+        return AnTamGroups.TryGetValue(key, out var vi) ? vi : null;
+    }
 
     // Các pool sẵn cho tín hiệu tương lai (pin / CPU-GPU / ngoại vi / B-C).
     // Tổng kết chưa dùng chúng vì chưa có tín hiệu, nhưng loader vẫn đọc để
@@ -66,6 +86,8 @@ public class PhrasingBank
             NotBuy = Pool(root, "notBuy");
             AnTamNotes = Pool(root, "anTamNotes");
             ReadGroup(root, "anTamGroups", AnTamGroups);
+            AnTamNotesEn = Pool(root, "anTamNotesEn");
+            ReadGroup(root, "anTamGroupsEn", AnTamGroupsEn);
             ReadGroup(root, "battery", Battery);
             ReadGroup(root, "cpuGpu", CpuGpu);
             ReadGroup(root, "peripheral", Peripheral);
@@ -92,6 +114,12 @@ public class PhrasingBank
         Incomplete = ["Chưa đủ dữ liệu để kết luận mua hay không, test tiếp nhé."];
         NotBuy = ["Máy này không đạt chuẩn An Tâm, không mua."];
         AnTamNotes = ["Máy ngon mua được thật vui,\nGiá mà vừa túi, niềm vui thêm đầy."];
+        AnTamNotesEn = ["A good machine at a price that fits,\nthat's joy that keeps on giving."];
+        AnTamGroupsEn["good"] = ["A good machine at a price that fits,\nthat's joy that keeps on giving.", "A durable machine is worth the money,\npay a little more now, save trouble later.", "Know a good machine inside out,\nunderstand it first, then pay — and respect your money.", "Even on a small budget, pick a good machine,\nas long as its origin is clear and it lasts.", "A good machine fears no inspection,\nthe more you look, the more you like it."];
+        AnTamGroupsEn["fair"] = ["Don't cheer a cheap price too soon,\nclear origins are what make joy last.", "Keep the check report for later,\nit saves you a headache if you ever need to compare.", "A good machine is one that fits the job,\ntoo much power can end up wasted.", "Office work needs a quiet machine,\nstudying needs a strong battery — and a light one helps.", "Joy is a machine that runs well from day one,\nendless repairs leave no joy at all."];
+        AnTamGroupsEn["negotiate"] = ["Don't celebrate a cheap machine yet,\ncount the repair bill too, for peace of mind.", "A worn battery and a weak drive — don't forget,\nfactor in the cost, and name your price.", "Don't compare the sticker price alone,\nweigh the condition too, to know it's worth buying.", "Bargaining is never wrong,\nsay what you don't like — no one will blame you.", "This machine isn't bad at all,\na slightly lower price, and we can talk."];
+        AnTamGroupsEn["manyFaults"] = ["Look closely before you buy,\na faulty machine is a regret that lasts.", "Don't pay for a pretty shell too fast,\na shiny outside can hide trouble inside.", "Check it thoroughly today,\nso tomorrow brings no bitter regret.", "Ask every warranty detail clearly,\nif trouble comes, you'll worry far less.", "Pretty as a flower on the outside,\nafter the check, it's a little sad inside."];
+        AnTamGroupsEn["notBuy"] = ["How many hands has this machine passed through?\nAsk where it came from, so you won't sit worrying.", "Charger, battery, drive — watch out,\neach small replacement sends money flying.", "A good machine needs a clear origin,\ndon't trust a shiny shell — it may be brass, not gold.", "If the seller rushes you to buy,\ntake your time to check before you pay.", "Don't hand over money for a pretty face,\nor tomorrow you'll hug the machine — and the trouble too."];
         AnTamGroups["good"] = ["Máy ngon mua được thật vui,\nGiá mà vừa túi, niềm vui thêm đầy.", "Máy bền mới đáng đồng tiền,\nGiá cao đôi chút, đỡ phiền mai sau.", "Máy ngon phải hiểu tận tường,\nRõ rồi mới trả, mới thương đồng tiền.", "Ít tiền vẫn chọn máy ngon,\nMiễn là nguồn gốc, máy còn bền lâu.", "Máy ngon chẳng ngại đem soi,\nCàng xem càng thích, càng coi càng mừng."];
         AnTamGroups["fair"] = ["Giá rẻ chớ vội mừng vui,\nNguồn gốc cho rõ, mới vui lâu dài.", "Bản kiểm nhớ giữ về sau,\nCó khi đối chiếu, khỏi đau cái đầu.", "Máy ngon hợp việc là hay,\nCấu hình quá mạnh, có ngày phí công.", "Văn phòng cần máy chạy êm,\nHọc hành pin khỏe, nhẹ thêm đôi phần.", "Mua về chạy tốt mới vui,\nChứ còn sửa mãi, niềm vui còn gì."];
         AnTamGroups["negotiate"] = ["Máy rẻ chớ vội hân hoan,\nTính luôn tiền sửa cho an trong lòng.", "Pin chai ổ yếu đừng quên,\nTrừ hao chi phí, nói lên giá mình.", "Chớ so mỗi giá niêm yết,\nXét thêm tình trạng mới biết đáng mua.", "Mua hàng mặc cả chẳng sai,\nChưa ưng cứ nói, chẳng ai trách mình.", "Máy này chưa hẳn là tồi,\nGiá mà bớt chút, thì ngồi tính sau."];

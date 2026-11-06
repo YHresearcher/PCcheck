@@ -25,6 +25,7 @@ public static class LanguageManager
     static void Apply(string lang, bool persist)
     {
         Current = lang;
+        Lang.CurrentLanguage = lang;
         var dicts = Application.Current.Resources.MergedDictionaries;
         for (int i = dicts.Count - 1; i >= 0; i--)
         {
