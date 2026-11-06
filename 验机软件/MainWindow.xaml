@@ -23,12 +23,15 @@
                 Padding="12,4">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right"
                         VerticalAlignment="Center">
-                <Button Content="Dừng test nặng" Click="OnStopAllHeavyTestsClick" Padding="10,4"
+                <Button Content="{DynamicResource Shell.StopHeavy}" Click="OnStopAllHeavyTestsClick" Padding="10,4"
                         Margin="0,0,12,0"
-                        ToolTip="Dừng Prime95 / FurMark / đo tốc độ ổ, kiểm tra tiến trình còn sống."/>
+                        ToolTip="{DynamicResource Shell.StopHeavyTip}"/>
+                <Button x:Name="LangButton" Content="EN" Click="OnLangButtonClick" Padding="10,4"
+                        Margin="0,0,12,0" FontWeight="SemiBold"
+                        ToolTip="{DynamicResource Shell.LangTip}"/>
                 <TextBlock Text="☀" FontSize="13" Margin="0,0,5,0" VerticalAlignment="Center"/>
                 <ToggleButton x:Name="ThemeSwitch" Style="{StaticResource ThemeSwitch}"
-                              ToolTip="Đổi giao diện tối / sáng"
+                              ToolTip="{DynamicResource Shell.ThemeTip}"
                               Checked="OnThemeSwitch" Unchecked="OnThemeSwitch"/>
                 <TextBlock Text="🌙" FontSize="13" Margin="5,0,0,0" VerticalAlignment="Center"/>
             </StackPanel>
@@ -57,12 +60,12 @@
                 </Style>
             </Border.Resources>
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                <TextBlock Text="Chế độ kiểm tra tập trung — mỗi lần 1 bài test" FontWeight="SemiBold" VerticalAlignment="Center"/>
-                <Button x:Name="WizardBackButton" Content="← Quay lại bài trước" Click="OnWizardBackClick" Style="{StaticResource WizardBarButton}" Margin="16,0,0,0"/>
-                <Button x:Name="WizardNextButton" Content="Bài tiếp theo →" Click="OnWizardNextClick" Style="{StaticResource WizardBarButton}" Margin="8,0,0,0"/>
-                <Button Content="Dừng tất cả test nặng" Click="OnWizardStopClick" Style="{StaticResource WizardBarButton}" Margin="8,0,0,0"/>
-                <Button Content="Dừng tất cả kiểm tra" Click="OnWizardExitClick" Style="{StaticResource WizardBarButton}" Margin="8,0,0,0"
-                        ToolTip="Thoát chế độ tập trung, mở lại menu bên trái. Trạng thái test đã xong không mất."/>
+                <TextBlock Text="{DynamicResource Wizard.Caption}" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                <Button x:Name="WizardBackButton" Content="{DynamicResource Wizard.Back}" Click="OnWizardBackClick" Style="{StaticResource WizardBarButton}" Margin="16,0,0,0"/>
+                <Button x:Name="WizardNextButton" Content="{DynamicResource Wizard.Next}" Click="OnWizardNextClick" Style="{StaticResource WizardBarButton}" Margin="8,0,0,0"/>
+                <Button Content="{DynamicResource Wizard.StopHeavy}" Click="OnWizardStopClick" Style="{StaticResource WizardBarButton}" Margin="8,0,0,0"/>
+                <Button Content="{DynamicResource Wizard.Exit}" Click="OnWizardExitClick" Style="{StaticResource WizardBarButton}" Margin="8,0,0,0"
+                        ToolTip="{DynamicResource Wizard.ExitTip}"/>
             </StackPanel>
         </Border>
 
@@ -97,30 +100,30 @@
                                 <TextBlock Text="PC check" FontSize="19" FontWeight="Bold"/>
                             </StackPanel>
                         </StackPanel>
-                        <Button x:Name="NavOverview" Content="⌂    Tổng quan" Click="SidebarOverview_Click"
+                        <Button x:Name="NavOverview" Content="{DynamicResource Nav.Overview}" Click="SidebarOverview_Click"
                                 HorizontalContentAlignment="Left" FontSize="15" FontWeight="SemiBold"
                                 Padding="14,12" Margin="0,0,0,5"
                                 Background="{DynamicResource NavSelectedBrush}"/>
-                        <Button x:Name="NavInspection" Content="▣    Kiểm tra chi tiết" Click="SidebarInspection_Click"
+                        <Button x:Name="NavInspection" Content="{DynamicResource Nav.Inspection}" Click="SidebarInspection_Click"
                                 HorizontalContentAlignment="Left" FontSize="14"
                                 Padding="14,11" Margin="0,0,0,5"/>
-                        <Button x:Name="NavHardware" Content="▥    Phần cứng &amp; Sức khỏe" Click="SidebarHardware_Click"
+                        <Button x:Name="NavHardware" Content="{DynamicResource Nav.Hardware}" Click="SidebarHardware_Click"
                                 HorizontalContentAlignment="Left" FontSize="14"
                                 Padding="14,11" Margin="0,0,0,5"/>
-                        <Button x:Name="NavReport" Content="▤    Báo cáo" Click="SidebarReport_Click"
+                        <Button x:Name="NavReport" Content="{DynamicResource Nav.Report}" Click="SidebarReport_Click"
                                 HorizontalContentAlignment="Left" FontSize="14"
                                 Padding="14,11" Margin="0,0,0,5"/>
-                        <Button x:Name="NavTools" Content="⚒    Công cụ tiện ích" Click="SidebarTools_Click"
+                        <Button x:Name="NavTools" Content="{DynamicResource Nav.Tools}" Click="SidebarTools_Click"
                                 HorizontalContentAlignment="Left" FontSize="14"
                                 Padding="14,11" Margin="0,0,0,5"/>
                     </StackPanel>
                     <StackPanel DockPanel.Dock="Bottom" Margin="18,8,18,17">
                         <!-- Mascot checklist chỉ xuất hiện ở header, theo bản thiết kế đã duyệt. -->
                         <Border x:Name="MascotBrand" Height="0" Visibility="Collapsed"/>
-                        <TextBlock x:Name="AllDoneHint" Text="🎉 Đã kiểm tra xong tất cả hạng mục!"
+                        <TextBlock x:Name="AllDoneHint" Text="{DynamicResource Shell.AllDone}"
                                    Foreground="{DynamicResource AccentBrush}" FontSize="11"
                                    TextWrapping="Wrap" Margin="0,0,0,8" Visibility="Collapsed"/>
-                        <TextBlock Text="An Tâm PC check • Windows" FontSize="10"
+                        <TextBlock Text="{DynamicResource Shell.Footer}" FontSize="10"
                                    Foreground="{DynamicResource TextSecondaryBrush}"/>
                     </StackPanel>
                     <!-- Thẻ shop dời từ Dashboard sang sidebar (nội dung giữ nguyên,
@@ -140,22 +143,22 @@
                                 </StackPanel>
                                 <Border Background="{DynamicResource NavSelectedBrush}"
                                         CornerRadius="10" Padding="8,6" Margin="0,0,0,10">
-                                    <TextBlock Text="Bán bằng tâm để bạn yên tâm"
+                                    <TextBlock Text="{DynamicResource Shop.Slogan}"
                                                Foreground="{DynamicResource AccentBrush}"
                                                FontWeight="SemiBold" FontSize="11"
                                                HorizontalAlignment="Center" TextAlignment="Center"
                                                TextWrapping="Wrap"/>
                                 </Border>
-                                <TextBlock Text="⌖  Chi nhánh 1: 52 Nguyễn Cửu Vân, P. Long An, T. Tây Ninh"
+                                <TextBlock Text="{DynamicResource Shop.Branch1}"
                                            Foreground="{DynamicResource TextSecondaryBrush}"
                                            FontSize="11" TextWrapping="Wrap" Margin="0,0,0,8"/>
-                                <TextBlock Text="⌖  Chi nhánh 2: 218/3 đường số 11, phường Thủ Đức, TP. Hồ Chí Minh"
+                                <TextBlock Text="{DynamicResource Shop.Branch2}"
                                            Foreground="{DynamicResource TextSecondaryBrush}"
                                            FontSize="11" TextWrapping="Wrap" Margin="0,0,0,8"/>
                                 <TextBlock Text="◎  vitinhantam.com"
                                            Foreground="{DynamicResource TextSecondaryBrush}"
                                            FontSize="11" Margin="0,0,0,12"/>
-                                <Button Content="↗  Ghé qua shop" Click="VisitShopButton_Click"
+                                <Button Content="{DynamicResource Shop.Visit}" Click="VisitShopButton_Click"
                                         HorizontalAlignment="Stretch" Padding="10,8"
                                         Foreground="{DynamicResource AccentBrush}"
                                         BorderBrush="{DynamicResource AccentBrush}"

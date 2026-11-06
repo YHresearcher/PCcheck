@@ -15,11 +15,15 @@ public static class Settings
     /// <summary>主题选择：null = 未设置过（首次运行跟随系统）。</summary>
     public static bool? DarkTheme { get; set; }
 
+    /// <summary>Ngôn ngữ giao diện: "vi" hoặc "en", null = chưa chọn (mặc định "vi").</summary>
+    public static string? Language { get; set; }
+
     static Settings() => Load();
 
     class Dto
     {
         public bool? DarkTheme { get; set; }
+        public string? Language { get; set; }
     }
 
     static void Load()
@@ -30,6 +34,7 @@ public static class Settings
             var dto = JsonSerializer.Deserialize<Dto>(File.ReadAllText(FilePath));
             if (dto == null) return;
             DarkTheme = dto.DarkTheme;
+            Language = dto.Language;
         }
         catch { /* 损坏则用默认 */ }
     }
@@ -51,6 +56,8 @@ public static class Settings
             catch { obj = new JsonObject(); }
             if (DarkTheme is bool dark) obj["DarkTheme"] = dark;
             else obj.Remove("DarkTheme");
+            if (Language is string lang) obj["Language"] = lang;
+            else obj.Remove("Language");
             File.WriteAllText(FilePath, obj.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
         }
         catch { /* 设置保存失败不致命 */ }

@@ -24,7 +24,7 @@
             <TextBlock Text="An Tâm PC Test" FontSize="28" FontWeight="Bold"
                        HorizontalAlignment="Center"/>
             <ProgressBar IsIndeterminate="True" Width="200" Height="6" Margin="0,16,0,0"/>
-            <TextBlock Text="Đang khởi động..." FontSize="11"
+            <TextBlock Text="{DynamicResource Splash.Starting}" FontSize="11"
                        Foreground="{DynamicResource TextSecondaryBrush}"
                        HorizontalAlignment="Center" Margin="0,8,0,0"/>
         </StackPanel>

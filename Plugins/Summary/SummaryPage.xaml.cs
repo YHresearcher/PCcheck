@@ -51,15 +51,10 @@ public partial class SummaryPage : UserControl
     /// câu vào pool tốt, không đổi tiêu đề. Dòng "An Tâm nhắn bạn" chia theo 5 nhóm tình trạng (máy tốt / khá / cần
     /// thương lượng / nhiều lỗi / không nên mua), chọn ngẫu nhiên 1 câu trong nhóm
     /// đúng tình trạng; chỉ ẩn khi chưa đủ dữ liệu. Các câu nghiêm trọng / không mua
-    /// là câu cảnh báo / thất vọng nên không làm nhẹ cảnh báo.</summary>
-    static readonly Dictionary<string, string> OverallTitles = new()
-    {
-        ["Dat"] = "CÓ THỂ MUA — MUA ĐƯỢC",
-        ["CanhBao"] = "CẦN KIỂM TRA THÊM / THƯƠNG LƯỢNG",
-        ["Sua"] = "KHÔNG KHUYẾN NGHỊ MUA",
-        ["Loai"] = "KHÔNG MUA MÁY NÀY",
-        ["ChuaXong"] = "CHƯA ĐỦ DỮ LIỆU — CHƯA KẾT LUẬN ĐƯỢC",
-    };
+    /// là câu cảnh báo / thất vọng nên không làm nhẹ cảnh báo.
+    /// Tiêu đề kết luận lấy từ từ điển ngôn ngữ (Sum.Title.Dat/CanhBao/Sua/Loai/ChuaXong),
+    /// không viết cố định — đổi ngữ thì tiêu đề đổi theo.</summary>
+    static string OverallTitle(string key) => Lang.Get("Sum.Title." + key);
 
     public SummaryPage(IHostContext host)
     {
@@ -68,6 +63,7 @@ public partial class SummaryPage : UserControl
         _host.DoneChanged += Refresh;
         _host.VerdictChanged += Refresh;
         _host.SignalChanged += Refresh;
+        Lang.Changed += Refresh;
         Loaded += (_, _) => { Refresh(); FillSerialFromSmbios(); };
     }
 
@@ -119,7 +115,7 @@ public partial class SummaryPage : UserControl
         // sẽ thấy đúng câu này, không random lại — vì báo cáo là file, không tự sinh lại.
         string anTamNote = _lastAnTamNote;
         string scenario = _currentScenario.Length > 0 ? _currentScenario : "incomplete";
-        string overall = _lastOverallTitle.Length > 0 ? _lastOverallTitle : "CHƯA TEST XONG";
+        string overall = _lastOverallTitle.Length > 0 ? _lastOverallTitle : Lang.Get("Sum.Title.ChuaXong");
 
         // Hồ sơ luôn lưu vào thư mục app \ KetQua (portable, tự tạo khi lưu)
         string ketQuaDir = YanJi.PluginSdk.Services.AppSettings.GetKetQuaDir();
@@ -129,7 +125,7 @@ public partial class SummaryPage : UserControl
         }
         catch (Exception ex)
         {
-            SaveStatusText.Text = $"Lưu hồ sơ thất bại: không tạo được thư mục {ketQuaDir}: {ex.Message}. Thử kiểm tra USB còn ghi được không, rồi bấm Lưu lại.";
+            SaveStatusText.Text = string.Format(Lang.Get("Sum.Save.FolderFailed"), ketQuaDir, ex.Message);
             SaveStatusText.SetResourceReference(TextBlock.ForegroundProperty, "ErrorBrush");
             return;
         }
@@ -197,12 +193,12 @@ public partial class SummaryPage : UserControl
 
             AppendIndex(ketQuaDir, savedAt, snRaw.Length > 0 ? snRaw : "KhongCoSN", overall, folderName);
             string freeNote = FreeSpaceNote(ketQuaDir);
-            SaveStatusText.Text = $"Đã lưu hồ sơ vào {folder}.{freeNote} Lưu xong mới test máy tiếp theo, vì kết quả đo ổ của máy sau sẽ ghi đè file gốc.";
+            SaveStatusText.Text = string.Format(Lang.Get("Sum.Save.Done"), folder, freeNote);
             SaveStatusText.SetResourceReference(TextBlock.ForegroundProperty, "TextSecondaryBrush");
         }
         catch (Exception ex)
         {
-            SaveStatusText.Text = $"Lưu hồ sơ thất bại: {ex.Message}. Thử kiểm tra USB còn ghi được không, rồi bấm Lưu lại.";
+            SaveStatusText.Text = string.Format(Lang.Get("Sum.Save.Failed"), ex.Message);
             SaveStatusText.SetResourceReference(TextBlock.ForegroundProperty, "ErrorBrush");
         }
     }
@@ -266,7 +262,7 @@ public partial class SummaryPage : UserControl
             if (root.Length == 0) return "";
             var drive = new DriveInfo(root);
             double freeMB = drive.AvailableFreeSpace / 1048576.0;
-            return freeMB < 100 ? $" Cảnh báo: ổ chứa hồ sơ còn {freeMB:0} MB trống." : "";
+            return freeMB < 100 ? string.Format(Lang.Get("Sum.FreeSpaceWarn"), freeMB) : "";
         }
         catch { return ""; }
     }
@@ -414,12 +410,12 @@ public partial class SummaryPage : UserControl
             else if (_host.IsDone(m.Id))
             {
                 grade = ModuleVerdictLevel.Dat;
-                note = "Đã cho qua";
+                note = Lang.Get("Sum.DoneNote");
             }
             else
             {
                 grade = ModuleVerdictLevel.ChuaTest;
-                note = "Chưa cho qua";
+                note = Lang.Get("Sum.UndoneNote");
             }
             grades.Add(grade);
             rows.Add(new(m.Name, GradeText(grade), note));
@@ -470,9 +466,9 @@ public partial class SummaryPage : UserControl
         string titleKey = _markedLoai ? "Loai" : autoTitleKey;
         string scenario = _markedLoai ? "notBuy" : autoScenario;
 
-        _lastOverallTitle = OverallTitles[titleKey];
+        _lastOverallTitle = OverallTitle(titleKey);
         OverallText.Text = _lastOverallTitle
-            + (_markedLoai ? $" (kỹ thuật viên đánh dấu; kết luận tự động là {OverallTitles[autoTitleKey]})" : "");
+            + (_markedLoai ? string.Format(Lang.Get("Sum.MarkedSuffix"), OverallTitle(autoTitleKey)) : "");
         if (titleKey == "Dat") OverallText.Foreground = Brushes.ForestGreen;
         else if (titleKey == "Sua" || titleKey == "Loai") OverallText.SetResourceReference(TextBlock.ForegroundProperty, "ErrorBrush");
         else if (titleKey == "CanhBao") OverallText.SetResourceReference(TextBlock.ForegroundProperty, "AccentBrush");
@@ -501,7 +497,7 @@ public partial class SummaryPage : UserControl
             PhrasingText.Text = PickPhrasing(scenario, -1);
             RefreshAnTamNote();
         }
-        MarkLoaiButton.Content = _markedLoai ? "Bỏ đánh dấu không mua" : "Đánh dấu không mua máy này";
+        MarkLoaiButton.Content = _markedLoai ? Lang.Get("Sum.UnmarkLoai") : Lang.Get("Sum.MarkLoai");
 
         // Hộp "Lý do chính" trong thẻ Sức khỏe & Rủi ro (dời từ Dashboard):
         // lý do chặn đầu tiên, không có thì cảnh báo đầu tiên — cùng logic
@@ -520,21 +516,21 @@ public partial class SummaryPage : UserControl
         int doneCount = grades.Count(g => g != ModuleVerdictLevel.ChuaTest);
         int totalCount = grades.Count;
         HealthReasonText.Text = _markedLoai
-            ? "Kỹ thuật viên đánh dấu không mua máy này."
+            ? Lang.Get("Sum.Reason.Marked")
             : titleKey switch
             {
-                "Sua" => $"Lý do chặn đầu tiên: {reason}" + (doneCount < totalCount ? $" • Còn {totalCount - doneCount} mục chưa hoàn thành." : ""),
-                "CanhBao" => $"Cảnh báo đầu tiên: {reason}" + (doneCount < totalCount ? $" • Còn {totalCount - doneCount} mục chưa hoàn thành." : ""),
-                "Dat" => "Tất cả bài test đã qua, chưa phát hiện vấn đề đáng kể.",
-                _ => "Còn bài test chưa xong, hoặc phiên bị dừng giữa chừng — chưa đủ dữ liệu để kết luận mua hay không.",
+                "Sua" => string.Format(Lang.Get("Sum.Reason.Blocked"), reason) + (doneCount < totalCount ? string.Format(Lang.Get("Sum.Reason.Remaining"), totalCount - doneCount) : ""),
+                "CanhBao" => string.Format(Lang.Get("Sum.Reason.Warning"), reason) + (doneCount < totalCount ? string.Format(Lang.Get("Sum.Reason.Remaining"), totalCount - doneCount) : ""),
+                "Dat" => Lang.Get("Sum.Reason.Good"),
+                _ => Lang.Get("Sum.Reason.Incomplete"),
             };
     }
 
     static string GradeText(ModuleVerdictLevel level) => level switch
     {
-        ModuleVerdictLevel.Dat => "Đạt",
-        ModuleVerdictLevel.CanhBao => "Cảnh báo",
-        ModuleVerdictLevel.Chan => "Chặn",
-        _ => "Chưa test xong",
+        ModuleVerdictLevel.Dat => Lang.Get("Sum.Grade.Dat"),
+        ModuleVerdictLevel.CanhBao => Lang.Get("Sum.Grade.CanhBao"),
+        ModuleVerdictLevel.Chan => Lang.Get("Sum.Grade.Chan"),
+        _ => Lang.Get("Sum.Grade.Untested"),
     };
 }

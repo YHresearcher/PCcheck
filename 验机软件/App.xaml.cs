@@ -16,6 +16,9 @@ public partial class App : Application
         Services.PluginPackageService.ProcessPendingOps();
         // 在窗口创建前加载主题字典（读取设置或跟随系统）——SplashWindow dùng luôn theme này
         Services.ThemeManager.ApplyInitial();
+        // Từ điển chuỗi ngôn ngữ (VI/EN): nạp trước khi tạo MainWindow để XAML
+        // dùng {DynamicResource Key} có chuỗi ngay từ đầu, kể cả SplashWindow.
+        Services.LanguageManager.ApplyInitial();
         // Màn hình chờ logo/thương hiệu: hiện trước khi tạo MainWindow (lúc này
         // MainWindow sẽ quét + tải 7 module), đóng sau khi MainWindow tải xong
         // và đủ tối thiểu 1,5 giây để khỏi chớp tắt khi máy khởi động nhanh.

@@ -14,8 +14,8 @@
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0">
-            <TextBlock Text="Kết luận mua máy — mua được hay không" FontSize="18" FontWeight="Bold"/>
-            <TextBlock Text="Dành cho người mua: chỉ cần đọc 2 dòng dưới là đủ" FontSize="11"
+            <TextBlock Text="{DynamicResource Sum.Title}" FontSize="18" FontWeight="Bold"/>
+            <TextBlock Text="{DynamicResource Sum.Subtitle}" FontSize="11"
                        Foreground="{DynamicResource TextSecondaryBrush}"/>
         </StackPanel>
         <TextBlock x:Name="OverallText" Grid.Row="1" FontSize="16" FontWeight="SemiBold" Margin="0,8,0,0"/>
@@ -36,7 +36,7 @@
              "An Tâm nhắn bạn" (câu thơ) ở trên cùng trang. -->
         <Border Grid.Row="4" Style="{StaticResource CardBorder}" Margin="0,0,0,12" Padding="14">
             <StackPanel>
-                <TextBlock Text="🛡  Sức khỏe &amp; Rủi ro thiết bị"
+                <TextBlock Text="{DynamicResource Sum.HealthTitle}"
                            FontSize="16" FontWeight="Bold" Margin="0,0,0,12"/>
                 <Border Background="{DynamicResource SubtleBgBrush}"
                         CornerRadius="12" Padding="12">
@@ -49,7 +49,7 @@
                                Width="140" Height="105" Stretch="Uniform"
                                Margin="0,0,12,0" VerticalAlignment="Center"/>
                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                            <TextBlock Text="Lý do chính" FontWeight="Bold" FontSize="15"/>
+                            <TextBlock Text="{DynamicResource Sum.MainReason}" FontWeight="Bold" FontSize="15"/>
                             <TextBlock x:Name="HealthReasonText" TextWrapping="Wrap"
                                        FontSize="12" Margin="0,5,0,0"/>
                         </StackPanel>
@@ -58,9 +58,9 @@
             </StackPanel>
         </Border>
         <StackPanel Grid.Row="5" Orientation="Horizontal" Margin="0,12,0,8">
-            <Button x:Name="MarkLoaiButton" Content="Đánh dấu không mua máy này" Padding="16,7"
+            <Button x:Name="MarkLoaiButton" Content="{DynamicResource Sum.MarkLoai}" Padding="16,7"
                     Click="MarkLoaiButton_Click"
-                    ToolTip="Máy hỏng nặng, không nên mua thì bấm đây để kết luận thành KHÔNG MUA. Bấm lại để bỏ đánh dấu."/>
+                    ToolTip="{DynamicResource Sum.MarkTip}"/>
         </StackPanel>
 
         <!-- Lưu hồ sơ phiên: 1 máy = 1 thư mục riêng trên USB, không ghi đè.
@@ -68,12 +68,12 @@
              S/N để trống vẫn lưu được, tên thư mục dùng KhongCoSN, để máy mất tem vẫn có hồ sơ. -->
         <StackPanel Grid.Row="6" Margin="0,0,0,8">
             <StackPanel Orientation="Horizontal">
-                <TextBlock Text="S/N máy:" VerticalAlignment="Center" FontWeight="SemiBold"/>
+                <TextBlock Text="{DynamicResource Sum.Serial}" VerticalAlignment="Center" FontWeight="SemiBold"/>
                 <TextBox x:Name="SerialBox" Width="220" Margin="8,0,0,0" Padding="6,4"
-                         ToolTip="Số serial / service_tag của máy đang test, dùng để đặt tên thư mục hồ sơ. Để trống vẫn lưu được."/>
-                <Button x:Name="SaveSessionButton" Content="Lưu hồ sơ phiên này" Margin="8,0,0,0" Padding="16,7"
+                         ToolTip="{DynamicResource Sum.SerialTip}"/>
+                <Button x:Name="SaveSessionButton" Content="{DynamicResource Sum.Save}" Margin="8,0,0,0" Padding="16,7"
                         Click="SaveSessionButton_Click"
-                        ToolTip="Lưu kết luận + nhận xét + kết quả từng module + kết quả đo ổ (nếu có) vào 1 thư mục riêng trên USB, không ghi đè hồ sơ máy trước"/>
+                        ToolTip="{DynamicResource Sum.SaveTip}"/>
             </StackPanel>
             <TextBlock x:Name="SaveStatusText" TextWrapping="Wrap" FontSize="11" Margin="0,6,0,0"
                        Foreground="{DynamicResource TextSecondaryBrush}"/>
@@ -81,7 +81,7 @@
 
         <ScrollViewer Grid.Row="7" VerticalScrollBarVisibility="Auto">
             <StackPanel>
-                <TextBlock Text="Dành cho kỹ thuật viên — chi tiết từng module (vì sao ra kết luận trên)" FontWeight="SemiBold" FontSize="13" Margin="0,0,0,6"/>
+                <TextBlock Text="{DynamicResource Sum.TechTitle}" FontWeight="SemiBold" FontSize="13" Margin="0,0,0,6"/>
                 <ItemsControl x:Name="ModuleList">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>

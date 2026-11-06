@@ -29,34 +29,34 @@ public partial class AnTamDialog : Window
             case AnTamDialogKind.Info:
                 IconGlyph.Text = "i";
                 IconBorder.SetResourceReference(Border.BackgroundProperty, "AccentBrush");
-                PrimaryButton.Content = "Đã hiểu";
+                PrimaryButton.Content = Lang.Get("Dialog.Ok");
                 PrimaryButton.IsCancel = true;
                 break;
             case AnTamDialogKind.Warn:
                 IconGlyph.Text = "!";
                 // Cam cảnh báo, cùng mốc với pin chai 20–<40% (không có token riêng).
                 IconBorder.Background = new SolidColorBrush(Color.FromRgb(0xDE, 0x87, 0x0F));
-                PrimaryButton.Content = "Đã hiểu";
+                PrimaryButton.Content = Lang.Get("Dialog.Ok");
                 PrimaryButton.IsCancel = true;
                 break;
             case AnTamDialogKind.Error:
                 IconGlyph.Text = "✕";
                 IconBorder.SetResourceReference(Border.BackgroundProperty, "ErrorBrush");
-                PrimaryButton.Content = "Đã hiểu";
+                PrimaryButton.Content = Lang.Get("Dialog.Ok");
                 PrimaryButton.IsCancel = true;
                 break;
             case AnTamDialogKind.Ask:
                 IconGlyph.Text = "?";
                 IconBorder.SetResourceReference(Border.BackgroundProperty, "AccentBrush");
-                PrimaryButton.Content = "Có";
-                SecondaryButton.Content = "Không";
+                PrimaryButton.Content = Lang.Get("Dialog.Yes");
+                SecondaryButton.Content = Lang.Get("Dialog.No");
                 SecondaryButton.Visibility = Visibility.Visible;
                 break;
             case AnTamDialogKind.Confirm:
                 IconGlyph.Text = "?";
                 IconBorder.SetResourceReference(Border.BackgroundProperty, "AccentBrush");
-                PrimaryButton.Content = "Đồng ý";
-                SecondaryButton.Content = "Hủy";
+                PrimaryButton.Content = Lang.Get("Dialog.Agree");
+                SecondaryButton.Content = Lang.Get("Dialog.Cancel");
                 SecondaryButton.Visibility = Visibility.Visible;
                 break;
         }

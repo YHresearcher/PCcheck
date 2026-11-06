@@ -92,6 +92,10 @@ public partial class MainWindow : Window
         ThemeManager.ApplyTitleBar(this);
         ThemeManager.ThemeChanged += SyncThemeSwitch;
         SyncThemeSwitch();
+        // Nút chuyển ngữ hiện ngôn ngữ ĐÍCH (đang VI thì hiện EN): đồng bộ
+        // lại mỗi khi ngôn ngữ đổi, giống cách đồng bộ công tắc theme.
+        LanguageManager.LanguageChanged += SyncLangButton;
+        SyncLangButton();
 
         // 先扫清单建立模块列表（终点页插件的页面构造时就要读 IHostContext.Modules），再加载创建页面
         _hostContext = new HostContext(this, tag => _doneTags.Contains(tag));
@@ -225,7 +229,7 @@ public partial class MainWindow : Window
     {
         if (_wizardMode)
         {
-            Dialogs.Info(this, "Bạn đang ở chế độ kiểm tra. Hãy bấm 'Dừng tất cả kiểm tra' ở thanh trên để đổi trang nha.");
+            Dialogs.Info(this, Lang.Get("Shell.WizardGuard"));
             return false;
         }
         return NavigateToModule(moduleId);
@@ -242,7 +246,7 @@ public partial class MainWindow : Window
         var tests = _hostContext.Modules.Where(m => !m.Terminal).OrderBy(m => m.Order).ToList();
         if (tests.Count == 0)
         {
-            Dialogs.Info(this, "Chưa có bài test nào được cài đặt.");
+            Dialogs.Info(this, Lang.Get("Shell.NoTests"));
             return;
         }
         if (tests.All(m => _doneTags.Contains(m.Id)))
@@ -414,9 +418,9 @@ public partial class MainWindow : Window
     {
         var survivors = StopAllHeavyTests();
         if (survivors.Count == 0)
-            Dialogs.Info(this, "Đã dừng tất cả test nặng (Prime95 / FurMark / đo tốc độ ổ).");
+            Dialogs.Info(this, Lang.Get("Shell.StopAllDone"));
         else
-            Dialogs.Warn(this, $"Chưa dừng được: {string.Join(", ", survivors)}.\n\nMáy vẫn đang tải cao. Mở Task Manager kiểm tra tiến trình trên rồi bấm Dừng tất cả lại, đừng tưởng máy đã hết tải.");
+            Dialogs.Warn(this, string.Format(Lang.Get("Shell.StopAllFailed"), string.Join(", ", survivors)));
     }
 
     // ═══ Wizard: 1 bài test/lần, khóa menu bên trái khi đang wizard ═══
@@ -504,7 +508,7 @@ public partial class MainWindow : Window
         }
         catch (Exception ex)
         {
-            Dialogs.Warn(this, $"Chưa mở được website: {ex.Message}");
+            Dialogs.Warn(this, string.Format(Lang.Get("Shell.WebsiteFailed"), ex.Message));
         }
     }
 
@@ -531,6 +535,12 @@ public partial class MainWindow : Window
         if (!_syncingSwitch)
             ThemeManager.Set(ThemeSwitch.IsChecked == true);
     }
+
+    void OnLangButtonClick(object sender, RoutedEventArgs e) =>
+        LanguageManager.Set(LanguageManager.Current == "vi" ? "en" : "vi");
+
+    void SyncLangButton() =>
+        LangButton.Content = LanguageManager.Current == "vi" ? "EN" : "VI";
 
     void SyncThemeSwitch()
     {

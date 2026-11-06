@@ -1,0 +1,130 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:system="clr-namespace:System;assembly=System.Runtime">
+    <!-- English UI strings. Vietnamese: Strings.vi.xaml — both files must
+         carry the same key set; a missing key shows up as the key itself. -->
+
+    <!-- Shell -->
+    <system:String x:Key="Shell.StopHeavy">Stop heavy tests</system:String>
+    <system:String x:Key="Shell.StopHeavyTip">Stop Prime95 / FurMark / drive benchmark and check for surviving processes.</system:String>
+    <system:String x:Key="Shell.ThemeTip">Switch dark / light theme</system:String>
+    <system:String x:Key="Shell.LangTip">Switch to Vietnamese</system:String>
+    <system:String x:Key="Shell.WizardGuard">You're in check mode. Press 'Stop all checks' in the top bar to change page.</system:String>
+    <system:String x:Key="Shell.NoTests">No test modules installed.</system:String>
+    <system:String x:Key="Shell.StopAllDone">Stopped all heavy tests (Prime95 / FurMark / drive benchmark).</system:String>
+    <system:String x:Key="Shell.StopAllFailed">Could not stop: {0}.&#10;&#10;The machine is still under heavy load. Check the processes above in Task Manager and press Stop all again — don't assume the load is gone.</system:String>
+    <system:String x:Key="Shell.WebsiteFailed">Could not open the website: {0}</system:String>
+    <system:String x:Key="Shell.AllDone">🎉 All checks finished!</system:String>
+    <system:String x:Key="Shell.Footer">An Tâm PC check • Windows</system:String>
+
+    <!-- Wizard bar -->
+    <system:String x:Key="Wizard.Caption">Focused check mode — one test at a time</system:String>
+    <system:String x:Key="Wizard.Back">← Previous test</system:String>
+    <system:String x:Key="Wizard.Next">Next test →</system:String>
+    <system:String x:Key="Wizard.StopHeavy">Stop all heavy tests</system:String>
+    <system:String x:Key="Wizard.Exit">Stop all checks</system:String>
+    <system:String x:Key="Wizard.ExitTip">Exit focused mode and reopen the left menu. Finished tests keep their state.</system:String>
+
+    <!-- Sidebar -->
+    <system:String x:Key="Nav.Overview">⌂    Overview</system:String>
+    <system:String x:Key="Nav.Inspection">▣    Detailed checks</system:String>
+    <system:String x:Key="Nav.Hardware">▥    Hardware &amp; Health</system:String>
+    <system:String x:Key="Nav.Report">▤    Report</system:String>
+    <system:String x:Key="Nav.Tools">⚒    Utilities</system:String>
+
+    <!-- Shop card (slogan + addresses stay Vietnamese in both builds) -->
+    <system:String x:Key="Shop.Slogan">Bán bằng tâm để bạn yên tâm</system:String>
+    <system:String x:Key="Shop.Branch1">⌖  Branch 1: 52 Nguyễn Cửu Vân, P. Long An, T. Tây Ninh</system:String>
+    <system:String x:Key="Shop.Branch2">⌖  Branch 2: 218/3 đường số 11, phường Thủ Đức, TP. Hồ Chí Minh</system:String>
+    <system:String x:Key="Shop.Visit">↗  Visit the shop</system:String>
+
+    <!-- Dashboard -->
+    <system:String x:Key="Dash.Hello">Hello! 👋</system:String>
+    <system:String x:Key="Dash.Subtitle">Let's give this PC a full check with An Tâm!</system:String>
+    <system:String x:Key="Dash.Continue">↻  Continue checking</system:String>
+    <system:String x:Key="Dash.MachineTitle">PC / Laptop under check</system:String>
+    <system:String x:Key="Dash.CpuInit">CPU: Not read</system:String>
+    <system:String x:Key="Dash.RamInit">RAM: Not read</system:String>
+    <system:String x:Key="Dash.GpuInit">GPU: Not read</system:String>
+    <system:String x:Key="Dash.StorageInit">SSD / HDD: Not read</system:String>
+    <system:String x:Key="Dash.SysSpecs">System specs</system:String>
+    <system:String x:Key="Dash.Device">Device: {0}</system:String>
+    <system:String x:Key="Dash.CpuUnread">Not read</system:String>
+    <system:String x:Key="Dash.GpuLine">GPU: See Hardware check</system:String>
+    <system:String x:Key="Dash.StorageFound">Drives: {0} recorded • See details</system:String>
+    <system:String x:Key="Dash.StorageEmpty">SSD / HDD: No check data yet</system:String>
+    <system:String x:Key="Dash.ViewConfig">View full hardware details →</system:String>
+    <system:String x:Key="Dash.QuickTitle">Quick check results</system:String>
+    <system:String x:Key="Dash.ProgressInit">0/8 items tried</system:String>
+    <system:String x:Key="Dash.ProgressDone">{0}/{1} items done</system:String>
+    <system:String x:Key="Dash.ProgressNone">No checks available</system:String>
+    <system:String x:Key="Dash.Progress">{0}/{1} items tried</system:String>
+    <system:String x:Key="Dash.RunDetail">▶  Detailed checks</system:String>
+    <system:String x:Key="Dash.RunDetailTip">Start or continue the wizard; tests never auto-run at startup.</system:String>
+    <system:String x:Key="Dash.Export">▤  Export report</system:String>
+    <system:String x:Key="Dash.ExportTip">Open the Summary page to save the actual check record.</system:String>
+    <system:String x:Key="Dash.Row.Screen">Screen</system:String>
+    <system:String x:Key="Dash.Row.Speakers">Speakers</system:String>
+    <system:String x:Key="Dash.Row.Webcam">Webcam</system:String>
+    <system:String x:Key="Dash.Row.Keyboard">Keyboard</system:String>
+    <system:String x:Key="Dash.Row.Trackpad">Trackpad</system:String>
+    <system:String x:Key="Dash.Row.Mic">Microphone</system:String>
+    <system:String x:Key="Dash.Row.Ports">Ports &amp; charging</system:String>
+    <system:String x:Key="Dash.Row.Visual">Appearance</system:String>
+    <system:String x:Key="Dash.Status.Pass">Passed</system:String>
+    <system:String x:Key="Dash.Status.Warn">Warning</system:String>
+    <system:String x:Key="Dash.Status.Fail">Failed</system:String>
+    <system:String x:Key="Dash.Status.Untried">Not tried</system:String>
+    <system:String x:Key="Dash.Detail.Trackpad">Mark the trackpad as verified on the Appearance page first.</system:String>
+    <system:String x:Key="Dash.Detail.Av">Shared status from the Camera - Mic - Speakers module.</system:String>
+    <system:String x:Key="Dash.Detail.Default">Actual status recorded by the check module.</system:String>
+    <system:String x:Key="Dash.NoHeavy">No heavy test process is still running. If you're checking by hand, you can keep going!</system:String>
+    <system:String x:Key="Dash.HeavyLeft">Still running: {0}. Please check Task Manager.</system:String>
+    <system:String x:Key="Dash.FolderFailed">Could not open the session folder ({0}): {1}</system:String>
+
+    <!-- Summary / Report page -->
+    <system:String x:Key="Sum.Title">Buy verdict — worth buying or not</system:String>
+    <system:String x:Key="Sum.Subtitle">For the buyer: the 2 lines below are all you need</system:String>
+    <system:String x:Key="Sum.HealthTitle">🛡  Device health &amp; risks</system:String>
+    <system:String x:Key="Sum.MainReason">Main reason</system:String>
+    <system:String x:Key="Sum.MarkLoai">Mark as do-not-buy</system:String>
+    <system:String x:Key="Sum.UnmarkLoai">Remove do-not-buy mark</system:String>
+    <system:String x:Key="Sum.MarkTip">If the machine is badly broken, press here to set the verdict to DO NOT BUY. Press again to remove the mark.</system:String>
+    <system:String x:Key="Sum.Serial">Machine S/N:</system:String>
+    <system:String x:Key="Sum.SerialTip">Serial / service tag of the machine under test, used to name the session folder. You can leave it empty.</system:String>
+    <system:String x:Key="Sum.Save">Save this session</system:String>
+    <system:String x:Key="Sum.SaveTip">Save the verdict + notes + per-module results + drive benchmark (if any) into its own folder on the USB, without overwriting earlier machines</system:String>
+    <system:String x:Key="Sum.TechTitle">For technicians — per-module detail (why this verdict)</system:String>
+    <system:String x:Key="Sum.Title.Dat">CAN BUY</system:String>
+    <system:String x:Key="Sum.Title.CanhBao">CHECK MORE / NEGOTIATE</system:String>
+    <system:String x:Key="Sum.Title.Sua">NOT RECOMMENDED</system:String>
+    <system:String x:Key="Sum.Title.Loai">DO NOT BUY THIS MACHINE</system:String>
+    <system:String x:Key="Sum.Title.ChuaXong">NOT ENOUGH DATA — NO VERDICT YET</system:String>
+    <system:String x:Key="Sum.MarkedSuffix"> (marked by technician; automatic verdict is {0})</system:String>
+    <system:String x:Key="Sum.Grade.Dat">Passed</system:String>
+    <system:String x:Key="Sum.Grade.CanhBao">Warning</system:String>
+    <system:String x:Key="Sum.Grade.Chan">Blocked</system:String>
+    <system:String x:Key="Sum.Grade.Untested">Not tested yet</system:String>
+    <system:String x:Key="Sum.DoneNote">Passed</system:String>
+    <system:String x:Key="Sum.UndoneNote">Not passed yet</system:String>
+    <system:String x:Key="Sum.Reason.Marked">Technician marked this machine as do-not-buy.</system:String>
+    <system:String x:Key="Sum.Reason.Blocked">First blocking reason: {0}</system:String>
+    <system:String x:Key="Sum.Reason.Warning">First warning: {0}</system:String>
+    <system:String x:Key="Sum.Reason.Good">All tests passed, no significant issue found.</system:String>
+    <system:String x:Key="Sum.Reason.Incomplete">Some tests are unfinished, or the session stopped midway — not enough data to conclude buy or not.</system:String>
+    <system:String x:Key="Sum.Reason.Remaining"> • {0} item(s) still unfinished.</system:String>
+    <system:String x:Key="Sum.Save.FolderFailed">Could not save the session: folder {0} could not be created: {1}. Check the USB is still writable, then press Save again.</system:String>
+    <system:String x:Key="Sum.Save.Done">Session saved to {0}.{1} Only test the next machine after saving, because the next drive benchmark overwrites the source file.</system:String>
+    <system:String x:Key="Sum.Save.Failed">Could not save the session: {0}. Check the USB is still writable, then press Save again.</system:String>
+    <system:String x:Key="Sum.FreeSpaceWarn"> Warning: the drive holding the sessions has only {0:0} MB free.</system:String>
+
+    <!-- App dialog buttons -->
+    <system:String x:Key="Dialog.Ok">Got it</system:String>
+    <system:String x:Key="Dialog.Yes">Yes</system:String>
+    <system:String x:Key="Dialog.No">No</system:String>
+    <system:String x:Key="Dialog.Agree">Agree</system:String>
+    <system:String x:Key="Dialog.Cancel">Cancel</system:String>
+
+    <!-- Splash -->
+    <system:String x:Key="Splash.Starting">Starting...</system:String>
+</ResourceDictionary>

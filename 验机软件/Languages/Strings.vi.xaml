@@ -1,0 +1,130 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:system="clr-namespace:System;assembly=System.Runtime">
+    <!-- Chuỗi giao diện tiếng Việt. Bản tiếng Anh: Strings.en.xaml — hai file
+         phải có cùng tập key, thiếu key nào thì Lang.Get trả về chính key đó. -->
+
+    <!-- Khung chính -->
+    <system:String x:Key="Shell.StopHeavy">Dừng test nặng</system:String>
+    <system:String x:Key="Shell.StopHeavyTip">Dừng Prime95 / FurMark / đo tốc độ ổ, kiểm tra tiến trình còn sống.</system:String>
+    <system:String x:Key="Shell.ThemeTip">Đổi giao diện tối / sáng</system:String>
+    <system:String x:Key="Shell.LangTip">Chuyển sang tiếng Anh</system:String>
+    <system:String x:Key="Shell.WizardGuard">Bạn đang ở chế độ kiểm tra. Hãy bấm 'Dừng tất cả kiểm tra' ở thanh trên để đổi trang nha.</system:String>
+    <system:String x:Key="Shell.NoTests">Chưa có bài test nào được cài đặt.</system:String>
+    <system:String x:Key="Shell.StopAllDone">Đã dừng tất cả test nặng (Prime95 / FurMark / đo tốc độ ổ).</system:String>
+    <system:String x:Key="Shell.StopAllFailed">Chưa dừng được: {0}.&#10;&#10;Máy vẫn đang tải cao. Mở Task Manager kiểm tra tiến trình trên rồi bấm Dừng tất cả lại, đừng tưởng máy đã hết tải.</system:String>
+    <system:String x:Key="Shell.WebsiteFailed">Chưa mở được website: {0}</system:String>
+    <system:String x:Key="Shell.AllDone">🎉 Đã kiểm tra xong tất cả hạng mục!</system:String>
+    <system:String x:Key="Shell.Footer">An Tâm PC check • Windows</system:String>
+
+    <!-- Thanh wizard -->
+    <system:String x:Key="Wizard.Caption">Chế độ kiểm tra tập trung — mỗi lần 1 bài test</system:String>
+    <system:String x:Key="Wizard.Back">← Quay lại bài trước</system:String>
+    <system:String x:Key="Wizard.Next">Bài tiếp theo →</system:String>
+    <system:String x:Key="Wizard.StopHeavy">Dừng tất cả test nặng</system:String>
+    <system:String x:Key="Wizard.Exit">Dừng tất cả kiểm tra</system:String>
+    <system:String x:Key="Wizard.ExitTip">Thoát chế độ tập trung, mở lại menu bên trái. Trạng thái test đã xong không mất.</system:String>
+
+    <!-- Menu bên trái -->
+    <system:String x:Key="Nav.Overview">⌂    Tổng quan</system:String>
+    <system:String x:Key="Nav.Inspection">▣    Kiểm tra chi tiết</system:String>
+    <system:String x:Key="Nav.Hardware">▥    Phần cứng &amp; Sức khỏe</system:String>
+    <system:String x:Key="Nav.Report">▤    Báo cáo</system:String>
+    <system:String x:Key="Nav.Tools">⚒    Công cụ tiện ích</system:String>
+
+    <!-- Thẻ shop (slogan + địa chỉ giữ nguyên tiếng Việt cả 2 bản) -->
+    <system:String x:Key="Shop.Slogan">Bán bằng tâm để bạn yên tâm</system:String>
+    <system:String x:Key="Shop.Branch1">⌖  Chi nhánh 1: 52 Nguyễn Cửu Vân, P. Long An, T. Tây Ninh</system:String>
+    <system:String x:Key="Shop.Branch2">⌖  Chi nhánh 2: 218/3 đường số 11, phường Thủ Đức, TP. Hồ Chí Minh</system:String>
+    <system:String x:Key="Shop.Visit">↗  Ghé qua shop</system:String>
+
+    <!-- Trang Tổng quan -->
+    <system:String x:Key="Dash.Hello">Xin chào! 👋</system:String>
+    <system:String x:Key="Dash.Subtitle">Cùng An Tâm kiểm tra tổng thể chiếc PC của bạn nhé!</system:String>
+    <system:String x:Key="Dash.Continue">↻  Kiểm tra tiếp</system:String>
+    <system:String x:Key="Dash.MachineTitle">PC / Laptop đang kiểm tra</system:String>
+    <system:String x:Key="Dash.CpuInit">CPU: Chưa đọc</system:String>
+    <system:String x:Key="Dash.RamInit">RAM: Chưa đọc</system:String>
+    <system:String x:Key="Dash.GpuInit">GPU: Chưa đọc</system:String>
+    <system:String x:Key="Dash.StorageInit">SSD / HDD: Chưa đọc</system:String>
+    <system:String x:Key="Dash.SysSpecs">Thông số hệ thống</system:String>
+    <system:String x:Key="Dash.Device">Thiết bị: {0}</system:String>
+    <system:String x:Key="Dash.CpuUnread">Chưa đọc được</system:String>
+    <system:String x:Key="Dash.GpuLine">GPU: Xem mục Đối chiếu cấu hình</system:String>
+    <system:String x:Key="Dash.StorageFound">Ổ đĩa: {0} ổ được ghi nhận • Xem thông tin chi tiết</system:String>
+    <system:String x:Key="Dash.StorageEmpty">SSD / HDD: Chưa có dữ liệu kiểm tra</system:String>
+    <system:String x:Key="Dash.ViewConfig">Xem cấu hình chi tiết →</system:String>
+    <system:String x:Key="Dash.QuickTitle">Kết quả kiểm tra nhanh</system:String>
+    <system:String x:Key="Dash.ProgressInit">0/8 mục đã thử</system:String>
+    <system:String x:Key="Dash.ProgressDone">{0}/{1} mục đã xong</system:String>
+    <system:String x:Key="Dash.ProgressNone">Chưa có mục kiểm tra</system:String>
+    <system:String x:Key="Dash.Progress">{0}/{1} mục đã thử</system:String>
+    <system:String x:Key="Dash.RunDetail">▶  Kiểm tra chi tiết</system:String>
+    <system:String x:Key="Dash.RunDetailTip">Bắt đầu hoặc tiếp tục wizard; không tự động chạy test khi khởi động.</system:String>
+    <system:String x:Key="Dash.Export">▤  Xuất báo cáo</system:String>
+    <system:String x:Key="Dash.ExportTip">Mở trang Tổng kết để lưu hồ sơ kiểm tra thực tế.</system:String>
+    <system:String x:Key="Dash.Row.Screen">Màn hình</system:String>
+    <system:String x:Key="Dash.Row.Speakers">Loa</system:String>
+    <system:String x:Key="Dash.Row.Webcam">Webcam</system:String>
+    <system:String x:Key="Dash.Row.Keyboard">Bàn phím</system:String>
+    <system:String x:Key="Dash.Row.Trackpad">Trackpad</system:String>
+    <system:String x:Key="Dash.Row.Mic">Microphone</system:String>
+    <system:String x:Key="Dash.Row.Ports">Cổng kết nối</system:String>
+    <system:String x:Key="Dash.Row.Visual">Ngoại quan</system:String>
+    <system:String x:Key="Dash.Status.Pass">Đạt</system:String>
+    <system:String x:Key="Dash.Status.Warn">Cảnh báo</system:String>
+    <system:String x:Key="Dash.Status.Fail">Có lỗi</system:String>
+    <system:String x:Key="Dash.Status.Untried">Chưa thử</system:String>
+    <system:String x:Key="Dash.Detail.Trackpad">Đánh dấu đã kiểm tra trackpad ở trang Ngoại quan trước khi ghi nhận.</system:String>
+    <system:String x:Key="Dash.Detail.Av">Trạng thái dùng chung từ module Camera - Mic - Loa.</system:String>
+    <system:String x:Key="Dash.Detail.Default">Trạng thái thực tế do module kiểm tra ghi nhận.</system:String>
+    <system:String x:Key="Dash.NoHeavy">Không phát hiện tiến trình test nặng nào còn chạy. Nếu đang kiểm tra thủ công, bạn vẫn có thể tiếp tục nha!</system:String>
+    <system:String x:Key="Dash.HeavyLeft">Còn tiến trình chưa dừng: {0}. Hãy kiểm tra Task Manager nhé.</system:String>
+    <system:String x:Key="Dash.FolderFailed">Không mở được thư mục hồ sơ ({0}): {1}</system:String>
+
+    <!-- Trang Tổng kết / Báo cáo -->
+    <system:String x:Key="Sum.Title">Kết luận mua máy — mua được hay không</system:String>
+    <system:String x:Key="Sum.Subtitle">Dành cho người mua: chỉ cần đọc 2 dòng dưới là đủ</system:String>
+    <system:String x:Key="Sum.HealthTitle">🛡  Sức khỏe &amp; Rủi ro thiết bị</system:String>
+    <system:String x:Key="Sum.MainReason">Lý do chính</system:String>
+    <system:String x:Key="Sum.MarkLoai">Đánh dấu không mua máy này</system:String>
+    <system:String x:Key="Sum.UnmarkLoai">Bỏ đánh dấu không mua</system:String>
+    <system:String x:Key="Sum.MarkTip">Máy hỏng nặng, không nên mua thì bấm đây để kết luận thành KHÔNG MUA. Bấm lại để bỏ đánh dấu.</system:String>
+    <system:String x:Key="Sum.Serial">S/N máy:</system:String>
+    <system:String x:Key="Sum.SerialTip">Số serial / service_tag của máy đang test, dùng để đặt tên thư mục hồ sơ. Để trống vẫn lưu được.</system:String>
+    <system:String x:Key="Sum.Save">Lưu hồ sơ phiên này</system:String>
+    <system:String x:Key="Sum.SaveTip">Lưu kết luận + nhận xét + kết quả từng module + kết quả đo ổ (nếu có) vào 1 thư mục riêng trên USB, không ghi đè hồ sơ máy trước</system:String>
+    <system:String x:Key="Sum.TechTitle">Dành cho kỹ thuật viên — chi tiết từng module (vì sao ra kết luận trên)</system:String>
+    <system:String x:Key="Sum.Title.Dat">CÓ THỂ MUA — MUA ĐƯỢC</system:String>
+    <system:String x:Key="Sum.Title.CanhBao">CẦN KIỂM TRA THÊM / THƯƠNG LƯỢNG</system:String>
+    <system:String x:Key="Sum.Title.Sua">KHÔNG KHUYẾN NGHỊ MUA</system:String>
+    <system:String x:Key="Sum.Title.Loai">KHÔNG MUA MÁY NÀY</system:String>
+    <system:String x:Key="Sum.Title.ChuaXong">CHƯA ĐỦ DỮ LIỆU — CHƯA KẾT LUẬN ĐƯỢC</system:String>
+    <system:String x:Key="Sum.MarkedSuffix"> (kỹ thuật viên đánh dấu; kết luận tự động là {0})</system:String>
+    <system:String x:Key="Sum.Grade.Dat">Đạt</system:String>
+    <system:String x:Key="Sum.Grade.CanhBao">Cảnh báo</system:String>
+    <system:String x:Key="Sum.Grade.Chan">Chặn</system:String>
+    <system:String x:Key="Sum.Grade.Untested">Chưa test xong</system:String>
+    <system:String x:Key="Sum.DoneNote">Đã cho qua</system:String>
+    <system:String x:Key="Sum.UndoneNote">Chưa cho qua</system:String>
+    <system:String x:Key="Sum.Reason.Marked">Kỹ thuật viên đánh dấu không mua máy này.</system:String>
+    <system:String x:Key="Sum.Reason.Blocked">Lý do chặn đầu tiên: {0}</system:String>
+    <system:String x:Key="Sum.Reason.Warning">Cảnh báo đầu tiên: {0}</system:String>
+    <system:String x:Key="Sum.Reason.Good">Tất cả bài test đã qua, chưa phát hiện vấn đề đáng kể.</system:String>
+    <system:String x:Key="Sum.Reason.Incomplete">Còn bài test chưa xong, hoặc phiên bị dừng giữa chừng — chưa đủ dữ liệu để kết luận mua hay không.</system:String>
+    <system:String x:Key="Sum.Reason.Remaining"> • Còn {0} mục chưa hoàn thành.</system:String>
+    <system:String x:Key="Sum.Save.FolderFailed">Lưu hồ sơ thất bại: không tạo được thư mục {0}: {1}. Thử kiểm tra USB còn ghi được không, rồi bấm Lưu lại.</system:String>
+    <system:String x:Key="Sum.Save.Done">Đã lưu hồ sơ vào {0}.{1} Lưu xong mới test máy tiếp theo, vì kết quả đo ổ của máy sau sẽ ghi đè file gốc.</system:String>
+    <system:String x:Key="Sum.Save.Failed">Lưu hồ sơ thất bại: {0}. Thử kiểm tra USB còn ghi được không, rồi bấm Lưu lại.</system:String>
+    <system:String x:Key="Sum.FreeSpaceWarn"> Cảnh báo: ổ chứa hồ sơ còn {0:0} MB trống.</system:String>
+
+    <!-- Nút popup riêng của app -->
+    <system:String x:Key="Dialog.Ok">Đã hiểu</system:String>
+    <system:String x:Key="Dialog.Yes">Có</system:String>
+    <system:String x:Key="Dialog.No">Không</system:String>
+    <system:String x:Key="Dialog.Agree">Đồng ý</system:String>
+    <system:String x:Key="Dialog.Cancel">Hủy</system:String>
+
+    <!-- Màn hình chờ -->
+    <system:String x:Key="Splash.Starting">Đang khởi động...</system:String>
+</ResourceDictionary>

@@ -40,11 +40,11 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <StackPanel>
-                    <TextBlock Text="Xin chào! 👋" FontSize="27" FontWeight="Bold"/>
-                    <TextBlock Text="Cùng An Tâm kiểm tra tổng thể chiếc PC của bạn nhé!"
+                    <TextBlock Text="{DynamicResource Dash.Hello}" FontSize="27" FontWeight="Bold"/>
+                    <TextBlock Text="{DynamicResource Dash.Subtitle}"
                                Foreground="{DynamicResource TextSecondaryBrush}" FontSize="13"/>
                 </StackPanel>
-                <Button Grid.Column="1" Content="↻  Kiểm tra tiếp" VerticalAlignment="Center"
+                <Button Grid.Column="1" Content="{DynamicResource Dash.Continue}" VerticalAlignment="Center"
                         Click="StartButton_Click" Padding="14,9"/>
             </Grid>
 
@@ -67,14 +67,14 @@
                                    Width="200" Height="190" Stretch="Uniform"
                                    RenderOptions.BitmapScalingMode="HighQuality" Margin="0,0,13,0"/>
                             <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                <TextBlock x:Name="MachineText" Text="PC / Laptop đang kiểm tra"
+                                <TextBlock x:Name="MachineText" Text="{DynamicResource Dash.MachineTitle}"
                                            FontWeight="Bold" FontSize="18" TextWrapping="Wrap"/>
-                                <TextBlock Text="Thông số hệ thống" Style="{StaticResource Muted}" Margin="0,3,0,10"/>
-                                <TextBlock x:Name="CpuText" Text="CPU: Chưa đọc" FontSize="12" Margin="0,0,0,5"/>
-                                <TextBlock x:Name="RamText" Text="RAM: Chưa đọc" FontSize="12" Margin="0,0,0,5"/>
-                                <TextBlock x:Name="GpuText" Text="GPU: Chưa đọc" FontSize="12" Margin="0,0,0,5"/>
-                                <TextBlock x:Name="StorageText" Text="SSD / HDD: Chưa đọc" FontSize="12" TextWrapping="Wrap"/>
-                                <Button Content="Xem cấu hình chi tiết →" Click="HardwareButton_Click"
+                                <TextBlock Text="{DynamicResource Dash.SysSpecs}" Style="{StaticResource Muted}" Margin="0,3,0,10"/>
+                                <TextBlock x:Name="CpuText" Text="{DynamicResource Dash.CpuInit}" FontSize="12" Margin="0,0,0,5"/>
+                                <TextBlock x:Name="RamText" Text="{DynamicResource Dash.RamInit}" FontSize="12" Margin="0,0,0,5"/>
+                                <TextBlock x:Name="GpuText" Text="{DynamicResource Dash.GpuInit}" FontSize="12" Margin="0,0,0,5"/>
+                                <TextBlock x:Name="StorageText" Text="{DynamicResource Dash.StorageInit}" FontSize="12" TextWrapping="Wrap"/>
+                                <Button Content="{DynamicResource Dash.ViewConfig}" Click="HardwareButton_Click"
                                         HorizontalAlignment="Left" Padding="8,5" Margin="0,10,0,0"/>
                             </StackPanel>
                         </Grid>
@@ -84,11 +84,11 @@
                     <Border Style="{StaticResource ReferenceCard}">
                         <StackPanel>
                             <DockPanel LastChildFill="False" Margin="0,0,0,10">
-                                <TextBlock DockPanel.Dock="Left" Text="Kết quả kiểm tra nhanh"
+                                <TextBlock DockPanel.Dock="Left" Text="{DynamicResource Dash.QuickTitle}"
                                            Style="{StaticResource CardHeading}"/>
                                 <Border DockPanel.Dock="Right" Background="{DynamicResource NavSelectedBrush}"
                                         CornerRadius="16" Padding="10,6">
-                                    <TextBlock x:Name="ProgressText" Text="0/8 mục đã thử" FontSize="11"
+                                    <TextBlock x:Name="ProgressText" Text="{DynamicResource Dash.ProgressInit}" FontSize="11"
                                                FontWeight="SemiBold" Foreground="{DynamicResource AccentBrush}"/>
                                 </Border>
                             </DockPanel>
@@ -136,12 +136,12 @@
                                 <ColumnDefinition Width="0.75*"/>
                             </Grid.ColumnDefinitions>
                             <Button x:Name="StartButton" Grid.Column="0" Style="{StaticResource ActionButton}"
-                                    Content="▶  Kiểm tra chi tiết" Background="{DynamicResource AccentBrush}"
+                                    Content="{DynamicResource Dash.RunDetail}" Background="{DynamicResource AccentBrush}"
                                     Foreground="White" Click="StartButton_Click"
-                                    ToolTip="Bắt đầu hoặc tiếp tục wizard; không tự động chạy test khi khởi động."/>
+                                    ToolTip="{DynamicResource Dash.RunDetailTip}"/>
                             <Button Grid.Column="2" Style="{StaticResource ActionButton}"
-                                    Content="▤  Xuất báo cáo" Click="SummaryButton_Click"
-                                    ToolTip="Mở trang Tổng kết để lưu hồ sơ kiểm tra thực tế."/>
+                                    Content="{DynamicResource Dash.Export}" Click="SummaryButton_Click"
+                                    ToolTip="{DynamicResource Dash.ExportTip}"/>
                         </Grid>
                     </Border>
                 </StackPanel>

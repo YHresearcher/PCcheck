@@ -28,6 +28,7 @@ public partial class DashboardPage : UserControl
         _host.VerdictChanged += Refresh;
         _host.SignalChanged += Refresh;
         _host.DriveSummariesChanged += Refresh;
+        Lang.Changed += Refresh;
         Loaded += (_, _) => Refresh();
     }
 
@@ -56,9 +57,9 @@ public partial class DashboardPage : UserControl
     {
         var survivors = _host.StopAllHeavyTests();
         if (survivors.Count == 0)
-            Dialogs.Info(Window.GetWindow(this), "Không phát hiện tiến trình test nặng nào còn chạy. Nếu đang kiểm tra thủ công, bạn vẫn có thể tiếp tục nha!");
+            Dialogs.Info(Window.GetWindow(this), Lang.Get("Dash.NoHeavy"));
         else
-            Dialogs.Warn(Window.GetWindow(this), $"Còn tiến trình chưa dừng: {string.Join(", ", survivors)}. Hãy kiểm tra Task Manager nhé.");
+            Dialogs.Warn(Window.GetWindow(this), string.Format(Lang.Get("Dash.HeavyLeft"), string.Join(", ", survivors)));
     }
 
     public sealed record TestLine(
@@ -75,16 +76,17 @@ public partial class DashboardPage : UserControl
     // Các hàng đúng thứ tự và màu của bản thiết kế đã duyệt.
     // AV bao gồm 3 phép kiểm tra (loa / webcam / microphone) trong 1 plugin.
     // Trackpad chỉ được tính sau khi kỹ thuật viên đánh dấu xác minh ở Ngoại quan.
-    static readonly (string Id, string Name, string Icon, string Row, string IconBg, string Fg)[] Rows =
+    // Name là key chuỗi ngôn ngữ (Lang.Get lúc vẽ), không phải chữ hiện thẳng.
+    static readonly (string Id, string NameKey, string Icon, string Row, string IconBg, string Fg)[] Rows =
     [
-        ("screen",   "Màn hình",      "▣", "#E5F4FF", "#D2EAFF", "#1688ED"),
-        ("av",       "Loa",           "♫", "#EEECFF", "#E1E0FF", "#536BFF"),
-        ("av",       "Webcam",        "▣", "#F1E5FF", "#E5D2FF", "#8645E8"),
-        ("keyboard", "Bàn phím",      "⌨", "#FFE7F2", "#FFD5EC", "#E83B9B"),
-        ("trackpad", "Trackpad",      "▭", "#DFF8F0", "#C8F1E4", "#08BA87"),
-        ("av",       "Microphone",    "♩", "#E6F8E7", "#D2F3D5", "#12AF37"),
-        ("ports",    "Cổng kết nối",  "ϟ", "#FFE9E3", "#FFDAD0", "#F26427"),
-        ("visual",   "Ngoại quan",    "▦", "#FFF2D4", "#FFE8B0", "#E8A600")
+        ("screen",   "Dash.Row.Screen",   "▣", "#E5F4FF", "#D2EAFF", "#1688ED"),
+        ("av",       "Dash.Row.Speakers", "♫", "#EEECFF", "#E1E0FF", "#536BFF"),
+        ("av",       "Dash.Row.Webcam",   "▣", "#F1E5FF", "#E5D2FF", "#8645E8"),
+        ("keyboard", "Dash.Row.Keyboard", "⌨", "#FFE7F2", "#FFD5EC", "#E83B9B"),
+        ("trackpad", "Dash.Row.Trackpad", "▭", "#DFF8F0", "#C8F1E4", "#08BA87"),
+        ("av",       "Dash.Row.Mic",      "♩", "#E6F8E7", "#D2F3D5", "#12AF37"),
+        ("ports",    "Dash.Row.Ports",    "ϟ", "#FFE9E3", "#FFDAD0", "#F26427"),
+        ("visual",   "Dash.Row.Visual",   "▦", "#FFF2D4", "#FFE8B0", "#E8A600")
     ];
 
 
@@ -101,9 +103,9 @@ public partial class DashboardPage : UserControl
         {
             return Registry.GetValue(
                 @"HKEY_LOCAL_MACHINE\HARDWARE\DESCRIPTION\System\CentralProcessor\0",
-                "ProcessorNameString", null)?.ToString()?.Trim() ?? "Chưa đọc được";
+                "ProcessorNameString", null)?.ToString()?.Trim() ?? Lang.Get("Dash.CpuUnread");
         }
-        catch { return "Chưa đọc được"; }
+        catch { return Lang.Get("Dash.CpuUnread"); }
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -125,9 +127,9 @@ public partial class DashboardPage : UserControl
             var status = new MemoryStatus { Length = (uint)Marshal.SizeOf<MemoryStatus>() };
             return GlobalMemoryStatusEx(ref status)
                 ? $"{status.TotalPhysical / 1073741824.0:0.#} GB"
-                : "Chưa đọc được";
+                : Lang.Get("Dash.CpuUnread");
         }
-        catch { return "Chưa đọc được"; }
+        catch { return Lang.Get("Dash.CpuUnread"); }
     }
 
     void HardwareButton_Click(object sender, RoutedEventArgs e) => _host.NavigateTo("config");
@@ -144,7 +146,7 @@ public partial class DashboardPage : UserControl
         }
         catch (Exception ex)
         {
-            Dialogs.Warn(Window.GetWindow(this), $"Không mở được thư mục hồ sơ ({dir}): {ex.Message}");
+            Dialogs.Warn(Window.GetWindow(this), string.Format(Lang.Get("Dash.FolderFailed"), dir, ex.Message));
         }
     }
 
@@ -154,8 +156,8 @@ public partial class DashboardPage : UserControl
         int done = passable.Count(m => _host.IsDone(m.Id));
         int total = passable.Count;
         ProgressText.Text = total > 0
-            ? $"{done}/{total} mục đã xong"
-            : "Chưa có mục kiểm tra";
+            ? string.Format(Lang.Get("Dash.ProgressDone"), done, total)
+            : Lang.Get("Dash.ProgressNone");
 
         var tests = new List<TestLine>();
         bool trackpadVerified = _host.IsDone("visual")
@@ -177,10 +179,10 @@ public partial class DashboardPage : UserControl
 
             string label = grade switch
             {
-                ModuleVerdictLevel.Dat => "Đạt",
-                ModuleVerdictLevel.CanhBao => "Cảnh báo",
-                ModuleVerdictLevel.Chan => "Có lỗi",
-                _ => "Chưa thử"
+                ModuleVerdictLevel.Dat => Lang.Get("Dash.Status.Pass"),
+                ModuleVerdictLevel.CanhBao => Lang.Get("Dash.Status.Warn"),
+                ModuleVerdictLevel.Chan => Lang.Get("Dash.Status.Fail"),
+                _ => Lang.Get("Dash.Status.Untried")
             };
             Brush color = grade switch
             {
@@ -197,22 +199,23 @@ public partial class DashboardPage : UserControl
                 _ => "○"
             };
             string detail = spec.Id == "trackpad"
-                ? "Đánh dấu đã kiểm tra trackpad ở trang Ngoại quan trước khi ghi nhận."
-                : spec.Id == "av" ? "Trạng thái dùng chung từ module Camera - Mic - Loa."
-                : "Trạng thái thực tế do module kiểm tra ghi nhận.";
+                ? Lang.Get("Dash.Detail.Trackpad")
+                : spec.Id == "av" ? Lang.Get("Dash.Detail.Av")
+                : Lang.Get("Dash.Detail.Default");
 
-            tests.Add(new TestLine(spec.Icon, spec.Name, label, color,
+            tests.Add(new TestLine(spec.Icon, Lang.Get(spec.NameKey), label, color,
                 HexBrush(spec.Row), HexBrush(spec.Fg), HexBrush(spec.IconBg), indicator, detail));
         }
         QuickTestList.ItemsSource = tests;
-        ProgressText.Text = $"{tests.Count(t => t.Status != "Chưa thử")}/{tests.Count} mục đã thử";
-        MachineText.Text = $"Thiết bị: {Environment.MachineName}";
+        ProgressText.Text = string.Format(Lang.Get("Dash.Progress"),
+            tests.Count(t => t.Status != Lang.Get("Dash.Status.Untried")), tests.Count);
+        MachineText.Text = string.Format(Lang.Get("Dash.Device"), Environment.MachineName);
         CpuText.Text = "CPU: " + ReadCpuName();
         RamText.Text = "RAM: " + ReadPhysicalMemory();
-        GpuText.Text = "GPU: Xem mục Đối chiếu cấu hình";
+        GpuText.Text = Lang.Get("Dash.GpuLine");
         StorageText.Text = _host.DriveSummaries.Count > 0
-            ? $"Ổ đĩa: {_host.DriveSummaries.Count} ổ được ghi nhận • Xem thông tin chi tiết"
-            : "SSD / HDD: Chưa có dữ liệu kiểm tra";
+            ? string.Format(Lang.Get("Dash.StorageFound"), _host.DriveSummaries.Count)
+            : Lang.Get("Dash.StorageEmpty");
 
     }
 }
