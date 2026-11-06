@@ -1,0 +1,68 @@
+<Window x:Class="YanJi.PluginSdk.AnTamDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="An Tâm PC check" WindowStyle="None" AllowsTransparency="True"
+        Background="Transparent" ResizeMode="NoResize" ShowInTaskbar="False"
+        SizeToContent="WidthAndHeight" MinWidth="400" MaxWidth="560"
+        WindowStartupLocation="CenterOwner">
+    <!-- Popup riêng của app: dải cam trên cùng như MainWindow, thẻ bo tròn +
+         bóng mờ, icon tròn theo mức độ, nút nổi kiểu app. -->
+    <Border Background="{DynamicResource SurfaceBgBrush}"
+            BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+            CornerRadius="10" Margin="12">
+        <Border.Effect>
+            <DropShadowEffect ShadowDepth="2" BlurRadius="12" Opacity="0.35"/>
+        </Border.Effect>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- Dải cam thương hiệu trên cùng. -->
+            <Border Grid.Row="0" Background="{DynamicResource AccentBrush}" Height="4"
+                    CornerRadius="10,10,0,0" MouseLeftButtonDown="TitleBar_MouseLeftButtonDown"/>
+
+            <!-- Thanh tiêu đề: tên app + nút đóng. -->
+            <Grid Grid.Row="1" Margin="16,10,8,4">
+                <TextBlock Text="An Tâm PC check" FontWeight="Bold" FontSize="14"
+                           VerticalAlignment="Center"
+                           MouseLeftButtonDown="TitleBar_MouseLeftButtonDown"/>
+                <Button x:Name="CloseButton" Content="✕" HorizontalAlignment="Right"
+                        Padding="8,4" Background="Transparent" BorderThickness="0"
+                        Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12"
+                        Click="CloseButton_Click" ToolTip="Đóng"/>
+            </Grid>
+
+            <!-- Nội dung: icon tròn + câu nhắn. -->
+            <Grid Grid.Row="2" Margin="16,8,16,12">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Border x:Name="IconBorder" Grid.Column="0" Width="48" Height="48"
+                        CornerRadius="24" Margin="0,2,12,0" VerticalAlignment="Top">
+                    <TextBlock x:Name="IconGlyph" HorizontalAlignment="Center"
+                               VerticalAlignment="Center" FontSize="22" FontWeight="Bold"
+                               Foreground="White"/>
+                </Border>
+                <TextBlock x:Name="MessageText" Grid.Column="1" FontSize="14"
+                           TextWrapping="Wrap" VerticalAlignment="Center"
+                           Foreground="{DynamicResource TextBrush}"/>
+            </Grid>
+
+            <!-- Nút bấm, căn phải. -->
+            <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right"
+                        Margin="0,0,16,14">
+                <Button x:Name="PrimaryButton" Padding="16,6" MinWidth="90"
+                        Background="{DynamicResource AccentBrush}" Foreground="White"
+                        IsDefault="True" Click="PrimaryButton_Click"/>
+                <Button x:Name="SecondaryButton" Padding="16,6" MinWidth="90"
+                        Margin="8,0,0,0" IsCancel="True" Visibility="Collapsed"
+                        Click="SecondaryButton_Click"/>
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>

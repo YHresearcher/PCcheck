@@ -4,6 +4,7 @@ using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using YanJi.PluginSdk;
 using YanJi.PluginSdk.Services;
 
@@ -476,6 +477,16 @@ public partial class SummaryPage : UserControl
         else if (titleKey == "Sua" || titleKey == "Loai") OverallText.SetResourceReference(TextBlock.ForegroundProperty, "ErrorBrush");
         else if (titleKey == "CanhBao") OverallText.SetResourceReference(TextBlock.ForegroundProperty, "AccentBrush");
         else OverallText.SetResourceReference(TextBlock.ForegroundProperty, "TextSecondaryBrush");
+
+        // Mascot kết luận đổi theo kết quả: máy tốt → vui, máy có vấn đề
+        // (chặn / cảnh báo / đánh dấu không mua) → lo lắng; chưa đủ dữ liệu
+        // thì giữ mascot suy nghĩ (mascot-new) như trước.
+        HealthMascot.Source = new BitmapImage(new Uri(titleKey switch
+        {
+            "Dat" => "pack://application:,,,/Assets/mascot-happy.png",
+            "Sua" or "CanhBao" or "Loai" => "pack://application:,,,/Assets/mascot-worried.png",
+            _ => "pack://application:,,,/Assets/mascot-new.png",
+        }, UriKind.Absolute));
 
         // Câu chỉ random lại khi kịch bản đổi, không random lại mỗi lần Refresh —
         // để câu đang hiện không tự nhảy sang câu khác khi 1 module báo cáo lại.
