@@ -2,7 +2,7 @@
   <img src="验机软件/Assets/logo-antam.png" alt="Logo Vi Tính An Tâm" width="160">
 </p>
 
-# An Tâm PC Test
+# An Tâm Check
 
 [![Build Windows portable](https://github.com/YHresearcher/PCcheck/actions/workflows/build-windows.yml/badge.svg)](https://github.com/YHresearcher/PCcheck/actions/workflows/build-windows.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
@@ -21,7 +21,7 @@ Vào mục **Releases** của repo, tải file **AnTamPCtest-portable.zip** ở 
 
 https://github.com/YHresearcher/PCcheck/releases/latest/download/AnTamPCtest-portable.zip
 
-Mỗi lần push lên main mà build thành công thì workflow tạo **một Release mới** (tag `build-<số run>-<lần chạy>`, tiêu đề "An Tâm PC check — Build #<số run>", đánh dấu Latest) thay vì ghi đè lên Release cũ — các Release cũ được giữ nguyên để quay lại bản trước khi cần. Bản Release mang tag `latest` từ trước vẫn giữ nguyên, không bị xóa, nhưng không còn được cập nhật nữa. Build lỗi không tạo Release mới, nên bản tốt đang phát hành không bị ghi đè. Với pull request thì workflow chỉ build + lưu artifact để kiểm thử, không tạo Release; build chạy tay bằng workflow_dispatch cũng không tạo Release chính thức. Nếu Releases chưa có file (ví dụ build đang chạy hoặc vừa lỗi), cách dự phòng là vào tab **Actions**, bấm vào run **Build Windows portable** mới nhất tick xanh, kéo xuống cuối trang run, tới mục **Artifacts**, tải **AnTamPCtest-portable** về — cách này thì GitHub bắt đăng nhập tài khoản mới tải được, kể cả repo public.
+Mỗi lần push lên main mà build thành công thì workflow tạo **một Release mới** (tag `build-<số run>-<lần chạy>`, tiêu đề "An Tâm Check — Build #<số run>", đánh dấu Latest) thay vì ghi đè lên Release cũ — các Release cũ được giữ nguyên để quay lại bản trước khi cần. Bản Release mang tag `latest` từ trước vẫn giữ nguyên, không bị xóa, nhưng không còn được cập nhật nữa. Build lỗi không tạo Release mới, nên bản tốt đang phát hành không bị ghi đè. Với pull request thì workflow chỉ build + lưu artifact để kiểm thử, không tạo Release; build chạy tay bằng workflow_dispatch cũng không tạo Release chính thức. Nếu Releases chưa có file (ví dụ build đang chạy hoặc vừa lỗi), cách dự phòng là vào tab **Actions**, bấm vào run **Build Windows portable** mới nhất tick xanh, kéo xuống cuối trang run, tới mục **Artifacts**, tải **AnTamPCtest-portable** về — cách này thì GitHub bắt đăng nhập tài khoản mới tải được, kể cả repo public.
 
 ## Chạy portable từ USB
 
@@ -129,11 +129,11 @@ Phần cổng tự động chỉ báo những gì hệ thống thật sự nhìn
 
 ## Cửa sổ chính và Splash screen
 
-Cửa sổ chính mặc định 1536×1024, tối thiểu 940×680. Dải cam 3px trên cùng, dưới là thanh tiện ích căn phải: nút **Dừng test nặng** (dừng Prime95 / FurMark / đo tốc độ ổ, có kiểm chứng tiến trình còn sống) và công tắc theme ☀/🌙. Thương hiệu không còn nằm ở top bar nữa mà nằm ở đầu sidebar: ảnh mascot + 2 dòng "An Tâm / PC check".
+Cửa sổ chính mặc định 1536×1024, tối thiểu 940×680. Dải cam 3px trên cùng, dưới là thanh tiện ích căn phải: nút **Dừng test nặng** (dừng Prime95 / FurMark / đo tốc độ ổ, có kiểm chứng tiến trình còn sống) và công tắc theme ☀/🌙. Thương hiệu không còn nằm ở top bar nữa mà nằm ở đầu sidebar: tên app một dòng "An Tâm [logo Windows] Check" màu cam, mascot ở cuối sidebar.
 
-Sidebar rộng 274, từ trên xuống: 7 nút chính — **Tổng quan** (về Dashboard), **Kiểm tra chi tiết** (mở danh sách bài test rồi vào wizard ở bài chưa xong đầu tiên, xong hết thì sang Tổng kết), **Phần cứng & Sức khỏe** (sang Đối chiếu cấu hình), **Báo cáo** (sang Tổng kết), **Công cụ tiện ích** (sang Đo tốc độ ổ), **Hướng dẫn** (popup 4 bước dùng app), **Giới thiệu** (popup thông tin shop + bảo hành) — rồi tới mục gập **Danh sách bài test** (mặc định gập) chứa đủ các module theo thứ tự, kèm chấm trạng thái từng bài; cuối sidebar là dòng "Đã kiểm tra xong tất cả hạng mục!" khi xong hết và dòng "An Tâm PC check • Windows". Nút ghé shop không còn ở sidebar nữa mà nằm ở thẻ shop trên trang Tổng quan ("Tham quan shop", mở vitinhantam.com); popup Giới thiệu cũng ghi đủ địa chỉ + website shop.
+Sidebar rộng 274, từ trên xuống: 4 nút — **Tổng quan** (về Dashboard), **Kiểm tra chi tiết** (mở màn hình Bắt đầu rồi vào wizard ở bài chưa xong đầu tiên, xong hết thì sang Tổng kết), **Báo cáo** (sang Tổng kết), **Giới thiệu** (popup thông tin shop + nút Ghé qua shop) — rồi tới mascot ở cuối sidebar; cuối sidebar là dòng "Đã kiểm tra xong tất cả hạng mục!" khi xong hết và dòng "An Tâm Check • Windows". Phần cứng tự thu thập nền khi mở app nên Dashboard có dữ liệu thật ngay (ổ + pin), không đợi vào trang Đối chiếu cấu hình.
 
-Mở app lên là thấy màn hình chờ 480×400 ở giữa màn hình, không có viền cửa sổ, không hiện trên taskbar: chỉ logo An Tâm 120px, tên **"An Tâm PC Test"**, thanh tiến trình và dòng "Đang khởi động...". Khối thông tin shop không còn nằm trên Splash nữa mà nằm ở trang Tổng quan và popup Giới thiệu (xem trên).
+Mở app lên là thấy màn hình chờ 480×400 ở giữa màn hình, không có viền cửa sổ, không hiện trên taskbar: chỉ logo An Tâm 120px, tên **"An Tâm Check"**, thanh tiến trình và dòng "Đang khởi động...". Khối thông tin shop không còn nằm trên Splash nữa mà nằm ở trang Tổng quan và popup Giới thiệu (xem trên).
 
 Splash hiện trong lúc app tải các module, tự đóng khi cửa sổ chính đã tải xong và đủ tối thiểu 1,5 giây (máy nhanh cũng không bị chớp tắt), rồi chuyển focus sang cửa sổ chính. Không cần bấm gì để tắt. Màu splash theo theme đang dùng (tối = nền xám đậm, sáng = nền kem ấm), logo cam nổi trên cả hai nền.
 

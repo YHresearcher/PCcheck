@@ -15,7 +15,7 @@
     <system:String x:Key="Shell.StopAllFailed">Could not stop: {0}.&#10;&#10;The machine is still under heavy load. Check the processes above in Task Manager and press Stop all again — don't assume the load is gone.</system:String>
     <system:String x:Key="Shell.WebsiteFailed">Could not open the website: {0}</system:String>
     <system:String x:Key="Shell.AllDone">🎉 All checks finished!</system:String>
-    <system:String x:Key="Shell.Footer">An Tâm PC check • Windows</system:String>
+    <system:String x:Key="Shell.Footer">An Tâm Check • Windows</system:String>
 
     <!-- Wizard bar -->
     <system:String x:Key="Wizard.Caption">Focused check mode — one test at a time</system:String>
@@ -25,12 +25,19 @@
     <system:String x:Key="Wizard.Exit">Stop all checks</system:String>
     <system:String x:Key="Wizard.ExitTip">Exit focused mode and reopen the left menu. Finished tests keep their state.</system:String>
 
-    <!-- Sidebar -->
-    <system:String x:Key="Nav.Overview">⌂    Overview</system:String>
-    <system:String x:Key="Nav.Inspection">▣    Detailed checks</system:String>
-    <system:String x:Key="Nav.Hardware">▥    Hardware &amp; Health</system:String>
-    <system:String x:Key="Nav.Report">▤    Report</system:String>
-    <system:String x:Key="Nav.Tools">⚒    Utilities</system:String>
+    <!-- Start screen shown before the wizard -->
+    <system:String x:Key="Wiz.IntroTitle">Start the checks</system:String>
+    <system:String x:Key="Wiz.IntroText">One item at a time — the technician reviews each result before passing it. Nothing runs or concludes on its own.</system:String>
+    <system:String x:Key="Wiz.IntroStart">Start</system:String>
+    <system:String x:Key="Wiz.IntroNote">Finished items show ✓ — Start opens the first unfinished item.</system:String>
+    <system:String x:Key="Wiz.IntroDone">Done</system:String>
+    <system:String x:Key="Wiz.IntroPending">Not done</system:String>
+
+    <!-- Sidebar: buttons carry text only, icons are images in XAML -->
+    <system:String x:Key="Nav.Overview">Overview</system:String>
+    <system:String x:Key="Nav.Inspection">Detailed checks</system:String>
+    <system:String x:Key="Nav.Report">Report</system:String>
+    <system:String x:Key="Nav.About">About</system:String>
 
     <!-- Shop card (slogan + addresses stay Vietnamese in both builds) -->
     <system:String x:Key="Shop.Slogan">Bán bằng tâm để bạn yên tâm</system:String>
@@ -51,7 +58,7 @@
     <system:String x:Key="Dash.Device">Device: {0}</system:String>
     <system:String x:Key="Dash.CpuUnread">Not read</system:String>
     <system:String x:Key="Dash.GpuLine">GPU: See Hardware check</system:String>
-    <system:String x:Key="Dash.StorageFound">Drives: {0} recorded • See details</system:String>
+    <system:String x:Key="Dash.StorageFound">Drives: {0} recorded</system:String>
     <system:String x:Key="Dash.StorageEmpty">SSD / HDD: No check data yet</system:String>
     <system:String x:Key="Dash.ViewConfig">View full hardware details →</system:String>
     <system:String x:Key="Dash.QuickTitle">Quick check results</system:String>
@@ -81,6 +88,12 @@
     <system:String x:Key="Dash.NoHeavy">No heavy test process is still running. If you're checking by hand, you can keep going!</system:String>
     <system:String x:Key="Dash.HeavyLeft">Still running: {0}. Please check Task Manager.</system:String>
     <system:String x:Key="Dash.FolderFailed">Could not open the session folder ({0}): {1}</system:String>
+    <system:String x:Key="Dash.DriveTitle">Drive health</system:String>
+    <system:String x:Key="Dash.DriveEmpty">No drive data yet — collecting…</system:String>
+    <system:String x:Key="Dash.OsLine">OS: {0}</system:String>
+    <system:String x:Key="Dash.BatteryHealthy">Battery: healthy</system:String>
+    <system:String x:Key="Dash.BatteryWorn">Battery: worn — factor in replacement cost</system:String>
+    <system:String x:Key="Dash.BatteryBad">Battery: heavily worn — plan a replacement</system:String>
 
     <!-- Summary / Report page -->
     <system:String x:Key="Sum.Title">Buy verdict — worth buying or not</system:String>
@@ -125,6 +138,7 @@
     <system:String x:Key="Dialog.No">No</system:String>
     <system:String x:Key="Dialog.Agree">Agree</system:String>
     <system:String x:Key="Dialog.Cancel">Cancel</system:String>
+    <system:String x:Key="Dialog.Close">Close</system:String>
 
     <!-- Splash -->
     <system:String x:Key="Splash.Starting">Starting...</system:String>

@@ -1,0 +1,80 @@
+<Window x:Class="YanJi.Views.ShopInfoDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Giới thiệu" WindowStyle="None" AllowsTransparency="True"
+        Background="Transparent" ResizeMode="NoResize" ShowInTaskbar="False"
+        SizeToContent="WidthAndHeight" MinWidth="420" MaxWidth="560"
+        WindowStartupLocation="CenterOwner">
+    <!-- Popup Giới thiệu kiểu Mac (khung riêng của app, giống AnTamDialog):
+         dải cam trên cùng, thẻ bo tròn + bóng mờ, nút nổi kiểu app. -->
+    <Border Background="{DynamicResource SurfaceBgBrush}"
+            BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+            CornerRadius="10" Margin="12">
+        <Border.Effect>
+            <DropShadowEffect ShadowDepth="2" BlurRadius="12" Opacity="0.35"/>
+        </Border.Effect>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- Dải cam thương hiệu trên cùng. -->
+            <Border Grid.Row="0" Background="{DynamicResource AccentBrush}" Height="4"
+                    CornerRadius="10,10,0,0" MouseLeftButtonDown="TitleBar_MouseLeftButtonDown"/>
+
+            <!-- Thanh tiêu đề + nút đóng. -->
+            <Grid Grid.Row="1" Margin="16,10,8,4">
+                <TextBlock Text="{DynamicResource Nav.About}" FontWeight="Bold" FontSize="14"
+                           VerticalAlignment="Center"
+                           MouseLeftButtonDown="TitleBar_MouseLeftButtonDown"/>
+                <Button x:Name="CloseButton" Content="✕" HorizontalAlignment="Right"
+                        Style="{DynamicResource FlatButton}"
+                        Padding="8,4" Background="Transparent" BorderThickness="0"
+                        Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12"
+                        Click="CloseButton_Click" ToolTip="{DynamicResource Dialog.Close}"/>
+            </Grid>
+
+            <!-- Nội dung: logo + tên shop + slogan + 2 chi nhánh + website. -->
+            <StackPanel Grid.Row="2" Margin="16,8,16,12">
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,10"
+                            HorizontalAlignment="Center">
+                    <Image Source="pack://application:,,,/Assets/logo-antam.png"
+                           Width="48" Height="48" Stretch="Uniform" Margin="0,0,10,0"/>
+                    <TextBlock Text="Vi tính An Tâm" FontWeight="Bold" FontSize="20"
+                               VerticalAlignment="Center"/>
+                </StackPanel>
+                <Border Background="{DynamicResource NavSelectedBrush}"
+                        CornerRadius="10" Padding="10,8" Margin="0,0,0,12">
+                    <TextBlock Text="{DynamicResource Shop.Slogan}"
+                               Foreground="{DynamicResource AccentBrush}"
+                               FontWeight="SemiBold" FontSize="13"
+                               HorizontalAlignment="Center" TextAlignment="Center"
+                               TextWrapping="Wrap"/>
+                </Border>
+                <TextBlock Text="{DynamicResource Shop.Branch1}"
+                           Foreground="{DynamicResource TextSecondaryBrush}"
+                           FontSize="12" TextWrapping="Wrap" Margin="0,0,0,8"/>
+                <TextBlock Text="{DynamicResource Shop.Branch2}"
+                           Foreground="{DynamicResource TextSecondaryBrush}"
+                           FontSize="12" TextWrapping="Wrap" Margin="0,0,0,8"/>
+                <TextBlock Text="◎  vitinhantam.com"
+                           Foreground="{DynamicResource TextSecondaryBrush}"
+                           FontSize="12" Margin="0,0,0,4"/>
+            </StackPanel>
+
+            <!-- Nút bấm, căn phải. -->
+            <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right"
+                        Margin="0,0,16,14">
+                <Button x:Name="VisitButton" Content="{DynamicResource Shop.Visit}" Padding="16,6" MinWidth="110"
+                        Background="{DynamicResource ButtonPrimaryBgBrush}"
+                        BorderBrush="{DynamicResource AccentBrush}" Foreground="White"
+                        IsDefault="True" Click="VisitButton_Click"/>
+                <Button Content="{DynamicResource Dialog.Close}" Padding="16,6" MinWidth="90"
+                        Margin="8,0,0,0" IsCancel="True" Click="CloseButton_Click"/>
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>

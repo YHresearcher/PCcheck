@@ -1,7 +1,7 @@
 <Window x:Class="YanJi.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="An Tâm PC check" Width="1536" Height="1024"
+        Title="An Tâm Check" Width="1536" Height="1024"
         MinWidth="940" MinHeight="680"
         Background="{DynamicResource WindowBgBrush}"
         FontFamily="/Fonts/#Be Vietnam Pro, Segoe UI, Microsoft YaHei UI"
@@ -78,14 +78,25 @@
                     <ListBox x:Name="NavList" SelectionChanged="OnNavSelect"
                              BorderThickness="0" Background="Transparent" Visibility="Collapsed"/>
                     <StackPanel DockPanel.Dock="Top" Margin="14,20,14,14">
-                        <StackPanel Orientation="Horizontal" Margin="0,0,0,14">
-                            <Image Source="pack://application:,,,/Assets/mascot-sidebar-2026.png"
-                                   Width="124" Height="100" Margin="0,0,8,0"
-                                   Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality"/>
-                            <StackPanel VerticalAlignment="Center">
-                                <TextBlock Text="An Tâm" FontSize="19" FontWeight="Bold"/>
-                                <TextBlock Text="PC check" FontSize="19" FontWeight="Bold"/>
-                            </StackPanel>
+                        <!-- Tên app mới, một dòng ngang: "An Tâm" + logo Windows
+                             (4 ô vuông cam vẽ bằng UniformGrid 2x2) + "Check" —
+                             chữ và logo đều màu cam, font Be Vietnam Pro như website.
+                             Mascot dời xuống cuối sidebar (xem SidebarMascot). -->
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,14"
+                                    VerticalAlignment="Center">
+                            <TextBlock Text="An Tâm" FontSize="19" FontWeight="Bold"
+                                       Foreground="{DynamicResource AccentBrush}"
+                                       VerticalAlignment="Center"/>
+                            <UniformGrid Columns="2" Rows="2" Width="20" Height="20"
+                                         Margin="8,0" VerticalAlignment="Center">
+                                <Rectangle Fill="{DynamicResource AccentBrush}" Margin="0,0,1.5,1.5"/>
+                                <Rectangle Fill="{DynamicResource AccentBrush}" Margin="1.5,0,0,1.5"/>
+                                <Rectangle Fill="{DynamicResource AccentBrush}" Margin="0,1.5,1.5,0"/>
+                                <Rectangle Fill="{DynamicResource AccentBrush}" Margin="1.5,1.5,0,0"/>
+                            </UniformGrid>
+                            <TextBlock Text="Check" FontSize="19" FontWeight="Bold"
+                                       Foreground="{DynamicResource AccentBrush}"
+                                       VerticalAlignment="Center"/>
                         </StackPanel>
                         <Button x:Name="NavOverview" Click="SidebarOverview_Click"
                                 Style="{StaticResource SidebarNavButton}"
@@ -103,13 +114,6 @@
                                 <TextBlock Text="{DynamicResource Nav.Inspection}" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
-                        <Button x:Name="NavHardware" Click="SidebarHardware_Click"
-                                Style="{StaticResource SidebarNavButton}">
-                            <StackPanel Orientation="Horizontal">
-                                <Image Source="pack://application:,,,/Assets/03_cpu_chip_gray.png" Width="20" Height="20" Margin="0,0,10,0" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality"/>
-                                <TextBlock Text="{DynamicResource Nav.Hardware}" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </Button>
                         <Button x:Name="NavReport" Click="SidebarReport_Click"
                                 Style="{StaticResource SidebarNavButton}">
                             <StackPanel Orientation="Horizontal">
@@ -117,63 +121,30 @@
                                 <TextBlock Text="{DynamicResource Nav.Report}" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
-                        <Button x:Name="NavTools" Click="SidebarTools_Click"
-                                Style="{StaticResource SidebarNavButton}">
-                            <StackPanel Orientation="Horizontal">
-                                <Image Source="pack://application:,,,/Assets/10_settings_orange.png" Width="20" Height="20" Margin="0,0,10,0" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality"/>
-                                <TextBlock Text="{DynamicResource Nav.Tools}" VerticalAlignment="Center"/>
+                        <!-- Nút Giới thiệu: nút nổi 3D bo 18 kiểu Mac (khác 3 nút phẳng
+                             trên), mở popup thông tin shop — không dùng UI mặc định Windows. -->
+                        <Button x:Name="NavAbout" Click="SidebarAbout_Click"
+                                Style="{StaticResource RaisedButton18}"
+                                FontSize="14" Padding="14,11" Margin="0,0,0,5">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <Image Source="pack://application:,,,/Assets/17_info_gray.png" Width="20" Height="20" Margin="0,0,10,0" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                <TextBlock Text="{DynamicResource Nav.About}" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
                     </StackPanel>
                     <StackPanel DockPanel.Dock="Bottom" Margin="18,8,18,17">
-                        <!-- Mascot checklist chỉ xuất hiện ở header, theo bản thiết kế đã duyệt. -->
-                        <Border x:Name="MascotBrand" Height="0" Visibility="Collapsed"/>
+                        <!-- Mascot ở cuối sidebar, to (~200px), lấp khoảng trống dưới
+                             nút Giới thiệu; màn hình thấp thì ẩn (AdjustSidebarForHeight). -->
+                        <Image x:Name="SidebarMascot" Source="pack://application:,,,/Assets/mascot-sidebar-2026.png"
+                               Width="200" Height="200" Stretch="Uniform" Margin="0,0,0,10"
+                               HorizontalAlignment="Center"
+                               RenderOptions.BitmapScalingMode="HighQuality"/>
                         <TextBlock x:Name="AllDoneHint" Text="{DynamicResource Shell.AllDone}"
                                    Foreground="{DynamicResource AccentBrush}" FontSize="11"
                                    TextWrapping="Wrap" Margin="0,0,0,8" Visibility="Collapsed"/>
                         <TextBlock Text="{DynamicResource Shell.Footer}" FontSize="10"
                                    Foreground="{DynamicResource TextSecondaryBrush}"/>
                     </StackPanel>
-                    <!-- Thẻ shop dời từ Dashboard sang sidebar (nội dung giữ nguyên,
-                         chỉ thu gọn cho vừa chiều rộng sidebar). -->
-                    <ScrollViewer VerticalScrollBarVisibility="Auto"
-                                  HorizontalScrollBarVisibility="Disabled">
-                        <Border Background="{DynamicResource SurfaceBgBrush}"
-                                BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
-                                CornerRadius="14" Padding="12">
-                            <StackPanel>
-                                <StackPanel Orientation="Horizontal" Margin="0,0,0,10"
-                                            HorizontalAlignment="Center">
-                                    <Image Source="pack://application:,,,/Assets/logo-antam.png"
-                                           Width="32" Height="32" Stretch="Uniform" Margin="0,0,8,0"/>
-                                    <TextBlock Text="Vi tính An Tâm" FontWeight="Bold"
-                                               FontSize="17" VerticalAlignment="Center"/>
-                                </StackPanel>
-                                <Border Background="{DynamicResource NavSelectedBrush}"
-                                        CornerRadius="10" Padding="8,6" Margin="0,0,0,10">
-                                    <TextBlock Text="{DynamicResource Shop.Slogan}"
-                                               Foreground="{DynamicResource AccentBrush}"
-                                               FontWeight="SemiBold" FontSize="11"
-                                               HorizontalAlignment="Center" TextAlignment="Center"
-                                               TextWrapping="Wrap"/>
-                                </Border>
-                                <TextBlock Text="{DynamicResource Shop.Branch1}"
-                                           Foreground="{DynamicResource TextSecondaryBrush}"
-                                           FontSize="11" TextWrapping="Wrap" Margin="0,0,0,8"/>
-                                <TextBlock Text="{DynamicResource Shop.Branch2}"
-                                           Foreground="{DynamicResource TextSecondaryBrush}"
-                                           FontSize="11" TextWrapping="Wrap" Margin="0,0,0,8"/>
-                                <TextBlock Text="◎  vitinhantam.com"
-                                           Foreground="{DynamicResource TextSecondaryBrush}"
-                                           FontSize="11" Margin="0,0,0,12"/>
-                                <Button Content="{DynamicResource Shop.Visit}" Click="VisitShopButton_Click"
-                                        HorizontalAlignment="Stretch" Padding="10,8"
-                                        Foreground="{DynamicResource AccentBrush}"
-                                        BorderBrush="{DynamicResource AccentBrush}"
-                                        Background="{DynamicResource SurfaceBgBrush}"/>
-                            </StackPanel>
-                        </Border>
-                    </ScrollViewer>
                 </DockPanel>
             </Border>
 

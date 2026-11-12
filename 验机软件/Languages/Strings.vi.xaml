@@ -15,7 +15,7 @@
     <system:String x:Key="Shell.StopAllFailed">Chưa dừng được: {0}.&#10;&#10;Máy vẫn đang tải cao. Mở Task Manager kiểm tra tiến trình trên rồi bấm Dừng tất cả lại, đừng tưởng máy đã hết tải.</system:String>
     <system:String x:Key="Shell.WebsiteFailed">Chưa mở được website: {0}</system:String>
     <system:String x:Key="Shell.AllDone">🎉 Đã kiểm tra xong tất cả hạng mục!</system:String>
-    <system:String x:Key="Shell.Footer">An Tâm PC check • Windows</system:String>
+    <system:String x:Key="Shell.Footer">An Tâm Check • Windows</system:String>
 
     <!-- Thanh wizard -->
     <system:String x:Key="Wizard.Caption">Chế độ kiểm tra tập trung — mỗi lần 1 bài test</system:String>
@@ -25,12 +25,19 @@
     <system:String x:Key="Wizard.Exit">Dừng tất cả kiểm tra</system:String>
     <system:String x:Key="Wizard.ExitTip">Thoát chế độ tập trung, mở lại menu bên trái. Trạng thái test đã xong không mất.</system:String>
 
-    <!-- Menu bên trái -->
-    <system:String x:Key="Nav.Overview">⌂    Tổng quan</system:String>
-    <system:String x:Key="Nav.Inspection">▣    Kiểm tra chi tiết</system:String>
-    <system:String x:Key="Nav.Hardware">▥    Phần cứng &amp; Sức khỏe</system:String>
-    <system:String x:Key="Nav.Report">▤    Báo cáo</system:String>
-    <system:String x:Key="Nav.Tools">⚒    Công cụ tiện ích</system:String>
+    <!-- Màn hình Bắt đầu trước khi vào wizard -->
+    <system:String x:Key="Wiz.IntroTitle">Bắt đầu kiểm tra</system:String>
+    <system:String x:Key="Wiz.IntroText">Kiểm tra từng hạng mục một — kỹ thuật viên xem kết quả rồi mới cho qua từng bài, không tự chạy, không tự kết luận.</system:String>
+    <system:String x:Key="Wiz.IntroStart">Bắt đầu</system:String>
+    <system:String x:Key="Wiz.IntroNote">Bài nào đã xong sẽ hiện dấu ✓ — bấm Bắt đầu để vào bài chưa xong đầu tiên.</system:String>
+    <system:String x:Key="Wiz.IntroDone">Đã xong</system:String>
+    <system:String x:Key="Wiz.IntroPending">Chưa làm</system:String>
+
+    <!-- Menu bên trái: nút chỉ còn chữ, icon là ảnh trong XAML -->
+    <system:String x:Key="Nav.Overview">Tổng quan</system:String>
+    <system:String x:Key="Nav.Inspection">Kiểm tra chi tiết</system:String>
+    <system:String x:Key="Nav.Report">Báo cáo</system:String>
+    <system:String x:Key="Nav.About">Giới thiệu</system:String>
 
     <!-- Thẻ shop (slogan + địa chỉ giữ nguyên tiếng Việt cả 2 bản) -->
     <system:String x:Key="Shop.Slogan">Bán bằng tâm để bạn yên tâm</system:String>
@@ -51,7 +58,7 @@
     <system:String x:Key="Dash.Device">Thiết bị: {0}</system:String>
     <system:String x:Key="Dash.CpuUnread">Chưa đọc được</system:String>
     <system:String x:Key="Dash.GpuLine">GPU: Xem mục Đối chiếu cấu hình</system:String>
-    <system:String x:Key="Dash.StorageFound">Ổ đĩa: {0} ổ được ghi nhận • Xem thông tin chi tiết</system:String>
+    <system:String x:Key="Dash.StorageFound">Ổ đĩa: {0} ổ được ghi nhận</system:String>
     <system:String x:Key="Dash.StorageEmpty">SSD / HDD: Chưa có dữ liệu kiểm tra</system:String>
     <system:String x:Key="Dash.ViewConfig">Xem cấu hình chi tiết →</system:String>
     <system:String x:Key="Dash.QuickTitle">Kết quả kiểm tra nhanh</system:String>
@@ -81,6 +88,12 @@
     <system:String x:Key="Dash.NoHeavy">Không phát hiện tiến trình test nặng nào còn chạy. Nếu đang kiểm tra thủ công, bạn vẫn có thể tiếp tục nha!</system:String>
     <system:String x:Key="Dash.HeavyLeft">Còn tiến trình chưa dừng: {0}. Hãy kiểm tra Task Manager nhé.</system:String>
     <system:String x:Key="Dash.FolderFailed">Không mở được thư mục hồ sơ ({0}): {1}</system:String>
+    <system:String x:Key="Dash.DriveTitle">Sức khỏe ổ đĩa</system:String>
+    <system:String x:Key="Dash.DriveEmpty">Chưa có dữ liệu ổ — đang thu thập…</system:String>
+    <system:String x:Key="Dash.OsLine">Hệ điều hành: {0}</system:String>
+    <system:String x:Key="Dash.BatteryHealthy">Pin: còn khỏe</system:String>
+    <system:String x:Key="Dash.BatteryWorn">Pin: chai vừa — tính chi phí thay pin</system:String>
+    <system:String x:Key="Dash.BatteryBad">Pin: chai nặng — nên thay pin</system:String>
 
     <!-- Trang Tổng kết / Báo cáo -->
     <system:String x:Key="Sum.Title">Kết luận mua máy — mua được hay không</system:String>
@@ -125,6 +138,7 @@
     <system:String x:Key="Dialog.No">Không</system:String>
     <system:String x:Key="Dialog.Agree">Đồng ý</system:String>
     <system:String x:Key="Dialog.Cancel">Hủy</system:String>
+    <system:String x:Key="Dialog.Close">Đóng</system:String>
 
     <!-- Màn hình chờ -->
     <system:String x:Key="Splash.Starting">Đang khởi động...</system:String>

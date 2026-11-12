@@ -27,6 +27,7 @@ public partial class MainWindow : Window
     // 已完成模块的 id 集合（自动跳转与「全部完成」判定用）
     readonly HashSet<string> _doneTags = [];
     readonly HostContext _hostContext;
+    readonly Views.WizardIntroPage _wizardIntroPage;
     bool _syncingSwitch;
 
     /// <summary>IHostContext 实现：模块清单在插件加载前填入，完成状态查询复用 _doneTags（不另立状态源）。
@@ -47,6 +48,7 @@ public partial class MainWindow : Window
         }
         public bool NavigateTo(string moduleId) => _owner.NavigateToModule(moduleId);
         public void StartWizard() => _owner.StartWizardMode();
+        public void BeginWizardCheck() => _owner.BeginWizardCheck();
         public IReadOnlyList<string> StopAllHeavyTests() => _owner.StopAllHeavyTests();
         public void ExitWizard() => _owner.ExitWizardMode();
         public bool WizardBack() => _owner.WizardMove(-1);
@@ -111,6 +113,11 @@ public partial class MainWindow : Window
             if (lp.Page is IModulePage mp)
                 mp.PassChanged += done => OnModulePassChanged(lp.Info.Id, done);
         }
+
+        // Màn hình Bắt đầu trước wizard: 1 instance dùng chung, bấm Bắt đầu
+        // thì vào bài chưa xong đầu tiên (NavigateToFirstUnfinished).
+        _wizardIntroPage = new Views.WizardIntroPage(_hostContext);
+        _wizardIntroPage.StartRequested += NavigateToFirstUnfinished;
 
         // 键盘测试等页面的物理按键路由：Preview 隧道事件 Window 最先拿到；
         // handledEventsToo=true 保证子控件（按钮等）已标记 Handled 的按键（如 Space/Enter）也能收到
@@ -240,30 +247,15 @@ public partial class MainWindow : Window
         NavigateFromSidebar("dashboard");
     }
 
-    void SidebarInspection_Click(object sender, RoutedEventArgs e)
-    {
-        if (_wizardMode) return;
-        var tests = _hostContext.Modules.Where(m => !m.Terminal).OrderBy(m => m.Order).ToList();
-        if (tests.Count == 0)
-        {
-            Dialogs.Info(this, Lang.Get("Shell.NoTests"));
-            return;
-        }
-        if (tests.All(m => _doneTags.Contains(m.Id)))
-        {
-            NavigateToModule("summary");
-            return;
-        }
-        string first = tests.First(m => !_doneTags.Contains(m.Id)).Id;
-        StartWizardMode();
-        if (!NavigateToModule(first)) ExitWizardMode();
-    }
+    void SidebarInspection_Click(object sender, RoutedEventArgs e) => BeginWizardCheck();
 
-    void SidebarHardware_Click(object sender, RoutedEventArgs e) => NavigateFromSidebar("config");
     void SidebarReport_Click(object sender, RoutedEventArgs e) => NavigateFromSidebar("summary");
-    void SidebarTools_Click(object sender, RoutedEventArgs e)
+
+    /// <summary>Nút "Giới thiệu" ở sidebar: popup thông tin shop kiểu Mac
+    /// (khung riêng của app, không dùng MessageBox mặc định của Windows).</summary>
+    void SidebarAbout_Click(object sender, RoutedEventArgs e)
     {
-        NavigateFromSidebar("disk");
+        new Views.ShopInfoDialog { Owner = this }.ShowDialog();
     }
 
     /// <summary>Mở app vừa màn hình: khung bung ra ~92% diện tích làm việc,
@@ -281,9 +273,9 @@ public partial class MainWindow : Window
 
     void AdjustSidebarForHeight()
     {
-        // Màn hình laptop thấp: ưu tiên không gian danh sách test, mascot chỉ ẩn
-        // trong sidebar (không mất asset, vẫn có trên dashboard).
-        MascotBrand.Visibility = ActualHeight < 850
+        // Màn hình laptop thấp: ưu tiên không gian nút bấm, mascot cuối sidebar
+        // chỉ ẩn (không mất asset, vẫn có trên dashboard).
+        SidebarMascot.Visibility = ActualHeight < 850
             ? Visibility.Collapsed : Visibility.Visible;
     }
 
@@ -300,7 +292,7 @@ public partial class MainWindow : Window
 
     void SyncPrimaryNav(string id)
     {
-        var buttons = new[] { NavOverview, NavInspection, NavHardware, NavReport, NavTools };
+        var buttons = new[] { NavOverview, NavInspection, NavReport, NavAbout };
         foreach (var button in buttons)
         {
             button.SetResourceReference(Control.BackgroundProperty, "NavIdleBrush");
@@ -311,9 +303,10 @@ public partial class MainWindow : Window
         Button selected = id switch
         {
             "dashboard" => NavOverview,
-            "config" or "health" => NavHardware,
+            // Đối chiếu cấu hình / Sức khỏe không còn nút riêng: đang wizard thì
+            // sáng nút Kiểm tra chi tiết, ngoài wizard thì sáng Tổng quan.
+            "config" or "health" => _wizardMode ? NavInspection : NavOverview,
             "summary" => NavReport,
-            "disk" => _wizardMode ? NavInspection : NavTools,
             _ => NavInspection
         };
         // Kiểu Mac: mục đang chọn = nền cam nhạt + chữ cam đậm (không còn nền
@@ -451,11 +444,61 @@ public partial class MainWindow : Window
         UpdateWizardButtons();
     }
 
+    /// <summary>Lối vào wizard duy nhất (sidebar "Kiểm tra chi tiết" +
+    /// nút "Kiểm tra chi tiết" trên Dashboard): không nhảy thẳng bài đầu mà
+    /// mở màn hình Bắt đầu liệt kê các bài, bấm Bắt đầu mới vào bài chưa xong
+    /// đầu tiên. Xong hết thì sang Tổng kết, không vào wizard nữa.</summary>
+    void BeginWizardCheck()
+    {
+        if (_wizardMode) return;
+        var tests = _hostContext.Modules.Where(m => !m.Terminal).OrderBy(m => m.Order).ToList();
+        if (tests.Count == 0)
+        {
+            Dialogs.Info(this, Lang.Get("Shell.NoTests"));
+            return;
+        }
+        if (tests.All(m => _doneTags.Contains(m.Id)))
+        {
+            NavigateToModule("summary");
+            return;
+        }
+        StartWizardMode();
+        ShowWizardIntro();
+    }
+
+    /// <summary>Màn hình Bắt đầu: liệt kê bài test + trạng thái, nút Quay lại /
+    /// Bài tiếp theo tạm tắt (chưa vào bài nào), nút Kiểm tra chi tiết sáng.</summary>
+    void ShowWizardIntro()
+    {
+        _wizardIntroPage.Refresh();
+        ContentHost.Content = _wizardIntroPage;
+        SyncPrimaryNav("");
+        WizardBackButton.IsEnabled = false;
+        WizardNextButton.IsEnabled = false;
+    }
+
+    /// <summary>Bấm Bắt đầu ở màn hình intro: vào bài chưa xong đầu tiên
+    /// (theo Order); xong hết rồi thì sang Tổng kết.</summary>
+    void NavigateToFirstUnfinished()
+    {
+        var first = _hostContext.Modules.Where(m => !m.Terminal).OrderBy(m => m.Order)
+            .FirstOrDefault(m => !_doneTags.Contains(m.Id));
+        if (first == null)
+        {
+            NavigateToModule("summary");
+            return;
+        }
+        if (!NavigateToModule(first.Id)) ExitWizardMode();
+    }
+
     void ExitWizardMode()
     {
         _wizardMode = false;
         NavList.IsEnabled = true;
         WizardBar.Visibility = Visibility.Collapsed;
+        // Thoát từ màn hình Bắt đầu thì về lại Tổng quan, khỏi kẹt ở trang intro.
+        if (ContentHost.Content == _wizardIntroPage)
+            NavigateToModule("dashboard");
     }
 
     /// <summary>Wizard di chuyển giữa các bài test có thể cho qua (không nhảy vào
@@ -498,22 +541,6 @@ public partial class MainWindow : Window
     void OnWizardNextClick(object sender, RoutedEventArgs e) => WizardMove(1);
     void OnWizardStopClick(object sender, RoutedEventArgs e) => ShowStopAllResult();
     void OnWizardExitClick(object sender, RoutedEventArgs e) => ExitWizardMode();
-
-    /// <summary>Nút "Ghé qua shop xíu" + "~_~" ở sidebar (trên footer phiên bản): mở
-    /// website chính của shop (https://www.vitinhantam.com) trong trình duyệt
-    /// mặc định, bằng Process.Start + UseShellExecute. Nút ở sidebar nên luôn
-    /// hiện ở mọi trang, không phụ thuộc trang Tổng kết hay kịch bản kết luận.</summary>
-    void VisitShopButton_Click(object sender, RoutedEventArgs e)
-    {
-        try
-        {
-            Process.Start(new ProcessStartInfo { FileName = "https://www.vitinhantam.com", UseShellExecute = true });
-        }
-        catch (Exception ex)
-        {
-            Dialogs.Warn(this, string.Format(Lang.Get("Shell.WebsiteFailed"), ex.Message));
-        }
-    }
 
     /// <summary>窗口图标取 exe 内嵌图标（Win32 提取，多尺寸 ico 在各 DPI 下都清晰）。</summary>
     void UpdateIcon()

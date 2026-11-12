@@ -14,5 +14,13 @@ public class ConfigCheckPlugin : IYanJiPlugin
         new("CrystalDiskInfo", "Tham khảo cách thu thập thông tin ổ (đọc trực tiếp SMART)", "MIT"),
     ];
 
-    public UserControl CreatePage(IHostContext host) => new ConfigCheckPage(host);
+    public UserControl CreatePage(IHostContext host)
+    {
+        // Trang được tạo lúc khởi động app (host load hết plugin ở constructor):
+        // thu thập phần cứng ngay từ đây để Dashboard có dữ liệu thật (ổ + pin)
+        // ngay khi mở app, không đợi vào trang. Chỉ thu thập, không tự cho qua.
+        var page = new ConfigCheckPage(host);
+        page.StartBackgroundCollect();
+        return page;
+    }
 }

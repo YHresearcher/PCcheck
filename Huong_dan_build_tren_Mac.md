@@ -1,4 +1,4 @@
-# Build An Tâm PC test khi đang xài Mac
+# Build An Tâm Check khi đang xài Mac
 
 ## Nếu upload lên GitHub bằng web bị chặn vì file > 25 MB — đọc đoạn này trước
 
@@ -132,7 +132,7 @@ dùng được khi ông chỉ có mỗi Mac bên cạnh.
 - Build trực tiếp trên Mac bằng .NET SDK cho macOS: không được, vì WPF
   chỉ có trên Windows.
 - Boot Camp trên Mac M2 Pro: không có, chỉ Mac Intel mới có.
-- Chạy BibaYanji / An Tâm PC test trực tiếp trên Mac để test máy Mac:
+- Chạy BibaYanji / An Tâm Check trực tiếp trên Mac để test máy Mac:
   không được, app này chỉ test máy Windows. Muốn test máy Mac để bán thì
   dùng bộ web AIO bản Mac (`Server_Mac.py`) đã có trong gói AIO trước đó,
   không dùng app này.

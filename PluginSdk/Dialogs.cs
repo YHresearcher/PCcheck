@@ -3,7 +3,7 @@ using System.Windows;
 namespace YanJi.PluginSdk;
 
 /// <summary>Popup chuẩn của app: mọi popup đều qua đây để chung 1 format —
-/// tiêu đề luôn "An Tâm PC check", icon theo mức độ, nút theo ý nghĩa.
+/// tiêu đề luôn "An Tâm Check", icon theo mức độ, nút theo ý nghĩa.
 /// Hiện bằng cửa sổ riêng của app (AnTamDialog), không dùng MessageBox
 /// mặc định của Windows. Owner (cửa sổ cha) truyền vào để popup hiện
 /// giữa cửa sổ app thay vì giữa màn hình.</summary>

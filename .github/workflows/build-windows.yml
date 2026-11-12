@@ -1,4 +1,4 @@
-# Build An Tâm PC check trên GitHub Actions (Windows).
+# Build An Tâm Check trên GitHub Actions (Windows).
 # Mỗi lần PUSH lên main và BUILD THÀNH CÔNG: tạo Release MỚI với tag
 # build-<run_number>-<run_attempt>, đánh dấu Latest. Không ghi đè release cũ.
 # Với pull_request: chỉ build + artifact để kiểm thử, không tạo Release.
@@ -81,7 +81,7 @@ jobs:
         run: |
           $ErrorActionPreference = 'Stop'
           $tag = "build-${{ github.run_number }}-${{ github.run_attempt }}"
-          $name = "An Tâm PC check — Build #${{ github.run_number }}"
+          $name = "An Tâm Check — Build #${{ github.run_number }}"
           $notes = @"
           Bản Windows Portable được build thành công từ nhánh main.
 

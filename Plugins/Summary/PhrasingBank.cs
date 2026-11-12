@@ -104,10 +104,10 @@ public class PhrasingBank
     {
         Good = ["Tin vui đây! Chiếc máy này đã vượt qua vòng kiểm tra khá êm đẹp. Nếu mức giá cũng dễ thương như tình trạng máy thì đây là một lựa chọn đáng cân nhắc!"];
         CombinedA = ["Chiếc máy này đã vượt qua vòng kiểm tra của An Tâm khá thuyết phục! Chưa phát hiện lỗi đáng kể ở các hạng mục được kiểm tra. Nếu giá bán hợp lý và nguồn gốc rõ ràng, bạn có thể cân nhắc lựa chọn này."];
-        CombinedD = ["Giá có hấp dẫn đến đâu thì độ tin cậy vẫn là ưu tiên hàng đầu! Máy đã xuất hiện lỗi phần cứng quan trọng. An Tâm PC check khuyến nghị không mua trong tình trạng hiện tại."];
-        CombinedE = ["Chiếc máy vẫn còn vài bí mật chưa được khám phá! Một số bài kiểm tra quan trọng chưa hoàn thành nên An Tâm PC check chưa thể đưa ra khuyến nghị đáng tin cậy. Hãy kiểm tra tiếp trước khi xuống tiền nhé."];
+        CombinedD = ["Giá có hấp dẫn đến đâu thì độ tin cậy vẫn là ưu tiên hàng đầu! Máy đã xuất hiện lỗi phần cứng quan trọng. An Tâm Check khuyến nghị không mua trong tình trạng hiện tại."];
+        CombinedE = ["Chiếc máy vẫn còn vài bí mật chưa được khám phá! Một số bài kiểm tra quan trọng chưa hoàn thành nên An Tâm Check chưa thể đưa ra khuyến nghị đáng tin cậy. Hãy kiểm tra tiếp trước khi xuống tiền nhé."];
         DriveWear = ["Ổ cứng đã đi được một chặng đường khá dài! Chỉ số hao mòn cần được lưu ý, nhưng chưa phát hiện lỗi nghiêm trọng trong dữ liệu SMART hiện có. Hãy cân nhắc tuổi thọ còn lại và chi phí thay ổ khi thương lượng giá."];
-        DriveMediaError = ["Cảnh báo đỏ từ ổ cứng! Dữ liệu SMART cho thấy đã xuất hiện lỗi media. Đây là rủi ro trực tiếp đến dữ liệu của bạn. An Tâm PC check không khuyến nghị mua nếu vấn đề chưa được xử lý."];
+        DriveMediaError = ["Cảnh báo đỏ từ ổ cứng! Dữ liệu SMART cho thấy đã xuất hiện lỗi media. Đây là rủi ro trực tiếp đến dữ liệu của bạn. An Tâm Check không khuyến nghị mua nếu vấn đề chưa được xử lý."];
         DriveBadSector = ["Ổ cứng đang có dấu hiệu xuống sức thật sự! Các sector lỗi là điều không nên xem nhẹ, nhất là khi bạn cần một chiếc máy đáng tin cậy để lưu dữ liệu quan trọng."];
         DriveSmartUnknown = ["Ổ cứng vẫn còn là một ẩn số! Hệ thống chưa lấy được dữ liệu SMART nên chưa thể xác nhận sức khỏe thiết bị. Đừng xem việc không có cảnh báo là bằng chứng ổ cứng tốt nhé."];
         Warning = ["Máy dùng được, nhưng có chỗ cần kiểm tra thêm hoặc thương lượng giá trước khi mua."];

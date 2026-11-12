@@ -25,17 +25,23 @@ public partial class ConfigCheckPage : UserControl, YanJi.PluginSdk.IModulePage
     /// <summary>当前是否已核对通过。</summary>
     public bool Passed { get; private set; }
 
+    /// <summary>Thu thập nền ngay khi mở app (không đợi vào trang Đối chiếu cấu hình):
+    /// cùng luồng StartDetect() của Loaded, cờ _autoStarted chống chạy trùng.
+    /// Chỉ thu thập + báo cáo, không tự cho qua — kỹ thuật viên vẫn đối chiếu tay.</summary>
+    public void StartBackgroundCollect()
+    {
+        if (_autoStarted) return;
+        _autoStarted = true;
+        StartDetect();
+    }
+
     public ConfigCheckPage(IHostContext? host = null)
     {
         _host = host;
         InitializeComponent();
-        // 进入页面即自动检测一次（手动再次采集走「重新检测」按钮）
-        Loaded += (_, _) =>
-        {
-            if (_autoStarted) return;
-            _autoStarted = true;
-            StartDetect();
-        };
+        // Vào trang mới thu thập (thủ công bấm "Kiểm tra lại" cũng gọi StartDetect);
+        // thu thập nền lúc mở app đi qua StartBackgroundCollect ở plugin entry.
+        Loaded += (_, _) => StartBackgroundCollect();
     }
 
     void RunButton_Click(object sender, RoutedEventArgs e) => StartDetect();

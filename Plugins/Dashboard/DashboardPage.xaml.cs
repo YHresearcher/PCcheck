@@ -34,23 +34,9 @@ public partial class DashboardPage : UserControl
 
     void StartButton_Click(object sender, RoutedEventArgs e)
     {
-        var passable = _host.Modules.Where(m => !m.Terminal).OrderBy(m => m.Order).ToList();
-        // Đã xong hết thì nút này chỉ là lối tắt tới Tổng kết, không vào wizard nữa.
-        // Dùng 1 handler duy nhất quyết định theo trạng thái lúc bấm, không đổi handler
-        // theo Refresh (đổi handler theo Refresh sẽ gắn trùng handler khi Refresh chạy nhiều lần).
-        if (passable.Count > 0 && passable.All(m => _host.IsDone(m.Id)))
-        {
-            _host.NavigateTo("summary");
-            return;
-        }
-        string target = passable.FirstOrDefault(m => !_host.IsDone(m.Id))?.Id
-            ?? passable.FirstOrDefault()?.Id ?? "summary";
-        _host.StartWizard();
-        if (!_host.NavigateTo(target))
-        {
-            // Không nhảy được (module bị xóa lúc chạy) thì thoát wizard để khỏi kẹt
-            _host.ExitWizard();
-        }
+        // Vào wizard qua màn hình Bắt đầu (host quyết định: xong hết thì sang
+        // Tổng kết, chưa thì mở intro rồi vào bài chưa xong đầu tiên).
+        _host.BeginWizardCheck();
     }
 
     void StopButton_Click(object sender, RoutedEventArgs e)
@@ -135,6 +121,22 @@ public partial class DashboardPage : UserControl
                 : Lang.Get("Dash.CpuUnread");
         }
         catch { return Lang.Get("Dash.CpuUnread"); }
+    }
+
+    static string? ReadOsName()
+    {
+        try
+        {
+            string? product = Registry.GetValue(
+                @"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion",
+                "ProductName", null)?.ToString()?.Trim();
+            if (string.IsNullOrWhiteSpace(product)) return null;
+            string? display = Registry.GetValue(
+                @"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion",
+                "DisplayVersion", null)?.ToString()?.Trim();
+            return string.IsNullOrWhiteSpace(display) ? product : $"{product} ({display})";
+        }
+        catch { return null; }
     }
 
     void HardwareButton_Click(object sender, RoutedEventArgs e) => _host.NavigateTo("config");
@@ -233,5 +235,116 @@ public partial class DashboardPage : UserControl
             ? string.Format(Lang.Get("Dash.StorageFound"), _host.DriveSummaries.Count)
             : Lang.Get("Dash.StorageEmpty");
 
+        // Dòng hệ điều hành (registry) + dòng pin (tín hiệu từ Đối chiếu cấu hình):
+        // không có pin / không đọc được thì ẩn dòng, không đoán.
+        string? os = ReadOsName();
+        OsText.Text = os == null ? "" : string.Format(Lang.Get("Dash.OsLine"), os);
+        OsText.Visibility = os == null ? Visibility.Collapsed : Visibility.Visible;
+        string? battery = null;
+        if (_host.Signals.TryGetValue("config", out var configSignals))
+        {
+            if (configSignals.Contains("batteryHealthy")) battery = Lang.Get("Dash.BatteryHealthy");
+            else if (configSignals.Contains("batteryWorn20_30")) battery = Lang.Get("Dash.BatteryWorn");
+            else if (configSignals.Contains("batteryWornOver40")) battery = Lang.Get("Dash.BatteryBad");
+        }
+        BatteryText.Text = battery ?? "";
+        BatteryText.Visibility = battery == null ? Visibility.Collapsed : Visibility.Visible;
+
+        RefreshDriveCard();
     }
+
+    /// <summary>Thẻ sức khỏe ổ: 1 hàng/ổ — tên + dung lượng, gauge tự vẽ theo
+    /// % sức khỏe (màu theo mốc kết luận ổ: ≥90% xanh, 70–89% cam, &lt;70% đỏ,
+    /// không rõ xám), lý do chặn/cảnh báo nếu có. Dữ liệu từ DriveSummaries do
+    /// Đối chiếu cấu hình báo cáo (thu thập nền khi mở app).</summary>
+    void RefreshDriveCard()
+    {
+        var drives = _host.DriveSummaries;
+        DriveEmptyText.Visibility = drives.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
+        DriveList.Children.Clear();
+        foreach (var d in drives)
+        {
+            var letters = d.Letters.Count > 0 ? $" ({string.Join(", ", d.Letters)})" : "";
+            var row = new StackPanel { Margin = new Thickness(0, 0, 0, 10) };
+            row.Children.Add(new TextBlock
+            {
+                Text = $"{d.Model} • {d.Capacity}{letters}",
+                FontSize = 13, FontWeight = FontWeights.SemiBold,
+                TextTrimming = TextTrimming.CharacterEllipsis,
+                Margin = new Thickness(0, 0, 0, 4),
+            });
+            row.Children.Add(BuildDriveGauge(d));
+            string reasons = string.Join("; ", d.BlockReasons.Concat(d.WarningReasons));
+            if (!string.IsNullOrWhiteSpace(reasons))
+                row.Children.Add(new TextBlock
+                {
+                    Text = reasons, FontSize = 11,
+                    Foreground = HexBrush("#888080"), TextWrapping = TextWrapping.Wrap,
+                    Margin = new Thickness(0, 4, 0, 0),
+                });
+            DriveList.Children.Add(row);
+        }
+    }
+
+    Grid BuildDriveGauge(DriveSummary d)
+    {
+        // Màu theo mốc kết luận ổ (giống ConfigCheck): không rõ xám, ≥90 xanh,
+        // 70–89 cam, <70 đỏ. Gauge đầy = % sức khỏe còn lại.
+        Color color = d.HealthPercent == null ? (Color)ColorConverter.ConvertFromString("#888080")
+            : d.HealthPercent >= 90 ? Colors.ForestGreen
+            : d.HealthPercent >= 70 ? (Color)ColorConverter.ConvertFromString("#DE870F")
+            : (Color)ColorConverter.ConvertFromString("#D33D42");
+        double health = d.HealthPercent ?? 0;
+        var trackGrid = new Grid();
+        trackGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(health, GridUnitType.Star) });
+        trackGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(100 - health, GridUnitType.Star) });
+        var fill = new System.Windows.Shapes.Rectangle { Fill = BandBrush(color), RadiusX = 3, RadiusY = 3 };
+        Grid.SetColumn(fill, 0);
+        trackGrid.Children.Add(fill);
+        var track = new Border
+        {
+            Height = 12, CornerRadius = new CornerRadius(6),
+            BorderThickness = new Thickness(1), Padding = new Thickness(2),
+        };
+        track.SetResourceReference(Border.BorderBrushProperty, "BorderBrush");
+        track.SetResourceReference(Border.BackgroundProperty, "SurfaceBgBrush");
+        track.Child = trackGrid;
+        string label = d.HealthPercent == null ? d.VerdictText : $"{d.HealthPercent}% • {d.VerdictText}";
+        var labelText = new TextBlock
+        {
+            Text = label, FontSize = 11, FontWeight = FontWeights.SemiBold,
+            Foreground = new SolidColorBrush(color), Margin = new Thickness(8, 0, 0, 0),
+            VerticalAlignment = VerticalAlignment.Center,
+        };
+        var grid = new Grid();
+        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+        Grid.SetColumn(track, 0);
+        Grid.SetColumn(labelText, 1);
+        grid.Children.Add(track);
+        grid.Children.Add(labelText);
+        return grid;
+    }
+
+    /// <summary>Gradient dọc cho fill gauge (sáng trên -> màu gốc -> đậm dưới),
+    /// giống viên pin ở Đối chiếu cấu hình để gauge nhìn nổi 3D.</summary>
+    static LinearGradientBrush BandBrush(Color baseColor)
+    {
+        var brush = new LinearGradientBrush { StartPoint = new Point(0, 0), EndPoint = new Point(0, 1) };
+        brush.GradientStops.Add(new GradientStop(Lighten(baseColor, 0.5), 0));
+        brush.GradientStops.Add(new GradientStop(baseColor, 0.5));
+        brush.GradientStops.Add(new GradientStop(Darken(baseColor, 0.3), 1));
+        brush.Freeze();
+        return brush;
+    }
+
+    static Color Lighten(Color c, double amount) => Color.FromRgb(
+        (byte)(c.R + (255 - c.R) * amount),
+        (byte)(c.G + (255 - c.G) * amount),
+        (byte)(c.B + (255 - c.B) * amount));
+
+    static Color Darken(Color c, double amount) => Color.FromRgb(
+        (byte)(c.R * (1 - amount)),
+        (byte)(c.G * (1 - amount)),
+        (byte)(c.B * (1 - amount)));
 }

@@ -75,6 +75,9 @@ public interface IHostContext
     /// (Quay lại / Bài tiếp theo / Dừng tất cả / Dừng tất cả kiểm tra), mỗi lần chỉ
     /// hiện 1 bài test. Dừng tất cả kiểm tra thì mở lại menu, không mất trạng thái test.</summary>
     void StartWizard();
+    /// <summary>Mở màn hình "Bắt đầu" rồi vào wizard (không nhảy thẳng bài đầu):
+    /// nút Kiểm tra chi tiết ở sidebar / Dashboard dùng chung lối này.</summary>
+    void BeginWizardCheck();
     /// <summary>Dừng các bài test tải nặng và trả tên tiến trình còn sống để cảnh báo.</summary>
     IReadOnlyList<string> StopAllHeavyTests();
     /// <summary>Thoát chế độ wizard, mở lại menu bên trái.</summary>
