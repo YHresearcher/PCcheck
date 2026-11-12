@@ -78,18 +78,18 @@ public partial class DashboardPage : UserControl
     // AV bao gồm 3 phép kiểm tra (loa / webcam / microphone) trong 1 plugin.
     // Trackpad chỉ được tính sau khi kỹ thuật viên đánh dấu xác minh ở Ngoại quan.
     // Name là key chuỗi ngôn ngữ (Lang.Get lúc vẽ), không phải chữ hiện thẳng.
-    // IconPath: ảnh icon thật trong bộ 24 icon Mac (Assets, file gốc user gửi,
-    // pack URI host); null = bộ icon không có hình cho hàng này → giữ ký tự Icon
-    // như cũ (Loa, Webcam, Bàn phím, Trackpad, Microphone chưa có icon trong bộ).
+    // IconPath: ảnh icon thật trong bộ icon An Tâm Mac Check (Assets, file gốc
+    // user gửi, pack URI host) — 24 icon đợt 1 + 5 icon kiểm tra đợt 2; đủ cả
+    // 8 hàng. null = chưa có icon cho hàng này → giữ ký tự Icon như cũ.
     const string IconAssets = "pack://application:,,,/Assets/";
     static readonly (string Id, string NameKey, string Icon, string? IconPath, string Row, string IconBg, string Fg)[] Rows =
     [
         ("screen",   "Dash.Row.Screen",   "▣", IconAssets + "01_laptop_orange.png",     "#E5F4FF", "#D2EAFF", "#1688ED"),
-        ("av",       "Dash.Row.Speakers", "♫", null,                                     "#EEECFF", "#E1E0FF", "#536BFF"),
-        ("av",       "Dash.Row.Webcam",   "▣", null,                                     "#F1E5FF", "#E5D2FF", "#8645E8"),
-        ("keyboard", "Dash.Row.Keyboard", "⌨", null,                                     "#FFE7F2", "#FFD5EC", "#E83B9B"),
-        ("trackpad", "Dash.Row.Trackpad", "▭", null,                                     "#DFF8F0", "#C8F1E4", "#08BA87"),
-        ("av",       "Dash.Row.Mic",      "♩", null,                                     "#E6F8E7", "#D2F3D5", "#12AF37"),
+        ("av",       "Dash.Row.Speakers", "♫", IconAssets + "loa_speaker.png",          "#EEECFF", "#E1E0FF", "#536BFF"),
+        ("av",       "Dash.Row.Webcam",   "▣", IconAssets + "webcam_camera.png",        "#F1E5FF", "#E5D2FF", "#8645E8"),
+        ("keyboard", "Dash.Row.Keyboard", "⌨", IconAssets + "ban_phim_keyboard.png",    "#FFE7F2", "#FFD5EC", "#E83B9B"),
+        ("trackpad", "Dash.Row.Trackpad", "▭", IconAssets + "trackpad.png",             "#DFF8F0", "#C8F1E4", "#08BA87"),
+        ("av",       "Dash.Row.Mic",      "♩", IconAssets + "microphone.png",           "#E6F8E7", "#D2F3D5", "#12AF37"),
         ("ports",    "Dash.Row.Ports",    "ϟ", IconAssets + "08_lightning_orange.png",  "#FFE9E3", "#FFDAD0", "#F26427"),
         ("visual",   "Dash.Row.Visual",   "▦", IconAssets + "15_search_gray.png",       "#FFF2D4", "#FFE8B0", "#E8A600")
     ];

@@ -1,0 +1,31 @@
+{
+  "version": "1.0",
+  "files": [
+    {
+      "name": "loa_speaker",
+      "png": "loa_speaker.png",
+      "svg": "loa_speaker.svg"
+    },
+    {
+      "name": "webcam_camera",
+      "png": "webcam_camera.png",
+      "svg": "webcam_camera.svg"
+    },
+    {
+      "name": "ban_phim_keyboard",
+      "png": "ban_phim_keyboard.png",
+      "svg": "ban_phim_keyboard.svg"
+    },
+    {
+      "name": "trackpad",
+      "png": "trackpad.png",
+      "svg": "trackpad.svg"
+    },
+    {
+      "name": "microphone",
+      "png": "microphone.png",
+      "svg": "microphone.svg"
+    }
+  ],
+  "description": "5 icon kiểm tra Mac: loa, webcam, bàn phím, trackpad, microphone; PNG 512x512 alpha và SVG vector."
+}

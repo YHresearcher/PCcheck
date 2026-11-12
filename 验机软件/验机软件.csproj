@@ -194,6 +194,14 @@
     <Resource Include="Assets\22_status_not_tested_gray.png" />
     <Resource Include="Assets\23_status_error_red.png" />
     <Resource Include="Assets\24_arrow_right_dark.png" />
+    <!-- 5 icon kiem tra Mac (user gui 2026-11-12, PNG 512x512 RGBA + SVG goc,
+         giu nguyen ten file + noi dung, khong sua): loa, webcam, ban phim,
+         trackpad, microphone — cho 5 hang Dashboard con thieu icon. -->
+    <Resource Include="Assets\loa_speaker.png" />
+    <Resource Include="Assets\webcam_camera.png" />
+    <Resource Include="Assets\ban_phim_keyboard.png" />
+    <Resource Include="Assets\trackpad.png" />
+    <Resource Include="Assets\microphone.png" />
     <!-- 烤机工具负载：Tools/prime95/（手工放入的 prime95.exe）与 Tools/furmark/（FurMark 工程构建后自动拷贝）
          与 Tools/pawnio/，整体随输出拷贝到 exe 同级 Tools/ 下（散热测试插件按 AppContext.BaseDirectory 定位） -->
     <None Update="Tools\**\*" CopyToOutputDirectory="PreserveNewest" />
