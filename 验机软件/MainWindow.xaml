@@ -44,27 +44,14 @@
         <Border x:Name="WizardBar" Grid.Row="2" Background="{DynamicResource SubtleBgBrush}"
                 BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1"
                 Padding="14,6" Visibility="Collapsed">
-            <Border.Resources>
-                <!-- Nút nổi: nền mặt thẻ + viền + bóng mờ để tách khỏi nền thanh. -->
-                <Style x:Key="WizardBarButton" TargetType="Button">
-                    <Setter Property="Background" Value="{DynamicResource SurfaceBgBrush}"/>
-                    <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
-                    <Setter Property="BorderThickness" Value="1"/>
-                    <Setter Property="Padding" Value="12,4"/>
-                    <Setter Property="Cursor" Value="Hand"/>
-                    <Setter Property="Effect">
-                        <Setter.Value>
-                            <DropShadowEffect ShadowDepth="1" BlurRadius="3" Opacity="0.25"/>
-                        </Setter.Value>
-                    </Setter>
-                </Style>
-            </Border.Resources>
+            <!-- Nút wizard dùng style Button mặc định (nổi 3D kiểu Mac), không còn
+                 style riêng — style WizardBarButton cũ đã bỏ vì trùng với mặc định. -->
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                 <TextBlock Text="{DynamicResource Wizard.Caption}" FontWeight="SemiBold" VerticalAlignment="Center"/>
-                <Button x:Name="WizardBackButton" Content="{DynamicResource Wizard.Back}" Click="OnWizardBackClick" Style="{StaticResource WizardBarButton}" Margin="16,0,0,0"/>
-                <Button x:Name="WizardNextButton" Content="{DynamicResource Wizard.Next}" Click="OnWizardNextClick" Style="{StaticResource WizardBarButton}" Margin="8,0,0,0"/>
-                <Button Content="{DynamicResource Wizard.StopHeavy}" Click="OnWizardStopClick" Style="{StaticResource WizardBarButton}" Margin="8,0,0,0"/>
-                <Button Content="{DynamicResource Wizard.Exit}" Click="OnWizardExitClick" Style="{StaticResource WizardBarButton}" Margin="8,0,0,0"
+                <Button x:Name="WizardBackButton" Content="{DynamicResource Wizard.Back}" Click="OnWizardBackClick" Margin="16,0,0,0"/>
+                <Button x:Name="WizardNextButton" Content="{DynamicResource Wizard.Next}" Click="OnWizardNextClick" Margin="8,0,0,0"/>
+                <Button Content="{DynamicResource Wizard.StopHeavy}" Click="OnWizardStopClick" Margin="8,0,0,0"/>
+                <Button Content="{DynamicResource Wizard.Exit}" Click="OnWizardExitClick" Margin="8,0,0,0"
                         ToolTip="{DynamicResource Wizard.ExitTip}"/>
             </StackPanel>
         </Border>
@@ -101,21 +88,17 @@
                             </StackPanel>
                         </StackPanel>
                         <Button x:Name="NavOverview" Content="{DynamicResource Nav.Overview}" Click="SidebarOverview_Click"
-                                HorizontalContentAlignment="Left" FontSize="15" FontWeight="SemiBold"
-                                Padding="14,12" Margin="0,0,0,5"
+                                Style="{StaticResource SidebarNavButton}"
+                                FontSize="15" FontWeight="SemiBold"
                                 Background="{DynamicResource NavSelectedBrush}"/>
                         <Button x:Name="NavInspection" Content="{DynamicResource Nav.Inspection}" Click="SidebarInspection_Click"
-                                HorizontalContentAlignment="Left" FontSize="14"
-                                Padding="14,11" Margin="0,0,0,5"/>
+                                Style="{StaticResource SidebarNavButton}"/>
                         <Button x:Name="NavHardware" Content="{DynamicResource Nav.Hardware}" Click="SidebarHardware_Click"
-                                HorizontalContentAlignment="Left" FontSize="14"
-                                Padding="14,11" Margin="0,0,0,5"/>
+                                Style="{StaticResource SidebarNavButton}"/>
                         <Button x:Name="NavReport" Content="{DynamicResource Nav.Report}" Click="SidebarReport_Click"
-                                HorizontalContentAlignment="Left" FontSize="14"
-                                Padding="14,11" Margin="0,0,0,5"/>
+                                Style="{StaticResource SidebarNavButton}"/>
                         <Button x:Name="NavTools" Content="{DynamicResource Nav.Tools}" Click="SidebarTools_Click"
-                                HorizontalContentAlignment="Left" FontSize="14"
-                                Padding="14,11" Margin="0,0,0,5"/>
+                                Style="{StaticResource SidebarNavButton}"/>
                     </StackPanel>
                     <StackPanel DockPanel.Dock="Bottom" Margin="18,8,18,17">
                         <!-- Mascot checklist chỉ xuất hiện ở header, theo bản thiết kế đã duyệt. -->

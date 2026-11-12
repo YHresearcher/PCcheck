@@ -31,6 +31,7 @@
                            VerticalAlignment="Center"
                            MouseLeftButtonDown="TitleBar_MouseLeftButtonDown"/>
                 <Button x:Name="CloseButton" Content="✕" HorizontalAlignment="Right"
+                        Style="{DynamicResource FlatButton}"
                         Padding="8,4" Background="Transparent" BorderThickness="0"
                         Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12"
                         Click="CloseButton_Click" ToolTip="Đóng"/>
@@ -57,7 +58,8 @@
             <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right"
                         Margin="0,0,16,14">
                 <Button x:Name="PrimaryButton" Padding="16,6" MinWidth="90"
-                        Background="{DynamicResource AccentBrush}" Foreground="White"
+                        Background="{DynamicResource ButtonPrimaryBgBrush}"
+                        BorderBrush="{DynamicResource AccentBrush}" Foreground="White"
                         IsDefault="True" Click="PrimaryButton_Click"/>
                 <Button x:Name="SecondaryButton" Padding="16,6" MinWidth="90"
                         Margin="8,0,0,0" IsCancel="True" Visibility="Collapsed"

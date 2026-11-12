@@ -6,12 +6,17 @@
         <Setter Property="VerticalAlignment" Value="Center"/>
     </Style>
 
+    <!-- Nút nổi 3D kiểu An Tâm Apple Check (RaisedButtonStyle): nền gradient
+         sáng trên đậm dưới, bo 10, bóng đổ mềm; bấm thì bóng xẹp + lún xuống 1px.
+         Nút chính (cam) không dùng style này mà đặt Background là
+         ButtonPrimaryBgBrush + Foreground trắng (vd nút "Kiểm tra chi tiết",
+         nút chính của popup). -->
     <Style TargetType="Button">
-        <Setter Property="Background" Value="{DynamicResource SurfaceBgBrush}"/>
+        <Setter Property="Background" Value="{DynamicResource ButtonBgBrush}"/>
         <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
         <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
         <Setter Property="BorderThickness" Value="1"/>
-        <Setter Property="Padding" Value="12,5"/>
+        <Setter Property="Padding" Value="10,6"/>
         <Setter Property="Margin" Value="2,3"/>
         <Setter Property="Cursor" Value="Hand"/>
         <Setter Property="FontSize" Value="12"/>
@@ -21,20 +26,90 @@
                     <Border x:Name="bd" Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}"
-                            CornerRadius="6" Padding="{TemplateBinding Padding}"
+                            CornerRadius="10" Padding="{TemplateBinding Padding}"
                             SnapsToDevicePixels="True">
+                        <Border.RenderTransform>
+                            <TranslateTransform x:Name="pressShift" Y="0"/>
+                        </Border.RenderTransform>
+                        <Border.Effect>
+                            <DropShadowEffect x:Name="shadow" Color="Black" Direction="270"
+                                              ShadowDepth="3" BlurRadius="4" Opacity="0.14"/>
+                        </Border.Effect>
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="bd" Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="shadow" Property="Opacity" Value="0.05"/>
+                            <Setter TargetName="shadow" Property="BlurRadius" Value="1"/>
+                            <Setter TargetName="shadow" Property="ShadowDepth" Value="1"/>
+                            <Setter TargetName="pressShift" Property="Y" Value="1"/>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
+                            <Setter TargetName="bd" Property="Opacity" Value="0.45"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Nút phẳng trong suốt (vd nút đóng ✕ ở popup): không gradient, không
+         bóng — để nút biểu tượng không bị bóng mờ của style Button mặc định. -->
+    <Style x:Key="FlatButton" TargetType="Button">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="bd" Background="{TemplateBinding Background}"
+                            BorderThickness="0" CornerRadius="6"
+                            Padding="{TemplateBinding Padding}" SnapsToDevicePixels="True">
                         <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter TargetName="bd" Property="Background" Value="{DynamicResource NavHoverBrush}"/>
-                            <Setter TargetName="bd" Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
                         </Trigger>
                         <Trigger Property="IsPressed" Value="True">
                             <Setter TargetName="bd" Property="Background" Value="{DynamicResource NavSelectedBrush}"/>
                         </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Nút điều hướng sidebar kiểu Mac: phẳng (không gradient, không bóng),
+         bo 12; chưa chọn = nền trắng mờ trên nền sidebar đào; đang chọn =
+         nền cam nhạt + chữ cam đậm (SyncPrimaryNav đổi Background/Foreground). -->
+    <Style x:Key="SidebarNavButton" TargetType="Button">
+        <Setter Property="Background" Value="{DynamicResource NavIdleBrush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Padding" Value="14,11"/>
+        <Setter Property="Margin" Value="0,0,0,5"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="HorizontalContentAlignment" Value="Left"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="bd" Background="{TemplateBinding Background}"
+                            BorderThickness="0" CornerRadius="12"
+                            Padding="{TemplateBinding Padding}" SnapsToDevicePixels="True">
+                        <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="bd" Property="Background" Value="{DynamicResource NavHoverBrush}"/>
+                        </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
-                            <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
                             <Setter TargetName="bd" Property="Opacity" Value="0.45"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
@@ -316,11 +391,12 @@
         </Setter>
     </Style>
 
-    <!-- 信息分组卡片 -->
+    <!-- 信息分组卡片：thẻ trắng, viền mảnh, bo 12 (kiểu thẻ của Mac là bo 18;
+         PC dày đặc hơn nên dùng 12). Mac không đổ bóng thẻ, chỉ viền mảnh. -->
     <Style x:Key="CardBorder" TargetType="Border">
         <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
         <Setter Property="BorderThickness" Value="1"/>
-        <Setter Property="CornerRadius" Value="8"/>
+        <Setter Property="CornerRadius" Value="12"/>
         <Setter Property="Background" Value="{DynamicResource SurfaceBgBrush}"/>
         <Setter Property="Padding" Value="12,10"/>
         <Setter Property="Margin" Value="0,0,10,10"/>

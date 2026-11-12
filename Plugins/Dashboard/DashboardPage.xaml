@@ -136,7 +136,8 @@
                                 <ColumnDefinition Width="0.75*"/>
                             </Grid.ColumnDefinitions>
                             <Button x:Name="StartButton" Grid.Column="0" Style="{StaticResource ActionButton}"
-                                    Content="{DynamicResource Dash.RunDetail}" Background="{DynamicResource AccentBrush}"
+                                    Content="{DynamicResource Dash.RunDetail}" Background="{DynamicResource ButtonPrimaryBgBrush}"
+                                    BorderBrush="{DynamicResource AccentBrush}"
                                     Foreground="White" Click="StartButton_Click"
                                     ToolTip="{DynamicResource Dash.RunDetailTip}"/>
                             <Button Grid.Column="2" Style="{StaticResource ActionButton}"

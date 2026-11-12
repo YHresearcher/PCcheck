@@ -1,24 +1,37 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <!-- 主题令牌（Vi Tính An Tâm 品牌）：样式一律 DynamicResource 引用这些键，不写字面颜色。
-         品牌橙取自 logo An Tâm #ED740C；浅色主题用深一档 #D95E00 做 Accent 以保证
-         在白底上的对比度（logo 图片本身仍 giữ đúng màu #ED740C）。 -->
-    <SolidColorBrush x:Key="WindowBgBrush" Color="#FFFFFF"/>
+    <!-- Chủ đề sáng = ngôn ngữ thiết kế của An Tâm Apple Check (Mac):
+         nền kem ấm #FBF9F6, thẻ trắng, chữ slate #29364A, chữ phụ slate nhạt,
+         cam thương hiệu #F06E0F, sidebar đào nhạt #FFF7EF. Nút nổi 3D kiểu Mac:
+         gradient trắng → #F7F3F0 (nút thường) và cam → cam sáng (nút chính).
+         Mọi style dùng DynamicResource với các khóa này, không viết màu trực tiếp.
+         Khóa phải khớp hoàn toàn với Dark.xaml. -->
+    <SolidColorBrush x:Key="WindowBgBrush" Color="#FBF9F6"/>
     <SolidColorBrush x:Key="SurfaceBgBrush" Color="#FFFFFF"/>
-    <SolidColorBrush x:Key="SubtleBgBrush" Color="#FFF6EC"/>
-    <SolidColorBrush x:Key="TextBrush" Color="#1E1A17"/>
-    <SolidColorBrush x:Key="TextSecondaryBrush" Color="#7A6A5E"/>
-    <SolidColorBrush x:Key="BorderBrush" Color="#EADFD3"/>
-    <SolidColorBrush x:Key="BorderStrongBrush" Color="#D8C7B4"/>
-    <SolidColorBrush x:Key="AccentBrush" Color="#D95E00"/>
-    <SolidColorBrush x:Key="AccentHoverBrush" Color="#C25200"/>
+    <SolidColorBrush x:Key="SubtleBgBrush" Color="#FFF7EF"/>
+    <SolidColorBrush x:Key="TextBrush" Color="#29364A"/>
+    <SolidColorBrush x:Key="TextSecondaryBrush" Color="#6E7585"/>
+    <SolidColorBrush x:Key="BorderBrush" Color="#E9E2D8"/>
+    <SolidColorBrush x:Key="BorderStrongBrush" Color="#D8CFC0"/>
+    <SolidColorBrush x:Key="AccentBrush" Color="#F06E0F"/>
+    <SolidColorBrush x:Key="AccentHoverBrush" Color="#D95E00"/>
     <SolidColorBrush x:Key="NavHoverBrush" Color="#FFF0DF"/>
-    <SolidColorBrush x:Key="NavSelectedBrush" Color="#FFE7CC"/>
+    <SolidColorBrush x:Key="NavSelectedBrush" Color="#FCE8D4"/>
+    <SolidColorBrush x:Key="NavIdleBrush" Color="#8CFFFFFF"/>
     <SolidColorBrush x:Key="ErrorBrush" Color="#C42B1C"/>
     <SolidColorBrush x:Key="ChartGridBrush" Color="#EDE4D8"/>
     <SolidColorBrush x:Key="ChartTextBrush" Color="#8A7D70"/>
     <SolidColorBrush x:Key="ChartNoDataBrush" Color="#D8CFC2"/>
     <SolidColorBrush x:Key="ScrollThumbBrush" Color="#CBB8A4"/>
     <SolidColorBrush x:Key="ScrollThumbHoverBrush" Color="#A99A88"/>
-    <SolidColorBrush x:Key="ScrollTrackBrush" Color="#FFF6EC"/>
+    <SolidColorBrush x:Key="ScrollTrackBrush" Color="#FFF7EF"/>
+    <!-- Nút nổi 3D kiểu Mac: gradient sáng trên đậm dưới. -->
+    <LinearGradientBrush x:Key="ButtonBgBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="#FFFFFF" Offset="0"/>
+        <GradientStop Color="#F7F3F0" Offset="1"/>
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="ButtonPrimaryBgBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="#F06E0F" Offset="0"/>
+        <GradientStop Color="#F38A3D" Offset="1"/>
+    </LinearGradientBrush>
 </ResourceDictionary>
