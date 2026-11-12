@@ -88,6 +88,8 @@
     <system:String x:Key="Dash.NoHeavy">Không phát hiện tiến trình test nặng nào còn chạy. Nếu đang kiểm tra thủ công, bạn vẫn có thể tiếp tục nha!</system:String>
     <system:String x:Key="Dash.HeavyLeft">Còn tiến trình chưa dừng: {0}. Hãy kiểm tra Task Manager nhé.</system:String>
     <system:String x:Key="Dash.FolderFailed">Không mở được thư mục hồ sơ ({0}): {1}</system:String>
+    <system:String x:Key="Dash.BrandModel">Hãng / Model: {0}</system:String>
+    <system:String x:Key="Dash.SerialLine">S/N: {0}</system:String>
     <system:String x:Key="Dash.DriveTitle">Sức khỏe ổ đĩa</system:String>
     <system:String x:Key="Dash.DriveEmpty">Chưa có dữ liệu ổ — đang thu thập…</system:String>
     <system:String x:Key="Dash.OsLine">Hệ điều hành: {0}</system:String>

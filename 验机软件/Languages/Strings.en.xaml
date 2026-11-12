@@ -88,6 +88,8 @@
     <system:String x:Key="Dash.NoHeavy">No heavy test process is still running. If you're checking by hand, you can keep going!</system:String>
     <system:String x:Key="Dash.HeavyLeft">Still running: {0}. Please check Task Manager.</system:String>
     <system:String x:Key="Dash.FolderFailed">Could not open the session folder ({0}): {1}</system:String>
+    <system:String x:Key="Dash.BrandModel">Brand / Model: {0}</system:String>
+    <system:String x:Key="Dash.SerialLine">S/N: {0}</system:String>
     <system:String x:Key="Dash.DriveTitle">Drive health</system:String>
     <system:String x:Key="Dash.DriveEmpty">No drive data yet — collecting…</system:String>
     <system:String x:Key="Dash.OsLine">OS: {0}</system:String>

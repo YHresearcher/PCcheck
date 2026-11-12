@@ -85,6 +85,8 @@
                                 <TextBlock x:Name="MachineText" Text="{DynamicResource Dash.MachineTitle}"
                                            FontWeight="Bold" FontSize="18" TextWrapping="Wrap"/>
                                 <TextBlock Text="{DynamicResource Dash.SysSpecs}" Style="{StaticResource Muted}" Margin="0,3,0,10"/>
+                                <TextBlock x:Name="BrandModelText" FontSize="12" Margin="0,0,0,5" Visibility="Collapsed"/>
+                                <TextBlock x:Name="SerialText" FontSize="12" Margin="0,0,0,5" Visibility="Collapsed"/>
                                 <TextBlock x:Name="CpuText" Text="{DynamicResource Dash.CpuInit}" FontSize="12" Margin="0,0,0,5"/>
                                 <TextBlock x:Name="RamText" Text="{DynamicResource Dash.RamInit}" FontSize="12" Margin="0,0,0,5"/>
                                 <TextBlock x:Name="GpuText" Text="{DynamicResource Dash.GpuInit}" FontSize="12" Margin="0,0,0,5"/>

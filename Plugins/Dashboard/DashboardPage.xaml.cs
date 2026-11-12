@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 using System.Windows.Media;
 using System.Collections.Generic;
 using YanJi.PluginSdk;
+using YanJi.PluginSdk.Services;
 
 namespace YanJi.Plugin.Dashboard;
 
@@ -19,11 +20,13 @@ namespace YanJi.Plugin.Dashboard;
 public partial class DashboardPage : UserControl
 {
     readonly IHostContext _host;
+    SmbiosService.SmbiosInfo? _smbios; // Hãng/Model/S/N đọc 1 lần lúc mở app, máy không đổi trong phiên
 
     public DashboardPage(IHostContext host)
     {
         _host = host;
         InitializeComponent();
+        _smbios = SmbiosService.Read();
         _host.DoneChanged += Refresh;
         _host.VerdictChanged += Refresh;
         _host.SignalChanged += Refresh;
@@ -229,6 +232,19 @@ public partial class DashboardPage : UserControl
             tests.Count(t => t.Status != Lang.Get("Dash.Status.Untried")), tests.Count);
         MachineText.Text = string.Format(Lang.Get("Dash.Device"), Environment.MachineName);
         CpuText.Text = "CPU: " + ReadCpuName();
+        // Hãng / Model / S/N từ SMBIOS thô (cùng nguồn với Đối chiếu cấu hình);
+        // placeholder đã được SmbiosService lọc thành null — không đọc được thì ẩn dòng.
+        string? brandModel = (_smbios?.SystemManufacturer, _smbios?.SystemProduct) switch
+        {
+            (string b, string m) => $"{b} • {m}",
+            (string b, null) => b,
+            (null, string m) => m,
+            _ => null,
+        };
+        BrandModelText.Text = brandModel == null ? "" : string.Format(Lang.Get("Dash.BrandModel"), brandModel);
+        BrandModelText.Visibility = brandModel == null ? Visibility.Collapsed : Visibility.Visible;
+        SerialText.Text = _smbios?.SystemSerial == null ? "" : string.Format(Lang.Get("Dash.SerialLine"), _smbios.SystemSerial);
+        SerialText.Visibility = _smbios?.SystemSerial == null ? Visibility.Collapsed : Visibility.Visible;
         RamText.Text = "RAM: " + ReadPhysicalMemory();
         GpuText.Text = Lang.Get("Dash.GpuLine");
         StorageText.Text = _host.DriveSummaries.Count > 0
