@@ -31,6 +31,7 @@ public partial class DashboardPage : UserControl
         _host.VerdictChanged += Refresh;
         _host.SignalChanged += Refresh;
         _host.DriveSummariesChanged += Refresh;
+        _host.BatteryWearChanged += Refresh;
         Lang.Changed += Refresh;
         Loaded += (_, _) => Refresh();
     }
@@ -267,6 +268,7 @@ public partial class DashboardPage : UserControl
         BatteryText.Visibility = battery == null ? Visibility.Collapsed : Visibility.Visible;
 
         RefreshDriveCard();
+        RefreshBatteryCard();
     }
 
     /// <summary>Thẻ sức khỏe ổ: 1 hàng/ổ — tên + dung lượng, gauge tự vẽ theo
@@ -302,6 +304,31 @@ public partial class DashboardPage : UserControl
         }
     }
 
+    /// <summary>Thẻ độ chai pin: gauge tự vẽ giống thẻ ổ — mức đầy = dung lượng
+    /// còn lại (100 - % chai), màu theo mốc chai (<20% xanh, 20–<40% cam,
+    /// ≥40% đỏ), nhãn chỉ báo trạng thái (không khuyên chi phí thay pin).
+    /// Chưa thu thập thì hiện dòng chờ; đã thu thập mà không có pin (desktop /
+    /// không đọc được) thì ẩn cả thẻ, không đoán.</summary>
+    void RefreshBatteryCard()
+    {
+        double? wear = _host.BatteryWearPercent;
+        if (wear == null && _host.Signals.ContainsKey("config"))
+        {
+            BatteryCard.Visibility = Visibility.Collapsed;
+            return;
+        }
+        BatteryCard.Visibility = Visibility.Visible;
+        BatteryEmptyText.Visibility = wear == null ? Visibility.Visible : Visibility.Collapsed;
+        BatteryGaugeHost.Children.Clear();
+        if (wear == null) return;
+        double remaining = 100 - wear.Value;
+        Color color = wear < 20 ? Colors.ForestGreen
+            : wear < 40 ? (Color)ColorConverter.ConvertFromString("#DE870F")
+            : (Color)ColorConverter.ConvertFromString("#D33D42");
+        BatteryGaugeHost.Children.Add(BuildGauge(remaining, color,
+            $"Còn {remaining:0.#}% dung lượng • Pin chai {wear:0.#}%"));
+    }
+
     Grid BuildDriveGauge(DriveSummary d)
     {
         // Màu theo mốc kết luận ổ (giống ConfigCheck): không rõ xám, ≥90 xanh,
@@ -311,12 +338,20 @@ public partial class DashboardPage : UserControl
             : d.HealthPercent >= 70 ? (Color)ColorConverter.ConvertFromString("#DE870F")
             : (Color)ColorConverter.ConvertFromString("#D33D42");
         double health = d.HealthPercent ?? 0;
+        string label = d.HealthPercent == null ? d.VerdictText : $"{d.HealthPercent}% • {d.VerdictText}";
+        return BuildGauge(health, color, label);
+    }
+
+    /// <summary>Gauge ngang tự vẽ: mức đầy = fill%, màu theo tham số, nhãn bên
+    /// phải. Dùng chung cho gauge sức khỏe ổ và gauge độ chai pin.</summary>
+    Grid BuildGauge(double fill, Color color, string label)
+    {
         var trackGrid = new Grid();
-        trackGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(health, GridUnitType.Star) });
-        trackGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(100 - health, GridUnitType.Star) });
-        var fill = new System.Windows.Shapes.Rectangle { Fill = BandBrush(color), RadiusX = 3, RadiusY = 3 };
-        Grid.SetColumn(fill, 0);
-        trackGrid.Children.Add(fill);
+        trackGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(fill, GridUnitType.Star) });
+        trackGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(100 - fill, GridUnitType.Star) });
+        var fillRect = new System.Windows.Shapes.Rectangle { Fill = BandBrush(color), RadiusX = 3, RadiusY = 3 };
+        Grid.SetColumn(fillRect, 0);
+        trackGrid.Children.Add(fillRect);
         var track = new Border
         {
             Height = 12, CornerRadius = new CornerRadius(6),
@@ -325,7 +360,6 @@ public partial class DashboardPage : UserControl
         track.SetResourceReference(Border.BorderBrushProperty, "BorderBrush");
         track.SetResourceReference(Border.BackgroundProperty, "SurfaceBgBrush");
         track.Child = trackGrid;
-        string label = d.HealthPercent == null ? d.VerdictText : $"{d.HealthPercent}% • {d.VerdictText}";
         var labelText = new TextBlock
         {
             Text = label, FontSize = 11, FontWeight = FontWeights.SemiBold,

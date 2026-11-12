@@ -73,6 +73,7 @@ public partial class ConfigCheckPage : UserControl, YanJi.PluginSdk.IModulePage
             (_batterySignals, _batteryNote, _batteryWear) = ComputeBatterySignals(report);
             SetBatteryGauge();
             _host?.ReportSignals("config", _batterySignals);
+            _host?.ReportBatteryWear(_batteryWear < 0 ? null : _batteryWear);
             ReportConfigVerdict();
             _host?.ReportDriveSummaries(report.Drives);
             SetTabGroups(report);
@@ -204,8 +205,8 @@ public partial class ConfigCheckPage : UserControl, YanJi.PluginSdk.IModulePage
         }
         if (worstWear < 0) return ([], "", -1);
         if (worstWear < 20) return (["batteryHealthy"], $"Pin chai {worstWear:0.#}% — còn khỏe", worstWear);
-        if (worstWear < 40) return (["batteryWorn20_30"], $"Pin chai {worstWear:0.#}% — tính thời lượng thực tế và chi phí thay pin", worstWear);
-        return (["batteryWornOver40"], $"Pin chai {worstWear:0.#}% — tính chi phí thay pin trước khi mua", worstWear);
+        if (worstWear < 40) return (["batteryWorn20_30"], $"Pin chai {worstWear:0.#}% — chai vừa", worstWear);
+        return (["batteryWornOver40"], $"Pin chai {worstWear:0.#}% — chai nặng", worstWear);
     }
 
     /// <summary>Hình viên pin thể hiện độ chai: mức đầy = dung lượng còn lại

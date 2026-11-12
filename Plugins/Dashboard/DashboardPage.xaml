@@ -40,11 +40,6 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <StackPanel>
-                    <TextBlock Text="{DynamicResource Dash.Hello}" FontSize="27" FontWeight="Bold"/>
-                    <TextBlock Text="{DynamicResource Dash.Subtitle}"
-                               Foreground="{DynamicResource TextSecondaryBrush}" FontSize="13"/>
-                </StackPanel>
                 <Button Grid.Column="1" VerticalAlignment="Center"
                         Click="StartButton_Click" Padding="14,9">
                     <StackPanel Orientation="Horizontal">
@@ -106,6 +101,16 @@
                             <TextBlock Text="{DynamicResource Dash.DriveTitle}" Style="{StaticResource CardHeading}" Margin="0,0,0,10"/>
                             <TextBlock x:Name="DriveEmptyText" Text="{DynamicResource Dash.DriveEmpty}" Style="{StaticResource Muted}"/>
                             <StackPanel x:Name="DriveList"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Độ chai pin: gauge tự vẽ giống thẻ ổ, % chai do Đối chiếu
+                         cấu hình báo cáo (thu thập nền khi mở app). -->
+                    <Border x:Name="BatteryCard" Style="{StaticResource ReferenceCard}">
+                        <StackPanel>
+                            <TextBlock Text="{DynamicResource Dash.BatteryTitle}" Style="{StaticResource CardHeading}" Margin="0,0,0,10"/>
+                            <TextBlock x:Name="BatteryEmptyText" Text="{DynamicResource Dash.BatteryEmpty}" Style="{StaticResource Muted}"/>
+                            <StackPanel x:Name="BatteryGaugeHost"/>
                         </StackPanel>
                     </Border>
                 </StackPanel>

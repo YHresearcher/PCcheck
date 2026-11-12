@@ -26,9 +26,73 @@
                 <Button Content="{DynamicResource Shell.StopHeavy}" Click="OnStopAllHeavyTestsClick" Padding="10,4"
                         Margin="0,0,12,0"
                         ToolTip="{DynamicResource Shell.StopHeavyTip}"/>
-                <Button x:Name="LangButton" Content="🇬🇧" Click="OnLangButtonClick" Padding="10,4"
-                        Margin="0,0,12,0" FontWeight="SemiBold" FontFamily="Segoe UI Emoji" FontSize="16"
-                        ToolTip="{DynamicResource Shell.LangTip}"/>
+                <!-- Nút đổi ngôn ngữ kiểu pill (như mẫu toggle cờ): 1 nút, 2 trạng
+                     thái — hiện cờ tròn + mã của ngôn ngữ sẽ chuyển sang (giữ logic
+                     cũ): đang VI thì pill "EN" cờ Anh bên trái, đang EN thì pill
+                     "VI" cờ Việt bên phải. Cờ vẽ bằng vector (không dùng emoji vì
+                     WPF chỉ hiện chữ GB/VN thay vì hình cờ). -->
+                <Button x:Name="LangButton" Click="OnLangButtonClick" Padding="10,4"
+                        Margin="0,0,12,0" Style="{StaticResource RaisedButton18}"
+                        ToolTip="{DynamicResource Shell.LangTip}">
+                    <Grid>
+                        <StackPanel x:Name="LangStateEn" Orientation="Horizontal" VerticalAlignment="Center">
+                            <Grid Width="22" Height="22">
+                                <Grid.Clip>
+                                    <EllipseGeometry Center="11,11" RadiusX="11" RadiusY="11"/>
+                                </Grid.Clip>
+                                <Viewbox Stretch="UniformToFill">
+                                    <Canvas Width="60" Height="40">
+                                        <Canvas.Clip>
+                                            <RectangleGeometry Rect="0,0,60,40"/>
+                                        </Canvas.Clip>
+                                        <Rectangle Width="60" Height="40" Fill="#012169"/>
+                                        <Rectangle Canvas.Left="-8" Canvas.Top="16" Width="76" Height="8" Fill="White" RenderTransformOrigin="0.5,0.5">
+                                            <Rectangle.RenderTransform>
+                                                <RotateTransform Angle="33.69"/>
+                                            </Rectangle.RenderTransform>
+                                        </Rectangle>
+                                        <Rectangle Canvas.Left="-8" Canvas.Top="16" Width="76" Height="8" Fill="White" RenderTransformOrigin="0.5,0.5">
+                                            <Rectangle.RenderTransform>
+                                                <RotateTransform Angle="-33.69"/>
+                                            </Rectangle.RenderTransform>
+                                        </Rectangle>
+                                        <Rectangle Canvas.Left="-8" Canvas.Top="18.5" Width="76" Height="3" Fill="#C8102E" RenderTransformOrigin="0.5,0.5">
+                                            <Rectangle.RenderTransform>
+                                                <RotateTransform Angle="33.69"/>
+                                            </Rectangle.RenderTransform>
+                                        </Rectangle>
+                                        <Rectangle Canvas.Left="-8" Canvas.Top="18.5" Width="76" Height="3" Fill="#C8102E" RenderTransformOrigin="0.5,0.5">
+                                            <Rectangle.RenderTransform>
+                                                <RotateTransform Angle="-33.69"/>
+                                            </Rectangle.RenderTransform>
+                                        </Rectangle>
+                                        <Rectangle Canvas.Left="23.33" Canvas.Top="0" Width="13.33" Height="40" Fill="White"/>
+                                        <Rectangle Canvas.Left="0" Canvas.Top="13.33" Width="60" Height="13.33" Fill="White"/>
+                                        <Rectangle Canvas.Left="26" Canvas.Top="0" Width="8" Height="40" Fill="#C8102E"/>
+                                        <Rectangle Canvas.Left="0" Canvas.Top="16" Width="60" Height="8" Fill="#C8102E"/>
+                                    </Canvas>
+                                </Viewbox>
+                            </Grid>
+                            <TextBlock Text="EN" FontSize="14" FontWeight="SemiBold" Margin="7,0,0,0"
+                                       Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <StackPanel x:Name="LangStateVi" Orientation="Horizontal" VerticalAlignment="Center" Visibility="Collapsed">
+                            <TextBlock Text="VI" FontSize="14" FontWeight="SemiBold" Margin="0,0,7,0"
+                                       Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center"/>
+                            <Grid Width="22" Height="22">
+                                <Grid.Clip>
+                                    <EllipseGeometry Center="11,11" RadiusX="11" RadiusY="11"/>
+                                </Grid.Clip>
+                                <Viewbox Stretch="UniformToFill">
+                                    <Canvas Width="60" Height="40">
+                                        <Rectangle Width="60" Height="40" Fill="#DA251D"/>
+                                        <Polygon Points="30,6 33.23,15.55 43.31,15.67 35.23,21.7 38.23,31.33 30,25.5 21.77,31.33 24.77,21.7 16.69,15.67 26.77,15.55" Fill="#FFFF00"/>
+                                    </Canvas>
+                                </Viewbox>
+                            </Grid>
+                        </StackPanel>
+                    </Grid>
+                </Button>
                 <TextBlock Text="☀" FontSize="13" Margin="0,0,5,0" VerticalAlignment="Center"/>
                 <ToggleButton x:Name="ThemeSwitch" Style="{StaticResource ThemeSwitch}"
                               ToolTip="{DynamicResource Shell.ThemeTip}"
@@ -78,22 +142,25 @@
                     <ListBox x:Name="NavList" SelectionChanged="OnNavSelect"
                              BorderThickness="0" Background="Transparent" Visibility="Collapsed"/>
                     <StackPanel DockPanel.Dock="Top" Margin="14,20,14,14">
-                        <!-- Tên app mới, một dòng ngang: "An Tâm" + logo Windows
-                             (4 ô vuông cam vẽ bằng UniformGrid 2x2) + "Check" —
-                             chữ và logo đều màu cam, font Be Vietnam Pro như website.
-                             Mascot dời xuống cuối sidebar (xem SidebarMascot). -->
+                        <!-- Tên app mới, một dòng ngang canh giữa: "An Tâm" + logo
+                             Windows xéo (perspective, 4 Polygon cam vẽ tay theo
+                             hình logo chuẩn) + "Check" — chữ và logo đều màu cam,
+                             font Be Vietnam Pro như website. Logo 28px, to hơn
+                             bản 4 ô vuông 20px trước. Mascot dời xuống cuối
+                             sidebar (xem SidebarMascot). -->
                         <StackPanel Orientation="Horizontal" Margin="0,0,0,14"
-                                    VerticalAlignment="Center">
+                                    VerticalAlignment="Center" HorizontalAlignment="Center">
                             <TextBlock Text="An Tâm" FontSize="19" FontWeight="Bold"
                                        Foreground="{DynamicResource AccentBrush}"
                                        VerticalAlignment="Center"/>
-                            <UniformGrid Columns="2" Rows="2" Width="20" Height="20"
-                                         Margin="8,0" VerticalAlignment="Center">
-                                <Rectangle Fill="{DynamicResource AccentBrush}" Margin="0,0,1.5,1.5"/>
-                                <Rectangle Fill="{DynamicResource AccentBrush}" Margin="1.5,0,0,1.5"/>
-                                <Rectangle Fill="{DynamicResource AccentBrush}" Margin="0,1.5,1.5,0"/>
-                                <Rectangle Fill="{DynamicResource AccentBrush}" Margin="1.5,1.5,0,0"/>
-                            </UniformGrid>
+                            <Viewbox Width="28" Height="28" Margin="8,0" VerticalAlignment="Center">
+                                <Canvas Width="100" Height="100">
+                                    <Polygon Points="4,26 48.5,15.4 48.5,48.5 4,51.5" Fill="{DynamicResource AccentBrush}"/>
+                                    <Polygon Points="51.5,14.6 96,4 96,48.5 51.5,48.5" Fill="{DynamicResource AccentBrush}"/>
+                                    <Polygon Points="4,51.5 48.5,51.5 48.5,84.6 4,74" Fill="{DynamicResource AccentBrush}"/>
+                                    <Polygon Points="51.5,51.5 96,51.5 96,96 51.5,85.4" Fill="{DynamicResource AccentBrush}"/>
+                                </Canvas>
+                            </Viewbox>
                             <TextBlock Text="Check" FontSize="19" FontWeight="Bold"
                                        Foreground="{DynamicResource AccentBrush}"
                                        VerticalAlignment="Center"/>

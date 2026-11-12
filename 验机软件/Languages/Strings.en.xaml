@@ -46,8 +46,6 @@
     <system:String x:Key="Shop.Visit">↗  Visit the shop</system:String>
 
     <!-- Dashboard -->
-    <system:String x:Key="Dash.Hello">Hello! 👋</system:String>
-    <system:String x:Key="Dash.Subtitle">Let's give this PC a full check with An Tâm!</system:String>
     <system:String x:Key="Dash.Continue">Continue checking</system:String>
     <system:String x:Key="Dash.MachineTitle">PC / Laptop under check</system:String>
     <system:String x:Key="Dash.CpuInit">CPU: Not read</system:String>
@@ -94,8 +92,10 @@
     <system:String x:Key="Dash.DriveEmpty">No drive data yet — collecting…</system:String>
     <system:String x:Key="Dash.OsLine">OS: {0}</system:String>
     <system:String x:Key="Dash.BatteryHealthy">Battery: healthy</system:String>
-    <system:String x:Key="Dash.BatteryWorn">Battery: worn — factor in replacement cost</system:String>
-    <system:String x:Key="Dash.BatteryBad">Battery: heavily worn — plan a replacement</system:String>
+    <system:String x:Key="Dash.BatteryWorn">Battery: moderately worn</system:String>
+    <system:String x:Key="Dash.BatteryBad">Battery: heavily worn</system:String>
+    <system:String x:Key="Dash.BatteryTitle">Battery</system:String>
+    <system:String x:Key="Dash.BatteryEmpty">No battery data yet — collecting…</system:String>
 
     <!-- Summary / Report page -->
     <system:String x:Key="Sum.Title">Buy verdict — worth buying or not</system:String>

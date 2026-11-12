@@ -67,6 +67,15 @@ public interface IHostContext
     void ReportDriveSummaries(IReadOnlyList<DriveSummary> summaries);
     /// <summary>Thông tin ổ thay đổi sau khi Đối chiếu cấu hình thu thập lại.</summary>
     event Action? DriveSummariesChanged;
+    /// <summary>% chai pin lớn nhất do Đối chiếu cấu hình báo cáo lần gần nhất
+    /// (null = chưa thu thập hoặc máy không có pin / không đọc được). Dashboard
+    /// đọc để vẽ gauge độ chai pin; chỉ host ghi, plugin chỉ đọc + báo cáo.</summary>
+    double? BatteryWearPercent { get; }
+    /// <summary>Đối chiếu cấu hình báo cáo % chai pin hiện tại (ghi đè lần báo
+    /// trước, gọi trên UI thread; host kích BatteryWearChanged).</summary>
+    void ReportBatteryWear(double? wearPercent);
+    /// <summary>% chai pin thay đổi sau khi Đối chiếu cấu hình thu thập lại.</summary>
+    event Action? BatteryWearChanged;
     /// <summary>Chuyển tới 1 module theo id (Dashboard dùng để nhảy tới bài test /
     /// thông tin phần cứng / sức khỏe / tổng kết). Trả về false nếu không có
     /// module đó. Chỉ đổi SelectedIndex của host, không tự vào wizard.</summary>

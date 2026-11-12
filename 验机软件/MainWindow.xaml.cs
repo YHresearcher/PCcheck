@@ -41,6 +41,7 @@ public partial class MainWindow : Window
         readonly Dictionary<string, ModuleVerdict> _verdicts = [];
         readonly Dictionary<string, IReadOnlyList<string>> _signals = [];
         readonly List<DriveSummary> _driveSummaries = [];
+        double? _batteryWear; // % chai pin lớn nhất, null = chưa thu thập / không có pin
         public HostContext(MainWindow owner, Func<string, bool> isDone)
         {
             _owner = owner;
@@ -79,6 +80,13 @@ public partial class MainWindow : Window
             DriveSummariesChanged?.Invoke();
         }
         public event Action? DriveSummariesChanged;
+        public double? BatteryWearPercent => _batteryWear;
+        public void ReportBatteryWear(double? wearPercent)
+        {
+            _batteryWear = wearPercent;
+            BatteryWearChanged?.Invoke();
+        }
+        public event Action? BatteryWearChanged;
         /// <summary>启动时批量填入 / 运行时追加（导入即载），均保持按 Order 排序。</summary>
         public void AddModule(PluginInfo info)
         {
@@ -273,10 +281,12 @@ public partial class MainWindow : Window
 
     void AdjustSidebarForHeight()
     {
-        // Màn hình laptop thấp: ưu tiên không gian nút bấm, mascot cuối sidebar
-        // chỉ ẩn (không mất asset, vẫn có trên dashboard).
-        SidebarMascot.Visibility = ActualHeight < 850
-            ? Visibility.Collapsed : Visibility.Visible;
+        // Màn hình laptop thấp: mascot cuối sidebar thu nhỏ thay vì biến mất
+        // (ẩn hẳn khiến user tưởng mất mascot — laptop 768px luôn < 850).
+        double size = ActualHeight < 850 ? 110 : 200;
+        SidebarMascot.Width = size;
+        SidebarMascot.Height = size;
+        SidebarMascot.Visibility = Visibility.Visible;
     }
 
     void OnNavSelect(object sender, SelectionChangedEventArgs e)
@@ -569,12 +579,17 @@ public partial class MainWindow : Window
     void OnLangButtonClick(object sender, RoutedEventArgs e) =>
         LanguageManager.Set(LanguageManager.Current == "vi" ? "en" : "vi");
 
-    // Nút đổi ngôn ngữ hiện CỜ của ngôn ngữ sẽ chuyển sang (giữ đúng logic cũ
-    // vốn hiện chữ EN/VI): đang tiếng Việt thì hiện cờ Anh 🇬🇧, đang tiếng Anh
-    // thì hiện cờ Việt 🇻🇳. Cờ vẽ bằng emoji (Segoe UI Emoji, font đã gắn ở
-    // nút trong XAML) nên không cần thêm file ảnh.
-    void SyncLangButton() =>
-        LangButton.Content = LanguageManager.Current == "vi" ? "🇬🇧" : "🇻🇳";
+    // Nút đổi ngôn ngữ kiểu pill: hiện cờ tròn + mã của ngôn ngữ sẽ chuyển
+    // sang (giữ đúng logic cũ vốn hiện chữ EN/VI): đang tiếng Việt thì pill
+    // "EN" cờ Anh bên trái, đang tiếng Anh thì pill "VI" cờ Việt bên phải.
+    // Cờ vẽ bằng vector trong XAML (không dùng emoji: WPF không vẽ cờ emoji
+    // thành hình mà chỉ hiện 2 chữ GB/VN — chính lỗi user chụp màn hình).
+    void SyncLangButton()
+    {
+        bool toEnglish = LanguageManager.Current == "vi";
+        LangStateEn.Visibility = toEnglish ? Visibility.Visible : Visibility.Collapsed;
+        LangStateVi.Visibility = toEnglish ? Visibility.Collapsed : Visibility.Visible;
+    }
 
     void SyncThemeSwitch()
     {
