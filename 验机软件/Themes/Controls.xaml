@@ -41,11 +41,33 @@
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter TargetName="bd" Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
                         </Trigger>
+                        <!-- Nút nhấn: bóng xẹp + nút lún 1px. Setter của trigger
+                             KHÔNG nhắm được hiệu ứng (shadow) hay transform
+                             (pressShift) — WPF báo "Cannot find the Trigger
+                             target" và fail build (Actions run #82, 2026-11-12).
+                             Dùng Storyboard thì nhắm được cả hai, về lại đúng
+                             giá trị gốc khi nhả nút. -->
                         <Trigger Property="IsPressed" Value="True">
-                            <Setter TargetName="shadow" Property="Opacity" Value="0.05"/>
-                            <Setter TargetName="shadow" Property="BlurRadius" Value="1"/>
-                            <Setter TargetName="shadow" Property="ShadowDepth" Value="1"/>
-                            <Setter TargetName="pressShift" Property="Y" Value="1"/>
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="shadow" Storyboard.TargetProperty="Opacity" To="0.05" Duration="0:0:0.08"/>
+                                        <DoubleAnimation Storyboard.TargetName="shadow" Storyboard.TargetProperty="BlurRadius" To="1" Duration="0:0:0.08"/>
+                                        <DoubleAnimation Storyboard.TargetName="shadow" Storyboard.TargetProperty="ShadowDepth" To="1" Duration="0:0:0.08"/>
+                                        <DoubleAnimation Storyboard.TargetName="pressShift" Storyboard.TargetProperty="Y" To="1" Duration="0:0:0.08"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="shadow" Storyboard.TargetProperty="Opacity" To="0.14" Duration="0:0:0.08"/>
+                                        <DoubleAnimation Storyboard.TargetName="shadow" Storyboard.TargetProperty="BlurRadius" To="4" Duration="0:0:0.08"/>
+                                        <DoubleAnimation Storyboard.TargetName="shadow" Storyboard.TargetProperty="ShadowDepth" To="3" Duration="0:0:0.08"/>
+                                        <DoubleAnimation Storyboard.TargetName="pressShift" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.08"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
