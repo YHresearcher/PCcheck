@@ -1,6 +1,7 @@
 {
   "id": "keyboard",
   "name": "Test bàn phím",
+  "nameEn": "Keyboard test",
   "version": "1.0.0",
   "order": 20,
   "terminal": false,

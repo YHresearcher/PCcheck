@@ -1,1 +1,1 @@
-{"entryAssembly":"YanJi.Plugin.Dashboard.dll","entryType":"YanJi.Plugin.Dashboard.DashboardPlugin","id":"dashboard","name":"Tổng quan","order":0,"terminal":true,"version":"1.0.0"}
+{"entryAssembly":"YanJi.Plugin.Dashboard.dll","entryType":"YanJi.Plugin.Dashboard.DashboardPlugin","id":"dashboard","name":"Tổng quan","nameEn":"Overview","order":0,"terminal":true,"version":"1.0.0"}

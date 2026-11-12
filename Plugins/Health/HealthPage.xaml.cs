@@ -42,7 +42,7 @@ public partial class HealthPage : UserControl
                 ModuleVerdictLevel.Chan => "Chặn",
                 _ => "Chưa test",
             };
-            rows.Add(new(m.Name, gradeText, note));
+            rows.Add(new(m.DisplayName, gradeText, note));
         }
         HealthList.ItemsSource = rows;
     }

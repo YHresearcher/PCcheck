@@ -5,14 +5,10 @@
          phải có cùng tập key, thiếu key nào thì Lang.Get trả về chính key đó. -->
 
     <!-- Khung chính -->
-    <system:String x:Key="Shell.StopHeavy">Dừng test nặng</system:String>
-    <system:String x:Key="Shell.StopHeavyTip">Dừng Prime95 / FurMark / đo tốc độ ổ, kiểm tra tiến trình còn sống.</system:String>
     <system:String x:Key="Shell.ThemeTip">Đổi giao diện tối / sáng</system:String>
     <system:String x:Key="Shell.LangTip">Chuyển sang tiếng Anh</system:String>
     <system:String x:Key="Shell.WizardGuard">Bạn đang ở chế độ kiểm tra. Hãy bấm 'Dừng tất cả kiểm tra' ở thanh trên để đổi trang nha.</system:String>
     <system:String x:Key="Shell.NoTests">Chưa có bài test nào được cài đặt.</system:String>
-    <system:String x:Key="Shell.StopAllDone">Đã dừng tất cả test nặng (Prime95 / FurMark / đo tốc độ ổ).</system:String>
-    <system:String x:Key="Shell.StopAllFailed">Chưa dừng được: {0}.&#10;&#10;Máy vẫn đang tải cao. Mở Task Manager kiểm tra tiến trình trên rồi bấm Dừng tất cả lại, đừng tưởng máy đã hết tải.</system:String>
     <system:String x:Key="Shell.WebsiteFailed">Chưa mở được website: {0}</system:String>
     <system:String x:Key="Shell.AllDone">🎉 Đã kiểm tra xong tất cả hạng mục!</system:String>
     <system:String x:Key="Shell.Footer">An Tâm Check • Windows</system:String>
@@ -21,7 +17,6 @@
     <system:String x:Key="Wizard.Caption">Chế độ kiểm tra tập trung — mỗi lần 1 bài test</system:String>
     <system:String x:Key="Wizard.Back">← Quay lại bài trước</system:String>
     <system:String x:Key="Wizard.Next">Bài tiếp theo →</system:String>
-    <system:String x:Key="Wizard.StopHeavy">Dừng tất cả test nặng</system:String>
     <system:String x:Key="Wizard.Exit">Dừng tất cả kiểm tra</system:String>
     <system:String x:Key="Wizard.ExitTip">Thoát chế độ tập trung, mở lại menu bên trái. Trạng thái test đã xong không mất.</system:String>
 
@@ -32,7 +27,11 @@
     <system:String x:Key="Wiz.IntroNote">Bài nào đã xong sẽ hiện dấu ✓ — bấm Bắt đầu để vào bài chưa xong đầu tiên.</system:String>
     <system:String x:Key="Wiz.IntroDone">Đã xong</system:String>
     <system:String x:Key="Wiz.IntroPending">Chưa làm</system:String>
-
+    <system:String x:Key="Wiz.ModeTitle">Chọn kiểu kiểm tra</system:String>
+    <system:String x:Key="Wiz.FastTitle">Kiểm tra nhanh</system:String>
+    <system:String x:Key="Wiz.FastDesc">Kiểm tra nhanh hệ thống, dưới 5 phút — không nướng máy, không đo tốc độ ổ.</system:String>
+    <system:String x:Key="Wiz.DeepTitle">Kiểm tra sâu</system:String>
+    <system:String x:Key="Wiz.DeepDesc">Kiểm tra tất cả phần cứng, kể cả nướng máy và đo tốc độ ổ.</system:String>
     <!-- Menu bên trái: nút chỉ còn chữ, icon là ảnh trong XAML -->
     <system:String x:Key="Nav.Overview">Tổng quan</system:String>
     <system:String x:Key="Nav.Inspection">Kiểm tra chi tiết</system:String>

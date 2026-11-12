@@ -23,10 +23,7 @@
                 Padding="12,4">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right"
                         VerticalAlignment="Center">
-                <Button Content="{DynamicResource Shell.StopHeavy}" Click="OnStopAllHeavyTestsClick" Padding="10,4"
-                        Margin="0,0,12,0"
-                        ToolTip="{DynamicResource Shell.StopHeavyTip}"/>
-                                <TextBlock Text="☀" FontSize="13" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                <TextBlock Text="☀" FontSize="13" Margin="0,0,5,0" VerticalAlignment="Center"/>
                 <ToggleButton x:Name="ThemeSwitch" Style="{StaticResource ThemeSwitch}"
                               ToolTip="{DynamicResource Shell.ThemeTip}"
                               Checked="OnThemeSwitch" Unchecked="OnThemeSwitch"/>
@@ -47,8 +44,7 @@
                 <TextBlock Text="{DynamicResource Wizard.Caption}" FontWeight="SemiBold" VerticalAlignment="Center"/>
                 <Button x:Name="WizardBackButton" Content="{DynamicResource Wizard.Back}" Click="OnWizardBackClick" Margin="16,0,0,0"/>
                 <Button x:Name="WizardNextButton" Content="{DynamicResource Wizard.Next}" Click="OnWizardNextClick" Margin="8,0,0,0"/>
-                <Button Content="{DynamicResource Wizard.StopHeavy}" Click="OnWizardStopClick" Margin="8,0,0,0"/>
-                <Button Content="{DynamicResource Wizard.Exit}" Click="OnWizardExitClick" Margin="8,0,0,0"
+                                <Button Content="{DynamicResource Wizard.Exit}" Click="OnWizardExitClick" Margin="8,0,0,0"
                         ToolTip="{DynamicResource Wizard.ExitTip}"/>
             </StackPanel>
         </Border>
@@ -56,7 +52,7 @@
         <!-- ═══ 主区：左导航 + 内容 ═══ -->
         <Grid Grid.Row="3">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="274"/>
+                <ColumnDefinition Width="440"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
@@ -133,61 +129,82 @@
                         </Button>
                     </StackPanel>
                     <StackPanel DockPanel.Dock="Bottom" Margin="18,8,18,17">
-                        <!-- Toggle đổi ngôn ngữ kiểu 3D chìm (neumorphic, theo mẫu
+                                                <!-- Toggle đổi ngôn ngữ kiểu 3D chìm (neumorphic, theo mẫu
                              SwiftUI user gửi): track lõm + nút tròn trượt mang cờ
                              ngôn ngữ hiện tại; bấm để đổi. Nằm cuối sidebar, trên
-                             mascot, canh giữa (rộng 220 như mẫu). -->
+                             mascot, canh giữa. Nhỏ gọn 98x30 (1/5 diện tích bản
+                             220x68 trước), viền sáng + bóng đổ đậm để đọc rõ là
+                             nút 3D chứ không phải pill phẳng. -->
                         <Button x:Name="LangButton" Click="OnLangButtonClick"
                                 ToolTip="{DynamicResource Shell.LangTip}"
                                 Background="Transparent" BorderThickness="0" Padding="0"
-                                Cursor="Hand" HorizontalAlignment="Center" Margin="0,0,0,12">
+                                Cursor="Hand" HorizontalAlignment="Center" Margin="0,0,0,6">
                             <Button.Template>
                                 <ControlTemplate TargetType="Button">
                                     <ContentPresenter/>
                                 </ControlTemplate>
                             </Button.Template>
-                            <Grid Width="220" Height="68">
-                                <!-- Vệt sáng trắng lệch lên-trái (bóng nổi kiểu neumorphic) -->
-                                <Border CornerRadius="34" Background="White" Margin="-3,-3,3,3" Opacity="0.9"/>
-                                <!-- Vỏ capsule nổi -->
-                                <Border CornerRadius="34" Background="#EDEDED">
+                            <Grid Width="98" Height="30">
+                                <!-- Vỏ capsule nổi: bóng tối dưới-phải -->
+                                <Border CornerRadius="15" Background="#EDEDED">
                                     <Border.Effect>
-                                        <DropShadowEffect Color="Black" Opacity="0.15" BlurRadius="5" ShadowDepth="4" Direction="45"/>
+                                        <DropShadowEffect Color="Black" Opacity="0.28" BlurRadius="5" ShadowDepth="4" Direction="45"/>
                                     </Border.Effect>
                                 </Border>
-                                <!-- Track lõm bên trong -->
-                                <Border CornerRadius="29" Background="#DBDBDB" Margin="5"/>
+                                <!-- Viền sáng trắng + bóng sáng trên-trái (nổi kiểu neumorphic) -->
+                                <Border CornerRadius="15" Background="Transparent" BorderBrush="White" BorderThickness="1">
+                                    <Border.Effect>
+                                        <DropShadowEffect Color="White" Opacity="0.9" BlurRadius="3" ShadowDepth="2" Direction="225"/>
+                                    </Border.Effect>
+                                </Border>
+                                <!-- Track lõm: nền xám đậm hơn + viền tối trên-trái, sáng dưới-phải -->
+                                <Border CornerRadius="13" Background="#CFCFCF" Margin="2" BorderBrush="#B5B5B5" BorderThickness="1,1,0,0"/>
+                                <Border CornerRadius="13" Margin="2" BorderBrush="White" BorderThickness="0,0,1,1" Opacity="0.6"/>
                                 <!-- Nhãn 2 nửa: chỉ hiện nhãn phía không có nút tròn
                                      (nút che phía ngôn ngữ hiện tại, như mask trong code mẫu) -->
-                                <Grid Margin="5">
+                                <Grid Margin="2">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition/>
                                         <ColumnDefinition/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock x:Name="LangLabelVi" Grid.Column="0" Text="VI" FontSize="22" FontWeight="Medium"
+                                    <TextBlock x:Name="LangLabelVi" Grid.Column="0" Text="VI" FontSize="10" FontWeight="Medium"
                                                Foreground="Gray" Opacity="0.8"
                                                HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                    <TextBlock x:Name="LangLabelEn" Grid.Column="1" Text="EN" FontSize="22" FontWeight="Medium"
+                                    <TextBlock x:Name="LangLabelEn" Grid.Column="1" Text="EN" FontSize="10" FontWeight="Medium"
                                                Foreground="Gray" Opacity="0.8"
                                                HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 </Grid>
                                 <!-- Nút tròn trượt -->
                                 <Canvas>
-                                    <Grid x:Name="LangKnob" Width="52" Height="52" Canvas.Left="8" Canvas.Top="8">
+                                    <Grid x:Name="LangKnob" Width="24" Height="24" Canvas.Left="4" Canvas.Top="3">
                                         <Ellipse>
                                             <Ellipse.Fill>
                                                 <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
                                                     <GradientStop Color="White" Offset="0"/>
-                                                    <GradientStop Color="#E0E0E0" Offset="1"/>
+                                                    <GradientStop Color="#D8D8D8" Offset="1"/>
                                                 </LinearGradientBrush>
                                             </Ellipse.Fill>
                                             <Ellipse.Effect>
-                                                <DropShadowEffect Color="Black" Opacity="0.22" BlurRadius="4" ShadowDepth="3" Direction="45"/>
+                                                <DropShadowEffect Color="Black" Opacity="0.3" BlurRadius="3" ShadowDepth="2" Direction="45"/>
                                             </Ellipse.Effect>
                                         </Ellipse>
-                                        <Grid Width="44" Height="44" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                        <!-- Vệt sáng trên nút tròn (cắt theo hình tròn) -->
+                                        <Grid Width="24" Height="24">
                                             <Grid.Clip>
-                                                <EllipseGeometry Center="22,22" RadiusX="22" RadiusY="22"/>
+                                                <EllipseGeometry Center="12,12" RadiusX="12" RadiusY="12"/>
+                                            </Grid.Clip>
+                                            <Ellipse Width="24" Height="12" VerticalAlignment="Top" Opacity="0.45">
+                                                <Ellipse.Fill>
+                                                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                                        <GradientStop Color="White" Offset="0"/>
+                                                        <GradientStop Color="White" Offset="1" Opacity="0"/>
+                                                    </LinearGradientBrush>
+                                                </Ellipse.Fill>
+                                            </Ellipse>
+                                        </Grid>
+                                        <Grid Width="20" Height="20" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                            <Grid.Clip>
+                                                <EllipseGeometry Center="10,10" RadiusX="10" RadiusY="10"/>
                                             </Grid.Clip>
                                             <Viewbox x:Name="LangKnobFlagUk" Stretch="UniformToFill">
                                                 <Canvas Width="60" Height="40">
@@ -235,7 +252,7 @@
                         <!-- Mascot ở cuối sidebar, to (~200px), lấp khoảng trống dưới
                              nút Giới thiệu; màn hình thấp thì ẩn (AdjustSidebarForHeight). -->
                         <Image x:Name="SidebarMascot" Source="pack://application:,,,/Assets/mascot-sidebar-2026.png"
-                               Width="200" Height="200" Stretch="Uniform" Margin="0,0,0,10"
+                               Width="400" Height="400" Stretch="Uniform" Margin="0,0,0,10"
                                HorizontalAlignment="Center"
                                RenderOptions.BitmapScalingMode="HighQuality"/>
                         <TextBlock x:Name="AllDoneHint" Text="{DynamicResource Shell.AllDone}"

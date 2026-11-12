@@ -1,6 +1,7 @@
 {
   "id": "disk",
   "name": "Đo tốc độ ổ",
+  "nameEn": "Disk speed test",
   "version": "1.0.1",
   "order": 15,
   "terminal": false,

@@ -1,1 +1,1 @@
-{"entryAssembly":"YanJi.Plugin.PortAdapter.dll","entryType":"YanJi.Plugin.PortAdapter.PortAdapterPlugin","id":"ports","name":"Cổng kết nối & Sạc","order":60,"terminal":false,"version":"1.0.0"}
+{"entryAssembly":"YanJi.Plugin.PortAdapter.dll","entryType":"YanJi.Plugin.PortAdapter.PortAdapterPlugin","id":"ports","name":"Cổng kết nối & Sạc","nameEn":"Ports & charging","order":60,"terminal":false,"version":"1.0.0"}

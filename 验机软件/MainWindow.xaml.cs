@@ -172,7 +172,7 @@ public partial class MainWindow : Window
         dotGrid.Children.Add(check);
         var panel = new StackPanel { Orientation = Orientation.Horizontal };
         panel.Children.Add(dotGrid);
-        panel.Children.Add(new TextBlock { Text = lp.Info.Name });
+        panel.Children.Add(new TextBlock { Text = lp.Info.DisplayName });
         var newItem = new ListBoxItem { Tag = lp.Info.Id, Content = panel };
         int insertAt = NavList.Items.Count;
         for (int i = 0; i < NavList.Items.Count; i++)
@@ -284,7 +284,7 @@ public partial class MainWindow : Window
     {
         // Màn hình laptop thấp: mascot cuối sidebar thu nhỏ thay vì biến mất
         // (ẩn hẳn khiến user tưởng mất mascot — laptop 768px luôn < 850).
-        double size = ActualHeight < 850 ? 110 : 200;
+        double size = ActualHeight < 850 ? 220 : 400;
         SidebarMascot.Width = size;
         SidebarMascot.Height = size;
         SidebarMascot.Visibility = Visibility.Visible;
@@ -352,7 +352,7 @@ public partial class MainWindow : Window
         for (int i = NavList.SelectedIndex + 1; i < NavList.Items.Count; i++)
         {
             if (NavList.Items[i] is ListBoxItem item && item.Tag is string tag
-                && _passableTags.Contains(tag) && !_doneTags.Contains(tag))
+                && _passableTags.Contains(tag) && !_doneTags.Contains(tag) && InWizardScope(tag))
             {
                 NavList.SelectedIndex = i;
                 return;
@@ -367,7 +367,7 @@ public partial class MainWindow : Window
                 break;
             }
         }
-        if (_passableTags.Count > 0 && _passableTags.All(_doneTags.Contains))
+        if (_passableTags.Count > 0 && _passableTags.Where(InWizardScope).All(_doneTags.Contains))
             AllDoneHint.Visibility = Visibility.Visible;
     }
 
@@ -401,12 +401,11 @@ public partial class MainWindow : Window
         if (kp.HandleKey(key, false)) e.Handled = true;
     }
 
-    /// <summary>Nút "Dừng tất cả test nặng": gọi IStopHeavyTests của mọi plugin có
-    /// tiến trình tải cao (hiện tại: nướng máy Prime95/FurMark + đo tốc độ ổ).
-    /// Chỉ báo "đã dừng" khi mọi plugin trả về rỗng; còn sống thì báo rõ tên,
-    /// không bao giờ báo dừng giả.</summary>
-    void OnStopAllHeavyTestsClick(object sender, RoutedEventArgs e) => ShowStopAllResult();
-
+    /// <summary>Dừng mọi test nặng qua IStopHeavyTests của các plugin có tiến
+    /// trình tải cao (nướng máy Prime95/FurMark + đo tốc độ ổ). Trả về tên các
+    /// tiến trình còn sống, rỗng = dừng thật. Giữ lại làm năng lực của host
+    /// (IHostContext, trang Tổng quan vẫn gọi qua đó); chỉ bỏ 2 nút bấm ở
+    /// thanh trên + thanh wizard, vì mỗi trang test đã có nút dừng riêng.</summary>
     List<string> StopAllHeavyTests()
     {
         var survivors = new List<string>();
@@ -421,18 +420,23 @@ public partial class MainWindow : Window
         return survivors;
     }
 
-    void ShowStopAllResult()
-    {
-        var survivors = StopAllHeavyTests();
-        if (survivors.Count == 0)
-            Dialogs.Info(this, Lang.Get("Shell.StopAllDone"));
-        else
-            Dialogs.Warn(this, string.Format(Lang.Get("Shell.StopAllFailed"), string.Join(", ", survivors)));
-    }
-
     // ═══ Wizard: 1 bài test/lần, khóa menu bên trái khi đang wizard ═══
 
     bool _wizardMode;
+    bool _wizardDeep;
+
+    /// <summary>Các module của Fast check (kiểm tra nhanh, dưới 5 phút): chỉ
+    /// các bài nhanh + đối chiếu tự động, không nướng máy, không đo tốc độ ổ.
+    /// Deep check chạy tất cả module không phải trang cuối.</summary>
+    internal static readonly HashSet<string> FastCheckModuleIds = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "config", "keyboard", "screen", "av", "ports", "visual",
+    };
+
+    /// <summary>Module có nằm trong phạm vi wizard đang chạy không: ngoài wizard
+    /// thì mọi module đều trong phạm vi (giữ hành vi tự nhảy bài cũ); trong
+    /// wizard thì Deep = tất cả, Fast = chỉ tập FastCheckModuleIds.</summary>
+    bool InWizardScope(string tag) => !_wizardMode || _wizardDeep || FastCheckModuleIds.Contains(tag);
 
     bool NavigateToModule(string moduleId)
     {
@@ -457,8 +461,10 @@ public partial class MainWindow : Window
 
     /// <summary>Lối vào wizard duy nhất (sidebar "Kiểm tra chi tiết" +
     /// nút "Kiểm tra chi tiết" trên Dashboard): không nhảy thẳng bài đầu mà
-    /// mở màn hình Bắt đầu liệt kê các bài, bấm Bắt đầu mới vào bài chưa xong
-    /// đầu tiên. Xong hết thì sang Tổng kết, không vào wizard nữa.</summary>
+    /// mở màn hình Bắt đầu cho chọn Fast/Deep + liệt kê các bài. Màn hình
+    /// Bắt đầu CHƯA khóa điều hướng (chưa bấm Bắt đầu thì vẫn chuyển tab tự
+    /// do); chỉ khi bấm Bắt đầu mới vào chế độ wizard và khóa menu.
+    /// Xong hết thì sang Tổng kết, không vào wizard nữa.</summary>
     void BeginWizardCheck()
     {
         if (_wizardMode) return;
@@ -473,7 +479,6 @@ public partial class MainWindow : Window
             NavigateToModule("summary");
             return;
         }
-        StartWizardMode();
         ShowWizardIntro();
     }
 
@@ -492,7 +497,11 @@ public partial class MainWindow : Window
     /// (theo Order); xong hết rồi thì sang Tổng kết.</summary>
     void NavigateToFirstUnfinished()
     {
-        var first = _hostContext.Modules.Where(m => !m.Terminal).OrderBy(m => m.Order)
+        // Bấm Bắt đầu ở màn hình intro mới thật sự vào wizard (khóa menu):
+        // chế độ Fast/Deep lấy theo lựa chọn trên màn hình intro.
+        _wizardDeep = _wizardIntroPage.DeepSelected;
+        StartWizardMode();
+        var first = _hostContext.Modules.Where(m => !m.Terminal && InWizardScope(m.Id)).OrderBy(m => m.Order)
             .FirstOrDefault(m => !_doneTags.Contains(m.Id));
         if (first == null)
         {
@@ -523,7 +532,7 @@ public partial class MainWindow : Window
         int next = current + delta;
         while (next >= 0 && next < NavList.Items.Count)
         {
-            if (NavList.Items[next] is ListBoxItem item && item.Tag is string tag && _passableTags.Contains(tag))
+            if (NavList.Items[next] is ListBoxItem item && item.Tag is string tag && _passableTags.Contains(tag) && InWizardScope(tag))
             {
                 NavList.SelectedIndex = next;
                 UpdateWizardButtons();
@@ -541,16 +550,15 @@ public partial class MainWindow : Window
         int current = NavList.SelectedIndex;
         bool hasPrev = false, hasNext = false;
         for (int i = current - 1; i >= 0; i--)
-            if (NavList.Items[i] is ListBoxItem item && item.Tag is string tag && _passableTags.Contains(tag)) { hasPrev = true; break; }
+            if (NavList.Items[i] is ListBoxItem item && item.Tag is string tag && _passableTags.Contains(tag) && InWizardScope(tag)) { hasPrev = true; break; }
         for (int i = current + 1; i < NavList.Items.Count; i++)
-            if (NavList.Items[i] is ListBoxItem item && item.Tag is string tag && _passableTags.Contains(tag)) { hasNext = true; break; }
+            if (NavList.Items[i] is ListBoxItem item && item.Tag is string tag && _passableTags.Contains(tag) && InWizardScope(tag)) { hasNext = true; break; }
         WizardBackButton.IsEnabled = hasPrev;
         WizardNextButton.IsEnabled = hasNext;
     }
 
     void OnWizardBackClick(object sender, RoutedEventArgs e) => WizardMove(-1);
     void OnWizardNextClick(object sender, RoutedEventArgs e) => WizardMove(1);
-    void OnWizardStopClick(object sender, RoutedEventArgs e) => ShowStopAllResult();
     void OnWizardExitClick(object sender, RoutedEventArgs e) => ExitWizardMode();
 
     /// <summary>窗口图标取 exe 内嵌图标（Win32 提取，多尺寸 ico 在各 DPI 下都清晰）。</summary>
@@ -588,7 +596,7 @@ public partial class MainWindow : Window
     void SyncLangButton()
     {
         bool isVi = LanguageManager.Current == "vi";
-        double targetLeft = isVi ? 8 : 160;
+        double targetLeft = isVi ? 4 : 70;
         LangKnobFlagUk.Visibility = isVi ? Visibility.Collapsed : Visibility.Visible;
         LangKnobFlagVn.Visibility = isVi ? Visibility.Visible : Visibility.Collapsed;
         LangLabelVi.Visibility = isVi ? Visibility.Collapsed : Visibility.Visible;

@@ -1,1 +1,1 @@
-{"entryAssembly":"YanJi.Plugin.Summary.dll","entryType":"YanJi.Plugin.Summary.SummaryPlugin","id":"summary","name":"Tổng kết","order":90,"terminal":true,"version":"1.0.0"}
+{"entryAssembly":"YanJi.Plugin.Summary.dll","entryType":"YanJi.Plugin.Summary.SummaryPlugin","id":"summary","name":"Tổng kết","nameEn":"Summary","order":90,"terminal":true,"version":"1.0.0"}

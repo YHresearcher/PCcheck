@@ -35,6 +35,7 @@ public partial class SummaryPage : UserControl
     string _lastOverallTitle = "";
     string _lastAnTamNote = "";
     string _lastAnTamLang = Lang.CurrentLanguage; // ngôn ngữ lúc câu An Tâm đang hiện được chọn
+    string _lastSentenceLang = Lang.CurrentLanguage; // ngôn ngữ lúc câu kết luận đang hiện được chọn
 
     /// <summary>1 dòng kết luận từng module hiển thị trong danh sách.</summary>
     public record ModuleRow(string Name, string Grade, string Note);
@@ -279,6 +280,18 @@ public partial class SummaryPage : UserControl
         return pool[idx];
     }
 
+    /// <summary>Đổi ngôn ngữ: giữ nguyên câu kết luận đang hiện (cùng chỉ số
+    /// trong pool song song VI/EN), chỉ đổi sang bản dịch — như cách câu An
+    /// Tâm giữ chỉ số khi đổi ngôn ngữ.</summary>
+    string PickPhrasingSameIndex(string scenario)
+    {
+        var pool = PoolForScenario(scenario);
+        if (pool.Length == 0) return "";
+        int idx = Math.Clamp(_currentPhrasingIndex, 0, pool.Length - 1);
+        _currentPhrasingIndex = idx;
+        return pool[idx];
+    }
+
     HashSet<string> AllSignals()
     {
         var set = new HashSet<string>();
@@ -290,12 +303,12 @@ public partial class SummaryPage : UserControl
     string[] GoodPool()
     {
         var pool = new List<string>();
-        pool.AddRange(_bank.Good);
-        pool.AddRange(_bank.CombinedA);
+        pool.AddRange(_bank.Sentences("good"));
+        pool.AddRange(_bank.Sentences("combinedA"));
         var signals = AllSignals();
-        if (signals.Contains("cpuGood") && _bank.CpuGpu.TryGetValue("cpuGood", out var cpuGood))
+        if (signals.Contains("cpuGood") && _bank.SignalSentences("cpuGpu", "cpuGood") is { } cpuGood)
             pool.AddRange(cpuGood);
-        if (signals.Contains("batteryHealthy") && _bank.Battery.TryGetValue("healthy", out var batGood))
+        if (signals.Contains("batteryHealthy") && _bank.SignalSentences("battery", "healthy") is { } batGood)
             pool.AddRange(batGood);
         return [.. pool];
     }
@@ -311,28 +324,28 @@ public partial class SummaryPage : UserControl
         // đề, chỉ thêm câu vào pool để lần chọn ngẫu nhiên khi kịch bản đổi có
         // thể ra câu chuyên biệt (không còn nút đổi câu tay).
         "good" => GoodPool(),
-        "driveMediaError" => _bank.DriveMediaError,
-        "driveBadSector" => _bank.DriveBadSector,
-        "driveWear" => _bank.DriveWear,
-        "driveSmartUnknown" => _bank.DriveSmartUnknown,
-        "cpuFail" => _bank.CpuGpu.TryGetValue("cpuFail", out var cpuFail) ? cpuFail : _bank.CombinedD,
-        "gpuArtifact" => _bank.CpuGpu.TryGetValue("gpuArtifact", out var gpuArt) ? gpuArt : _bank.CombinedD,
-        "batteryNotCharging" => _bank.Battery.TryGetValue("notCharging", out var batNc) ? batNc : _bank.CombinedD,
-        "keyboardDead" => _bank.Peripheral.TryGetValue("keyboard", out var kb) ? kb : _bank.Warning,
-        "screenDeadPixel" => _bank.Peripheral.TryGetValue("screen", out var sc) ? sc : _bank.Warning,
-        "speakerDistorted" => _bank.Peripheral.TryGetValue("speaker", out var sp) ? sp : _bank.Warning,
-        "webcamFail" => _bank.Peripheral.TryGetValue("webcam", out var wc) ? wc : _bank.Warning,
-        "hingeLoose" => _bank.Peripheral.TryGetValue("hinge", out var hg) ? hg : _bank.Warning,
-        "combinedB" => _bank.CombinedB,
-        "batteryWornOver40" => _bank.Battery.TryGetValue("wornOver40", out var bw40) ? bw40 : _bank.Warning,
-        "batteryWorn20_30" => _bank.Battery.TryGetValue("worn20_30", out var bw20) ? bw20 : _bank.Warning,
-        "cpuOverheat" => _bank.CpuGpu.TryGetValue("cpuOverheat", out var cpuHot) ? cpuHot : _bank.Warning,
-        "scratchesLight" => _bank.Peripheral.TryGetValue("scratches", out var scr) ? scr : _bank.Warning,
-        "serious" => _bank.CombinedD,
-        "warning" => _bank.Warning,
-        "incomplete" => [.. _bank.CombinedE, .. _bank.Incomplete],
-        "notBuy" => _bank.NotBuy,
-        _ => _bank.Incomplete,
+        "driveMediaError" => _bank.Sentences("driveMediaError"),
+        "driveBadSector" => _bank.Sentences("driveBadSector"),
+        "driveWear" => _bank.Sentences("driveWear"),
+        "driveSmartUnknown" => _bank.Sentences("driveSmartUnknown"),
+        "cpuFail" => _bank.SignalSentences("cpuGpu", "cpuFail") ?? _bank.Sentences("combinedD"),
+        "gpuArtifact" => _bank.SignalSentences("cpuGpu", "gpuArtifact") ?? _bank.Sentences("combinedD"),
+        "batteryNotCharging" => _bank.SignalSentences("battery", "notCharging") ?? _bank.Sentences("combinedD"),
+        "keyboardDead" => _bank.SignalSentences("peripheral", "keyboard") ?? _bank.Sentences("warning"),
+        "screenDeadPixel" => _bank.SignalSentences("peripheral", "screen") ?? _bank.Sentences("warning"),
+        "speakerDistorted" => _bank.SignalSentences("peripheral", "speaker") ?? _bank.Sentences("warning"),
+        "webcamFail" => _bank.SignalSentences("peripheral", "webcam") ?? _bank.Sentences("warning"),
+        "hingeLoose" => _bank.SignalSentences("peripheral", "hinge") ?? _bank.Sentences("warning"),
+        "combinedB" => _bank.Sentences("combinedB"),
+        "batteryWornOver40" => _bank.SignalSentences("battery", "wornOver40") ?? _bank.Sentences("warning"),
+        "batteryWorn20_30" => _bank.SignalSentences("battery", "worn20_30") ?? _bank.Sentences("warning"),
+        "cpuOverheat" => _bank.SignalSentences("cpuGpu", "cpuOverheat") ?? _bank.Sentences("warning"),
+        "scratchesLight" => _bank.SignalSentences("peripheral", "scratches") ?? _bank.Sentences("warning"),
+        "serious" => _bank.Sentences("combinedD"),
+        "warning" => _bank.Sentences("warning"),
+        "incomplete" => [.. _bank.Sentences("combinedE"), .. _bank.Sentences("incomplete")],
+        "notBuy" => _bank.Sentences("notBuy"),
+        _ => _bank.Sentences("incomplete"),
     };
 
     /// <summary>Dòng "An Tâm nhắn bạn" chia theo nhóm tình trạng (user chốt 2026-11-03):
@@ -439,7 +452,7 @@ public partial class SummaryPage : UserControl
                 note = Lang.Get("Sum.UndoneNote");
             }
             grades.Add(grade);
-            rows.Add(new(m.Name, GradeText(grade), note));
+            rows.Add(new(m.DisplayName, GradeText(grade), note));
         }
         ModuleList.ItemsSource = rows;
         _lastRows = rows;
@@ -517,6 +530,15 @@ public partial class SummaryPage : UserControl
         {
             PhrasingText.Text = PickPhrasing(scenario, -1);
             RefreshAnTamNote();
+        }
+        // Đổi ngôn ngữ: giữ nguyên câu kết luận đang hiện (cùng chỉ số), chỉ
+        // đổi sang bản dịch — đặt sau khối kịch bản để khi kịch bản cũng đổi
+        // thì câu mới đã chọn đúng ngôn ngữ rồi, gọi lại cũng chỉ vẽ lại cùng câu.
+        if (_lastSentenceLang != Lang.CurrentLanguage)
+        {
+            _lastSentenceLang = Lang.CurrentLanguage;
+            if (_currentPhrasingIndex >= 0)
+                PhrasingText.Text = PickPhrasingSameIndex(scenario);
         }
         // Đổi ngôn ngữ: giữ nguyên câu An Tâm đang hiện (cùng chỉ số), chỉ đổi
         // sang bản dịch — đặt sau khối kịch bản để khi kịch bản cũng đổi thì câu

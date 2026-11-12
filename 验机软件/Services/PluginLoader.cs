@@ -11,6 +11,7 @@ public class PluginManifest
 {
     public string Id { get; set; } = "";
     public string Name { get; set; } = "";
+    public string? NameEn { get; set; }
     public string Version { get; set; } = "1.0.0";
     public int Order { get; set; } = 100;
     public bool Terminal { get; set; }
@@ -68,7 +69,7 @@ public static class PluginLoader
                 throw new InvalidDataException($"{manifest.EntryType} không triển khai IYanJiPlugin");
             return new LoadedPlugin
             {
-                Info = new PluginInfo(manifest.Id, manifest.Name, manifest.Version, manifest.Order, manifest.Terminal),
+                Info = new PluginInfo(manifest.Id, manifest.Name, manifest.Version, manifest.Order, manifest.Terminal, manifest.NameEn),
                 Plugin = plugin,
                 Page = plugin.CreatePage(host),
                 Directory = dir,

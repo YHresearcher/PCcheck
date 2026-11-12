@@ -1,8 +1,10 @@
 <UserControl x:Class="YanJi.Views.WizardIntroPage"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <!-- Màn hình Bắt đầu trước wizard: liệt kê bài test + trạng thái, nút
-         Bắt đầu mới vào bài chưa xong đầu tiên (không nhảy thẳng như trước). -->
+    <!-- Màn hình Bắt đầu trước wizard: chọn Fast/Deep check rồi liệt kê các
+         bài sẽ chạy (thiết kế hàng giống thẻ kết quả kiểm tra nhanh trên
+         Dashboard: icon + hàng pastel + trạng thái). Bấm Bắt đầu mới vào bài
+         chưa xong đầu tiên — màn hình này chưa khóa điều hướng. -->
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
                   Background="{DynamicResource WindowBgBrush}">
         <StackPanel Margin="40,32,40,24" MaxWidth="640" HorizontalAlignment="Center">
@@ -10,25 +12,130 @@
                        TextWrapping="Wrap" Margin="0,0,0,8"/>
             <TextBlock Text="{DynamicResource Wiz.IntroText}" FontSize="13"
                        Foreground="{DynamicResource TextSecondaryBrush}"
-                       TextWrapping="Wrap" Margin="0,0,0,20"/>
+                       TextWrapping="Wrap" Margin="0,0,0,16"/>
+            <TextBlock Text="{DynamicResource Wiz.ModeTitle}" FontSize="13" FontWeight="SemiBold"
+                       Margin="0,0,0,8"/>
+            <Grid Margin="0,0,0,20">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Button x:Name="FastCardButton" Grid.Column="0" Margin="0,0,6,0" Click="FastCard_Click"
+                        Background="Transparent" BorderThickness="0" Padding="0" Cursor="Hand"
+                        HorizontalAlignment="Stretch">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <ContentPresenter/>
+                        </ControlTemplate>
+                    </Button.Template>
+                    <Border x:Name="FastCardBorder" CornerRadius="12" Padding="12" Background="#E6F8E7"
+                            BorderBrush="{DynamicResource AccentBrush}" BorderThickness="2">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Image Grid.Row="0" Grid.Column="0" Source="pack://application:,,,/Assets/08_lightning_orange.png"
+                                   Width="28" Height="28" HorizontalAlignment="Left"
+                                   RenderOptions.BitmapScalingMode="HighQuality"/>
+                            <TextBlock x:Name="FastCheckMark" Grid.Row="0" Grid.Column="1" Text="✓" FontSize="16" FontWeight="Bold"
+                                       Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Top"/>
+                            <TextBlock Grid.Row="1" Grid.ColumnSpan="2" Text="{DynamicResource Wiz.FastTitle}" FontSize="15" FontWeight="SemiBold" Margin="0,8,0,2"/>
+                            <TextBlock Grid.Row="2" Grid.ColumnSpan="2" Text="{DynamicResource Wiz.FastDesc}" FontSize="12"
+                                       Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap"/>
+                        </Grid>
+                    </Border>
+                </Button>
+                <Button x:Name="DeepCardButton" Grid.Column="1" Margin="6,0,0,0" Click="DeepCard_Click"
+                        Background="Transparent" BorderThickness="0" Padding="0" Cursor="Hand"
+                        HorizontalAlignment="Stretch">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <ContentPresenter/>
+                        </ControlTemplate>
+                    </Button.Template>
+                    <Border x:Name="DeepCardBorder" CornerRadius="12" Padding="12" Background="#FFE9E3"
+                            BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Image Grid.Row="0" Grid.Column="0" Source="pack://application:,,,/Assets/03_cpu_chip_gray.png"
+                                   Width="28" Height="28" HorizontalAlignment="Left"
+                                   RenderOptions.BitmapScalingMode="HighQuality"/>
+                            <TextBlock x:Name="DeepCheckMark" Grid.Row="0" Grid.Column="1" Text="✓" FontSize="16" FontWeight="Bold"
+                                       Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Top" Visibility="Collapsed"/>
+                            <TextBlock Grid.Row="1" Grid.ColumnSpan="2" Text="{DynamicResource Wiz.DeepTitle}" FontSize="15" FontWeight="SemiBold" Margin="0,8,0,2"/>
+                            <TextBlock Grid.Row="2" Grid.ColumnSpan="2" Text="{DynamicResource Wiz.DeepDesc}" FontSize="12"
+                                       Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap"/>
+                        </Grid>
+                    </Border>
+                </Button>
+            </Grid>
             <ItemsControl x:Name="ModuleList" Margin="0,0,0,20">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Border CornerRadius="10" Margin="0,2" Padding="10,8"
-                                Background="{DynamicResource SurfaceBgBrush}"
-                                BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+                        <Border CornerRadius="10" Margin="0,2" Padding="7,5"
+                                Background="{Binding RowBrush}">
                             <Grid>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="28"/>
+                                    <ColumnDefinition Width="36"/>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="24"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" Text="{Binding Mark}" FontSize="15" FontWeight="Bold"
-                                           Foreground="{Binding MarkBrush}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <Border Grid.Column="0" Background="{Binding IconBackground}"
+                                        Width="27" Height="27" CornerRadius="7">
+                                    <Grid>
+                                        <!-- Icon ảnh thật (bộ icon An Tâm Mac Check) khi module có IconPath;
+                                             chưa có icon thì giữ ký tự như cũ (giống thẻ kết quả nhanh). -->
+                                        <Image Source="{Binding IconPath}" Width="20" Height="20" Stretch="Uniform"
+                                               RenderOptions.BitmapScalingMode="HighQuality"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center">
+                                            <Image.Style>
+                                                <Style TargetType="Image">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IconPath}" Value="{x:Null}">
+                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Image.Style>
+                                        </Image>
+                                        <TextBlock Text="{Binding Icon}" FontSize="16"
+                                                   Foreground="{Binding IconBrush}"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IconPath}" Value="{x:Null}">
+                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                    </Grid>
+                                </Border>
                                 <TextBlock Grid.Column="1" Text="{Binding Name}" FontSize="14" FontWeight="SemiBold"
                                            VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
                                 <TextBlock Grid.Column="2" Text="{Binding State}" FontSize="12"
-                                           Foreground="{Binding StateBrush}" VerticalAlignment="Center"/>
+                                           Foreground="{Binding StateBrush}" VerticalAlignment="Center" Margin="8,0,0,0"/>
+                                <TextBlock Grid.Column="3" Text="{Binding Mark}" FontSize="15" FontWeight="Bold"
+                                           Foreground="{Binding MarkBrush}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Grid>
                         </Border>
                     </DataTemplate>

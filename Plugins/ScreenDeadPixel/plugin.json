@@ -1,6 +1,7 @@
 {
   "id": "screen",
   "name": "Test điểm chết màn hình",
+  "nameEn": "Screen dead-pixel test",
   "version": "1.0.0",
   "order": 30,
   "terminal": false,

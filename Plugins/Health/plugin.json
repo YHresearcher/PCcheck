@@ -1,1 +1,1 @@
-{"entryAssembly":"YanJi.Plugin.Health.dll","entryType":"YanJi.Plugin.Health.HealthPlugin","id":"health","name":"Sức khỏe thiết bị","order":85,"terminal":true,"version":"1.0.0"}
+{"entryAssembly":"YanJi.Plugin.Health.dll","entryType":"YanJi.Plugin.Health.HealthPlugin","id":"health","name":"Sức khỏe thiết bị","nameEn":"Device health","order":85,"terminal":true,"version":"1.0.0"}

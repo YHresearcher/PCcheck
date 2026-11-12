@@ -1,6 +1,7 @@
 {
   "id": "config",
   "name": "Đối chiếu cấu hình",
+  "nameEn": "Configuration check",
   "version": "1.0.0",
   "order": 10,
   "terminal": false,

@@ -6,7 +6,14 @@ namespace YanJi.PluginSdk;
 
 /// <summary>插件元数据（与插件目录里 plugin.json 一致）。Order 决定导航顺序（小的在前）；
 /// Terminal = 终点页（无「确认通过」、不参与通过状态流、导航不配状态圆点）。</summary>
-public record PluginInfo(string Id, string Name, string Version, int Order, bool Terminal);
+public record PluginInfo(string Id, string Name, string Version, int Order, bool Terminal, string? NameEn = null)
+{
+    /// <summary>Tên hiển thị theo ngôn ngữ đang chọn: bản EN trong plugin.json
+    /// (nameEn) nếu có, không thì tên gốc tiếng Việt. Plugin cũ thiếu nameEn
+    /// vẫn chạy bình thường (hiện tên Việt).</summary>
+    public string DisplayName =>
+        Lang.CurrentLanguage == "en" && !string.IsNullOrWhiteSpace(NameEn) ? NameEn! : Name;
+}
 
 /// <summary>Kết luận từng module, dùng cho trang Tổng kết: ChuaTest = chưa test xong,
 /// Dat = đạt, CanhBao = đạt nhưng có điều kiện (ví dụ ổ cảnh báo, sạc Trung bình),

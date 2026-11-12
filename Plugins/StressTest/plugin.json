@@ -1,6 +1,7 @@
 {
   "id": "stress",
   "name": "Test tản nhiệt",
+  "nameEn": "Stress test",
   "version": "1.0.0",
   "order": 50,
   "terminal": false,

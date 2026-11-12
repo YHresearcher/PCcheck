@@ -35,6 +35,72 @@ public class PhrasingBank
     public string[] AnTamNotesEn { get; private set; } = [];
     public Dictionary<string, string[]> AnTamGroupsEn { get; } = [];
 
+    // Bản dịch EN của các pool câu kết luận (goodEn / warningEn / ... trong
+    // JSON): song song tuyệt đối với pool VI (cùng thứ tự, cùng độ dài) để
+    // cùng chỉ số = cùng câu khi đổi ngôn ngữ, như cặp lục bát EN.
+    public string[] GoodEn { get; private set; } = [];
+    public string[] WarningEn { get; private set; } = [];
+    public string[] IncompleteEn { get; private set; } = [];
+    public string[] NotBuyEn { get; private set; } = [];
+    public string[] DriveWearEn { get; private set; } = [];
+    public string[] DriveMediaErrorEn { get; private set; } = [];
+    public string[] DriveBadSectorEn { get; private set; } = [];
+    public string[] DriveSmartUnknownEn { get; private set; } = [];
+    public string[] CombinedAEn { get; private set; } = [];
+    public string[] CombinedBEn { get; private set; } = [];
+    public string[] CombinedCEn { get; private set; } = [];
+    public string[] CombinedDEn { get; private set; } = [];
+    public string[] CombinedEEn { get; private set; } = [];
+    public Dictionary<string, string[]> BatteryEn { get; } = [];
+    public Dictionary<string, string[]> CpuGpuEn { get; } = [];
+    public Dictionary<string, string[]> PeripheralEn { get; } = [];
+
+    static string[] PickLang(string[] vi, string[] en) =>
+        Lang.CurrentLanguage == "en" && en.Length > 0 ? en : vi;
+
+    /// <summary>Pool câu kết luận của 1 kịch bản, theo ngôn ngữ đang chọn;
+    /// EN thiếu pool thì dùng pool VI (cùng thứ tự, cùng độ dài).</summary>
+    public string[] Sentences(string key) => key switch
+    {
+        "good" => PickLang(Good, GoodEn),
+        "warning" => PickLang(Warning, WarningEn),
+        "incomplete" => PickLang(Incomplete, IncompleteEn),
+        "notBuy" => PickLang(NotBuy, NotBuyEn),
+        "driveWear" => PickLang(DriveWear, DriveWearEn),
+        "driveMediaError" => PickLang(DriveMediaError, DriveMediaErrorEn),
+        "driveBadSector" => PickLang(DriveBadSector, DriveBadSectorEn),
+        "driveSmartUnknown" => PickLang(DriveSmartUnknown, DriveSmartUnknownEn),
+        "combinedA" => PickLang(CombinedA, CombinedAEn),
+        "combinedB" => PickLang(CombinedB, CombinedBEn),
+        "combinedC" => PickLang(CombinedC, CombinedCEn),
+        "combinedD" => PickLang(CombinedD, CombinedDEn),
+        "combinedE" => PickLang(CombinedE, CombinedEEn),
+        _ => [],
+    };
+
+    /// <summary>Câu chuyên biệt theo tín hiệu (battery / cpuGpu / peripheral),
+    /// theo ngôn ngữ đang chọn; EN thiếu nhóm thì dùng nhóm VI.</summary>
+    public string[]? SignalSentences(string group, string key)
+    {
+        Dictionary<string, string[]>? vi = group switch
+        {
+            "battery" => Battery,
+            "cpuGpu" => CpuGpu,
+            "peripheral" => Peripheral,
+            _ => null,
+        };
+        Dictionary<string, string[]>? en = group switch
+        {
+            "battery" => BatteryEn,
+            "cpuGpu" => CpuGpuEn,
+            "peripheral" => PeripheralEn,
+            _ => null,
+        };
+        if (vi == null) return null;
+        if (Lang.CurrentLanguage == "en" && en != null && en.TryGetValue(key, out var e) && e.Length > 0) return e;
+        return vi.TryGetValue(key, out var v) ? v : null;
+    }
+
     /// <summary>Pool "An Tâm nhắn bạn" theo ngôn ngữ đang chọn: bản EN nếu có
     /// đủ, không thì bản VI (không crash, không trống).</summary>
     public string[] AnTamNotePool() =>
@@ -88,6 +154,22 @@ public class PhrasingBank
             ReadGroup(root, "anTamGroups", AnTamGroups);
             AnTamNotesEn = Pool(root, "anTamNotesEn");
             ReadGroup(root, "anTamGroupsEn", AnTamGroupsEn);
+            GoodEn = Pool(root, "goodEn");
+            WarningEn = Pool(root, "warningEn");
+            IncompleteEn = Pool(root, "incompleteEn");
+            NotBuyEn = Pool(root, "notBuyEn");
+            DriveWearEn = Pool(root, "driveWearEn");
+            DriveMediaErrorEn = Pool(root, "driveMediaErrorEn");
+            DriveBadSectorEn = Pool(root, "driveBadSectorEn");
+            DriveSmartUnknownEn = Pool(root, "driveSmartUnknownEn");
+            CombinedAEn = Pool(root, "combinedAEn");
+            CombinedBEn = Pool(root, "combinedBEn");
+            CombinedCEn = Pool(root, "combinedCEn");
+            CombinedDEn = Pool(root, "combinedDEn");
+            CombinedEEn = Pool(root, "combinedEEn");
+            ReadGroup(root, "batteryEn", BatteryEn);
+            ReadGroup(root, "cpuGpuEn", CpuGpuEn);
+            ReadGroup(root, "peripheralEn", PeripheralEn);
             ReadGroup(root, "battery", Battery);
             ReadGroup(root, "cpuGpu", CpuGpu);
             ReadGroup(root, "peripheral", Peripheral);
@@ -125,6 +207,18 @@ public class PhrasingBank
         AnTamGroups["negotiate"] = ["Máy rẻ chớ vội hân hoan,\nTính luôn tiền sửa cho an trong lòng.", "Pin chai ổ yếu đừng quên,\nTrừ hao chi phí, nói lên giá mình.", "Chớ so mỗi giá niêm yết,\nXét thêm tình trạng mới biết đáng mua.", "Mua hàng mặc cả chẳng sai,\nChưa ưng cứ nói, chẳng ai trách mình.", "Máy này chưa hẳn là tồi,\nGiá mà bớt chút, thì ngồi tính sau."];
         AnTamGroups["manyFaults"] = ["Xem cho kỹ trước khi mua,\nBiết đâu máy lỗi, tránh thua một đời.", "Máy xinh chớ vội xuống tiền,\nVỏ ngoài bóng bẩy, lắm phiền bên trong.", "Kiểm cho thật kỹ hôm nay,\nMai sau khỏi tiếc, đắng cay một mình.", "Bảo hành hỏi rõ từng điều,\nCó khi trục trặc, đỡ nhiều âu lo.", "Nhìn ngoài bóng bẩy như hoa,\nKiểm xong mới biết, hóa ra hơi buồn."];
         AnTamGroups["notBuy"] = ["Máy qua tay mấy người rồi,\nHỏi cho rõ gốc, kẻo ngồi âu lo.", "Sạc pin ổ cứng coi chừng,\nThay từng món nhỏ, tiền từng ấy bay.", "Máy ngon phải rõ nguồn hàng,\nChớ tin vỏ bóng, ngỡ vàng hóa thau.", "Người bán có giục mua nhanh,\nCứ xem cho kỹ, mới đành xuống tay.", "Thấy xinh chớ vội trao tiền,\nKẻo mai ôm máy, muộn phiền ôm theo."];
+        // Dự phòng EN (khi JSON hỏng/thiếu): bản dịch của các câu dự phòng VI trên.
+        GoodEn = ["Good news! This machine passed its checks quite smoothly. If the price is as friendly as its condition, it's well worth considering!"];
+        CombinedAEn = ["This machine passed An Tâm's checks convincingly! No significant faults found in the items checked. If the price is fair and the origin is clear, it's worth considering."];
+        CombinedDEn = ["No matter how attractive the price, reliability comes first! The machine has a serious hardware fault. An Tâm Check recommends not buying it in its current state."];
+        CombinedEEn = ["This machine still has a few secrets left! Some key checks aren't finished, so An Tâm Check can't give a reliable recommendation yet. Test a bit more before paying."];
+        DriveWearEn = ["The drive has travelled quite a long road! Wear is worth noting, but no serious errors showed in the SMART data so far. Weigh the remaining lifespan and replacement cost when negotiating."];
+        DriveMediaErrorEn = ["Red alert from the drive! SMART data shows media errors — a direct risk to your data. An Tâm Check does not recommend buying until this is resolved."];
+        DriveBadSectorEn = ["The drive is genuinely wearing out! Bad sectors shouldn't be brushed aside, especially if you need a machine you can trust with important data."];
+        DriveSmartUnknownEn = ["The drive is still a mystery! The system couldn't read SMART data, so drive health can't be confirmed. No warning doesn't mean the drive is healthy."];
+        WarningEn = ["Usable, but check a few things or negotiate the price before buying."];
+        IncompleteEn = ["Not enough data to conclude buy or not — keep testing."];
+        NotBuyEn = ["This machine doesn't meet An Tâm's standard — don't buy."];
     }
 
     static string[] Pool(JsonElement root, string key)

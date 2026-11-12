@@ -1,6 +1,7 @@
 {
   "id": "av",
   "name": "Camera - Mic - Loa",
+  "nameEn": "Camera - Mic - Speakers",
   "version": "1.0.0",
   "order": 40,
   "terminal": false,
