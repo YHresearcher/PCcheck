@@ -1,0 +1,343 @@
+{
+  "source": "modern_macos_dashboard_icon_grid.png",
+  "count": 24,
+  "format": "256x256 RGBA transparent PNG",
+  "icons": [
+    {
+      "filename": "01_laptop_orange.png",
+      "name": "laptop_orange",
+      "source_cell": [
+        35,
+        35,
+        270,
+        275
+      ],
+      "export_size": [
+        256,
+        256
+      ]
+    },
+    {
+      "filename": "02_apple_gray.png",
+      "name": "apple_gray",
+      "source_cell": [
+        270,
+        35,
+        510,
+        275
+      ],
+      "export_size": [
+        256,
+        256
+      ]
+    },
+    {
+      "filename": "03_cpu_chip_gray.png",
+      "name": "cpu_chip_gray",
+      "source_cell": [
+        510,
+        35,
+        745,
+        275
+      ],
+      "export_size": [
+        256,
+        256
+      ]
+    },
+    {
+      "filename": "04_layers_gray.png",
+      "name": "layers_gray",
+      "source_cell": [
+        745,
+        35,
+        975,
+        275
+      ],
+      "export_size": [
+        256,
+        256
+      ]
+    },
+    {
+      "filename": "05_ram_orange.png",
+      "name": "ram_orange",
+      "source_cell": [
+        975,
+        35,
+        1225,
+        275
+      ],
+      "export_size": [
+        256,
+        256
+      ]
+    },
+    {
+      "filename": "06_ssd_orange.png",
+      "name": "ssd_orange",
+      "source_cell": [
+        35,
+        275,
+        270,
+        520
+      ],
+      "export_size": [
+        256,
+        256
+      ]
+    },
+    {
+      "filename": "07_battery_green.png",
+      "name": "battery_green",
+      "source_cell": [
+        270,
+        275,
+        510,
+        520
+      ],
+      "export_size": [
+        256,
+        256
+      ]
+    },
+    {
+      "filename": "08_lightning_orange.png",
+      "name": "lightning_orange",
+      "source_cell": [
+        510,
+        275,
+        745,
+        520
+      ],
+      "export_size": [
+        256,
+        256
+      ]
+    },
+    {
+      "filename": "09_macos_badge.png",
+      "name": "macos_badge",
+      "source_cell": [
+        745,
+        275,
+        975,
+        520
+      ],
+      "export_size": [
+        256,
+        256
+      ]
+    },
+    {
+      "filename": "10_settings_orange.png",
+      "name": "settings_orange",
+      "source_cell": [
+        975,
+        275,
+        1225,
+        520
+      ],
+      "export_size": [
+        256,
+        256
+      ]
+    },
+    {
+      "filename": "11_lock_orange.png",
+      "name": "lock_orange",
+      "source_cell": [
+        35,
+        520,
+        270,
+        770
+      ],
+      "export_size": [
+        256,
+        256
+      ]
+    },
+    {
+      "filename": "12_check_outline_orange.png",
+      "name": "check_outline_orange",
+      "source_cell": [
+        270,
+        520,
+        510,
+        770
+      ],
+      "export_size": [
+        256,
+        256
+      ]
+    },
+    {
+      "filename": "13_checklist_orange.png",
+      "name": "checklist_orange",
+      "source_cell": [
+        510,
+        520,
+        745,
+        770
+      ],
+      "export_size": [
+        256,
+        256
+      ]
+    },
+    {
+      "filename": "14_home_orange.png",
+      "name": "home_orange",
+      "source_cell": [
+        745,
+        520,
+        975,
+        770
+      ],
+      "export_size": [
+        256,
+        256
+      ]
+    },
+    {
+      "filename": "15_search_gray.png",
+      "name": "search_gray",
+      "source_cell": [
+        975,
+        520,
+        1225,
+        770
+      ],
+      "export_size": [
+        256,
+        256
+      ]
+    },
+    {
+      "filename": "16_bar_chart_gray.png",
+      "name": "bar_chart_gray",
+      "source_cell": [
+        35,
+        770,
+        270,
+        995
+      ],
+      "export_size": [
+        256,
+        256
+      ]
+    },
+    {
+      "filename": "17_info_gray.png",
+      "name": "info_gray",
+      "source_cell": [
+        270,
+        770,
+        510,
+        995
+      ],
+      "export_size": [
+        256,
+        256
+      ]
+    },
+    {
+      "filename": "18_refresh_dark.png",
+      "name": "refresh_dark",
+      "source_cell": [
+        510,
+        770,
+        745,
+        995
+      ],
+      "export_size": [
+        256,
+        256
+      ]
+    },
+    {
+      "filename": "19_download_orange.png",
+      "name": "download_orange",
+      "source_cell": [
+        745,
+        770,
+        975,
+        995
+      ],
+      "export_size": [
+        256,
+        256
+      ]
+    },
+    {
+      "filename": "20_help_dark.png",
+      "name": "help_dark",
+      "source_cell": [
+        975,
+        770,
+        1225,
+        995
+      ],
+      "export_size": [
+        256,
+        256
+      ]
+    },
+    {
+      "filename": "21_status_pass_green.png",
+      "name": "status_pass_green",
+      "source_cell": [
+        35,
+        995,
+        270,
+        1235
+      ],
+      "export_size": [
+        256,
+        256
+      ]
+    },
+    {
+      "filename": "22_status_not_tested_gray.png",
+      "name": "status_not_tested_gray",
+      "source_cell": [
+        270,
+        995,
+        510,
+        1235
+      ],
+      "export_size": [
+        256,
+        256
+      ]
+    },
+    {
+      "filename": "23_status_error_red.png",
+      "name": "status_error_red",
+      "source_cell": [
+        510,
+        995,
+        745,
+        1235
+      ],
+      "export_size": [
+        256,
+        256
+      ]
+    },
+    {
+      "filename": "24_arrow_right_dark.png",
+      "name": "arrow_right_dark",
+      "source_cell": [
+        745,
+        995,
+        975,
+        1235
+      ],
+      "export_size": [
+        256,
+        256
+      ]
+    }
+  ]
+}

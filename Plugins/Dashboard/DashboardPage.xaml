@@ -44,8 +44,13 @@
                     <TextBlock Text="{DynamicResource Dash.Subtitle}"
                                Foreground="{DynamicResource TextSecondaryBrush}" FontSize="13"/>
                 </StackPanel>
-                <Button Grid.Column="1" Content="{DynamicResource Dash.Continue}" VerticalAlignment="Center"
-                        Click="StartButton_Click" Padding="14,9"/>
+                <Button Grid.Column="1" VerticalAlignment="Center"
+                        Click="StartButton_Click" Padding="14,9">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="pack://application:,,,/Assets/18_refresh_dark.png" Width="16" Height="16" Margin="0,0,8,0" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality"/>
+                        <TextBlock Text="{DynamicResource Dash.Continue}" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
             </Grid>
 
             <!-- Một cột duy nhất: thẻ máy + kết quả nhanh + nút hành động.
@@ -106,9 +111,38 @@
                                                 </Grid.ColumnDefinitions>
                                                 <Border Grid.Column="0" Background="{Binding IconBackground}"
                                                         Width="27" Height="27" CornerRadius="7">
-                                                    <TextBlock Text="{Binding Icon}" FontSize="16"
-                                                               Foreground="{Binding IconBrush}"
-                                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                    <Grid>
+                                                        <!-- Icon ảnh thật (bộ 24 icon Mac) khi hàng có IconPath;
+                                                             chưa có icon thì giữ ký tự như cũ. -->
+                                                        <Image Source="{Binding IconPath}" Width="20" Height="20" Stretch="Uniform"
+                                                               RenderOptions.BitmapScalingMode="HighQuality"
+                                                               HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                            <Image.Style>
+                                                                <Style TargetType="Image">
+                                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger Binding="{Binding IconPath}" Value="{x:Null}">
+                                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </Image.Style>
+                                                        </Image>
+                                                        <TextBlock Text="{Binding Icon}" FontSize="16"
+                                                                   Foreground="{Binding IconBrush}"
+                                                                   HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                            <TextBlock.Style>
+                                                                <Style TargetType="TextBlock">
+                                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger Binding="{Binding IconPath}" Value="{x:Null}">
+                                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </TextBlock.Style>
+                                                        </TextBlock>
+                                                    </Grid>
                                                 </Border>
                                                 <TextBlock Grid.Column="1" Text="{Binding Name}"
                                                            FontSize="13" FontWeight="SemiBold"
@@ -116,9 +150,38 @@
                                                 <TextBlock Grid.Column="2" Text="{Binding Status}"
                                                            FontSize="11" Foreground="{Binding StatusBrush}"
                                                            VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
-                                                <TextBlock Grid.Column="3" Text="{Binding Indicator}"
-                                                           FontSize="17" Foreground="{Binding StatusBrush}"
-                                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                <!-- Dấu trạng thái: ảnh icon thật khi có StatusIcon
+                                                     (đạt / lỗi / chưa thử); cảnh báo giữ dấu "!" chữ. -->
+                                                <Grid Grid.Column="3">
+                                                    <Image Source="{Binding StatusIcon}" Width="20" Height="20" Stretch="Uniform"
+                                                           RenderOptions.BitmapScalingMode="HighQuality"
+                                                           HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                        <Image.Style>
+                                                            <Style TargetType="Image">
+                                                                <Setter Property="Visibility" Value="Visible"/>
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding StatusIcon}" Value="{x:Null}">
+                                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </Image.Style>
+                                                    </Image>
+                                                    <TextBlock Text="{Binding Indicator}"
+                                                               FontSize="17" Foreground="{Binding StatusBrush}"
+                                                               HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                        <TextBlock.Style>
+                                                            <Style TargetType="TextBlock">
+                                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding StatusIcon}" Value="{x:Null}">
+                                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </TextBlock.Style>
+                                                    </TextBlock>
+                                                </Grid>
                                             </Grid>
                                         </Border>
                                     </DataTemplate>
@@ -136,13 +199,23 @@
                                 <ColumnDefinition Width="0.75*"/>
                             </Grid.ColumnDefinitions>
                             <Button x:Name="StartButton" Grid.Column="0" Style="{StaticResource ActionButton}"
-                                    Content="{DynamicResource Dash.RunDetail}" Background="{DynamicResource ButtonPrimaryBgBrush}"
+                                    Background="{DynamicResource ButtonPrimaryBgBrush}"
                                     BorderBrush="{DynamicResource AccentBrush}"
                                     Foreground="White" Click="StartButton_Click"
-                                    ToolTip="{DynamicResource Dash.RunDetailTip}"/>
+                                    ToolTip="{DynamicResource Dash.RunDetailTip}">
+                                <StackPanel Orientation="Horizontal">
+                                    <Image Source="pack://application:,,,/Assets/24_arrow_right_dark.png" Width="16" Height="16" Margin="0,0,8,0" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                    <TextBlock Text="{DynamicResource Dash.RunDetail}" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
                             <Button Grid.Column="2" Style="{StaticResource ActionButton}"
-                                    Content="{DynamicResource Dash.Export}" Click="SummaryButton_Click"
-                                    ToolTip="{DynamicResource Dash.ExportTip}"/>
+                                    Click="SummaryButton_Click"
+                                    ToolTip="{DynamicResource Dash.ExportTip}">
+                                <StackPanel Orientation="Horizontal">
+                                    <Image Source="pack://application:,,,/Assets/19_download_orange.png" Width="16" Height="16" Margin="0,0,8,0" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                    <TextBlock Text="{DynamicResource Dash.Export}" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
                         </Grid>
                     </Border>
                 </StackPanel>

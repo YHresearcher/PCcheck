@@ -64,7 +64,8 @@ public partial class DashboardPage : UserControl
 
     public sealed record TestLine(
         string Icon, string Name, string Status, Brush StatusBrush,
-        Brush RowBrush, Brush IconBrush, Brush IconBackground, string Indicator, string Detail);
+        Brush RowBrush, Brush IconBrush, Brush IconBackground, string Indicator, string Detail,
+        string? IconPath, string? StatusIcon);
 
     static Brush HexBrush(string hex)
     {
@@ -77,16 +78,20 @@ public partial class DashboardPage : UserControl
     // AV bao gồm 3 phép kiểm tra (loa / webcam / microphone) trong 1 plugin.
     // Trackpad chỉ được tính sau khi kỹ thuật viên đánh dấu xác minh ở Ngoại quan.
     // Name là key chuỗi ngôn ngữ (Lang.Get lúc vẽ), không phải chữ hiện thẳng.
-    static readonly (string Id, string NameKey, string Icon, string Row, string IconBg, string Fg)[] Rows =
+    // IconPath: ảnh icon thật trong bộ 24 icon Mac (Assets, file gốc user gửi,
+    // pack URI host); null = bộ icon không có hình cho hàng này → giữ ký tự Icon
+    // như cũ (Loa, Webcam, Bàn phím, Trackpad, Microphone chưa có icon trong bộ).
+    const string IconAssets = "pack://application:,,,/Assets/";
+    static readonly (string Id, string NameKey, string Icon, string? IconPath, string Row, string IconBg, string Fg)[] Rows =
     [
-        ("screen",   "Dash.Row.Screen",   "▣", "#E5F4FF", "#D2EAFF", "#1688ED"),
-        ("av",       "Dash.Row.Speakers", "♫", "#EEECFF", "#E1E0FF", "#536BFF"),
-        ("av",       "Dash.Row.Webcam",   "▣", "#F1E5FF", "#E5D2FF", "#8645E8"),
-        ("keyboard", "Dash.Row.Keyboard", "⌨", "#FFE7F2", "#FFD5EC", "#E83B9B"),
-        ("trackpad", "Dash.Row.Trackpad", "▭", "#DFF8F0", "#C8F1E4", "#08BA87"),
-        ("av",       "Dash.Row.Mic",      "♩", "#E6F8E7", "#D2F3D5", "#12AF37"),
-        ("ports",    "Dash.Row.Ports",    "ϟ", "#FFE9E3", "#FFDAD0", "#F26427"),
-        ("visual",   "Dash.Row.Visual",   "▦", "#FFF2D4", "#FFE8B0", "#E8A600")
+        ("screen",   "Dash.Row.Screen",   "▣", IconAssets + "01_laptop_orange.png",     "#E5F4FF", "#D2EAFF", "#1688ED"),
+        ("av",       "Dash.Row.Speakers", "♫", null,                                     "#EEECFF", "#E1E0FF", "#536BFF"),
+        ("av",       "Dash.Row.Webcam",   "▣", null,                                     "#F1E5FF", "#E5D2FF", "#8645E8"),
+        ("keyboard", "Dash.Row.Keyboard", "⌨", null,                                     "#FFE7F2", "#FFD5EC", "#E83B9B"),
+        ("trackpad", "Dash.Row.Trackpad", "▭", null,                                     "#DFF8F0", "#C8F1E4", "#08BA87"),
+        ("av",       "Dash.Row.Mic",      "♩", null,                                     "#E6F8E7", "#D2F3D5", "#12AF37"),
+        ("ports",    "Dash.Row.Ports",    "ϟ", IconAssets + "08_lightning_orange.png",  "#FFE9E3", "#FFDAD0", "#F26427"),
+        ("visual",   "Dash.Row.Visual",   "▦", IconAssets + "15_search_gray.png",       "#FFF2D4", "#FFE8B0", "#E8A600")
     ];
 
 
@@ -191,6 +196,16 @@ public partial class DashboardPage : UserControl
                 ModuleVerdictLevel.Chan => HexBrush("#D33D42"),
                 _ => HexBrush("#888080")
             };
+            // Cột trạng thái: ảnh icon thật trong bộ 24 icon Mac. Bộ không có
+            // icon cảnh báo nên CanhBao giữ dấu "!" chữ như cũ (không lấy nhầm
+            // icon lỗi đỏ — cảnh báo khác lỗi).
+            string? statusIcon = grade switch
+            {
+                ModuleVerdictLevel.Dat => IconAssets + "21_status_pass_green.png",
+                ModuleVerdictLevel.Chan => IconAssets + "23_status_error_red.png",
+                ModuleVerdictLevel.ChuaTest => IconAssets + "22_status_not_tested_gray.png",
+                _ => null
+            };
             string indicator = grade switch
             {
                 ModuleVerdictLevel.Dat => "●",
@@ -204,7 +219,8 @@ public partial class DashboardPage : UserControl
                 : Lang.Get("Dash.Detail.Default");
 
             tests.Add(new TestLine(spec.Icon, Lang.Get(spec.NameKey), label, color,
-                HexBrush(spec.Row), HexBrush(spec.Fg), HexBrush(spec.IconBg), indicator, detail));
+                HexBrush(spec.Row), HexBrush(spec.Fg), HexBrush(spec.IconBg), indicator, detail,
+                spec.IconPath, statusIcon));
         }
         QuickTestList.ItemsSource = tests;
         ProgressText.Text = string.Format(Lang.Get("Dash.Progress"),

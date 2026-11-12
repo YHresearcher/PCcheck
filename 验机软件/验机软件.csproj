@@ -167,6 +167,33 @@
     <Resource Include="Assets\mascot-worried.png" />
     <Resource Include="Assets\mascot-happy.png" />
     <Resource Include="Assets\laptop-preview-2026.png" />
+    <!-- Bộ 24 icon An Tâm Mac Check (user gửi 2026-11-12, file gốc 256x256 RGBA,
+         giữ nguyên tên file + nội dung, không sửa): nav sidebar, chip 8 hàng
+         kiểm tra nhanh, cột trạng thái, nút refresh/download/arrow. -->
+    <Resource Include="Assets\01_laptop_orange.png" />
+    <Resource Include="Assets\02_apple_gray.png" />
+    <Resource Include="Assets\03_cpu_chip_gray.png" />
+    <Resource Include="Assets\04_layers_gray.png" />
+    <Resource Include="Assets\05_ram_orange.png" />
+    <Resource Include="Assets\06_ssd_orange.png" />
+    <Resource Include="Assets\07_battery_green.png" />
+    <Resource Include="Assets\08_lightning_orange.png" />
+    <Resource Include="Assets\09_macos_badge.png" />
+    <Resource Include="Assets\10_settings_orange.png" />
+    <Resource Include="Assets\11_lock_orange.png" />
+    <Resource Include="Assets\12_check_outline_orange.png" />
+    <Resource Include="Assets\13_checklist_orange.png" />
+    <Resource Include="Assets\14_home_orange.png" />
+    <Resource Include="Assets\15_search_gray.png" />
+    <Resource Include="Assets\16_bar_chart_gray.png" />
+    <Resource Include="Assets\17_info_gray.png" />
+    <Resource Include="Assets\18_refresh_dark.png" />
+    <Resource Include="Assets\19_download_orange.png" />
+    <Resource Include="Assets\20_help_dark.png" />
+    <Resource Include="Assets\21_status_pass_green.png" />
+    <Resource Include="Assets\22_status_not_tested_gray.png" />
+    <Resource Include="Assets\23_status_error_red.png" />
+    <Resource Include="Assets\24_arrow_right_dark.png" />
     <!-- 烤机工具负载：Tools/prime95/（手工放入的 prime95.exe）与 Tools/furmark/（FurMark 工程构建后自动拷贝）
          与 Tools/pawnio/，整体随输出拷贝到 exe 同级 Tools/ 下（散热测试插件按 AppContext.BaseDirectory 定位） -->
     <None Update="Tools\**\*" CopyToOutputDirectory="PreserveNewest" />

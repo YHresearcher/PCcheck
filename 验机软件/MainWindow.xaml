@@ -87,18 +87,43 @@
                                 <TextBlock Text="PC check" FontSize="19" FontWeight="Bold"/>
                             </StackPanel>
                         </StackPanel>
-                        <Button x:Name="NavOverview" Content="{DynamicResource Nav.Overview}" Click="SidebarOverview_Click"
+                        <Button x:Name="NavOverview" Click="SidebarOverview_Click"
                                 Style="{StaticResource SidebarNavButton}"
                                 FontSize="15" FontWeight="SemiBold"
-                                Background="{DynamicResource NavSelectedBrush}"/>
-                        <Button x:Name="NavInspection" Content="{DynamicResource Nav.Inspection}" Click="SidebarInspection_Click"
-                                Style="{StaticResource SidebarNavButton}"/>
-                        <Button x:Name="NavHardware" Content="{DynamicResource Nav.Hardware}" Click="SidebarHardware_Click"
-                                Style="{StaticResource SidebarNavButton}"/>
-                        <Button x:Name="NavReport" Content="{DynamicResource Nav.Report}" Click="SidebarReport_Click"
-                                Style="{StaticResource SidebarNavButton}"/>
-                        <Button x:Name="NavTools" Content="{DynamicResource Nav.Tools}" Click="SidebarTools_Click"
-                                Style="{StaticResource SidebarNavButton}"/>
+                                Background="{DynamicResource NavSelectedBrush}">
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="pack://application:,,,/Assets/14_home_orange.png" Width="20" Height="20" Margin="0,0,10,0" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                <TextBlock Text="{DynamicResource Nav.Overview}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        <Button x:Name="NavInspection" Click="SidebarInspection_Click"
+                                Style="{StaticResource SidebarNavButton}">
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="pack://application:,,,/Assets/15_search_gray.png" Width="20" Height="20" Margin="0,0,10,0" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                <TextBlock Text="{DynamicResource Nav.Inspection}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        <Button x:Name="NavHardware" Click="SidebarHardware_Click"
+                                Style="{StaticResource SidebarNavButton}">
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="pack://application:,,,/Assets/03_cpu_chip_gray.png" Width="20" Height="20" Margin="0,0,10,0" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                <TextBlock Text="{DynamicResource Nav.Hardware}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        <Button x:Name="NavReport" Click="SidebarReport_Click"
+                                Style="{StaticResource SidebarNavButton}">
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="pack://application:,,,/Assets/16_bar_chart_gray.png" Width="20" Height="20" Margin="0,0,10,0" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                <TextBlock Text="{DynamicResource Nav.Report}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        <Button x:Name="NavTools" Click="SidebarTools_Click"
+                                Style="{StaticResource SidebarNavButton}">
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="pack://application:,,,/Assets/10_settings_orange.png" Width="20" Height="20" Margin="0,0,10,0" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                <TextBlock Text="{DynamicResource Nav.Tools}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
                     </StackPanel>
                     <StackPanel DockPanel.Dock="Bottom" Margin="18,8,18,17">
                         <!-- Mascot checklist chỉ xuất hiện ở header, theo bản thiết kế đã duyệt. -->

@@ -41,7 +41,7 @@
     <!-- Dashboard -->
     <system:String x:Key="Dash.Hello">Hello! 👋</system:String>
     <system:String x:Key="Dash.Subtitle">Let's give this PC a full check with An Tâm!</system:String>
-    <system:String x:Key="Dash.Continue">↻  Continue checking</system:String>
+    <system:String x:Key="Dash.Continue">Continue checking</system:String>
     <system:String x:Key="Dash.MachineTitle">PC / Laptop under check</system:String>
     <system:String x:Key="Dash.CpuInit">CPU: Not read</system:String>
     <system:String x:Key="Dash.RamInit">RAM: Not read</system:String>
@@ -59,9 +59,9 @@
     <system:String x:Key="Dash.ProgressDone">{0}/{1} items done</system:String>
     <system:String x:Key="Dash.ProgressNone">No checks available</system:String>
     <system:String x:Key="Dash.Progress">{0}/{1} items tried</system:String>
-    <system:String x:Key="Dash.RunDetail">▶  Detailed checks</system:String>
+    <system:String x:Key="Dash.RunDetail">Detailed checks</system:String>
     <system:String x:Key="Dash.RunDetailTip">Start or continue the wizard; tests never auto-run at startup.</system:String>
-    <system:String x:Key="Dash.Export">▤  Export report</system:String>
+    <system:String x:Key="Dash.Export">Export report</system:String>
     <system:String x:Key="Dash.ExportTip">Open the Summary page to save the actual check record.</system:String>
     <system:String x:Key="Dash.Row.Screen">Screen</system:String>
     <system:String x:Key="Dash.Row.Speakers">Speakers</system:String>

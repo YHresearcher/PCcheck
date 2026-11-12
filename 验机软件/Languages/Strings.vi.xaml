@@ -41,7 +41,7 @@
     <!-- Trang Tổng quan -->
     <system:String x:Key="Dash.Hello">Xin chào! 👋</system:String>
     <system:String x:Key="Dash.Subtitle">Cùng An Tâm kiểm tra tổng thể chiếc PC của bạn nhé!</system:String>
-    <system:String x:Key="Dash.Continue">↻  Kiểm tra tiếp</system:String>
+    <system:String x:Key="Dash.Continue">Kiểm tra tiếp</system:String>
     <system:String x:Key="Dash.MachineTitle">PC / Laptop đang kiểm tra</system:String>
     <system:String x:Key="Dash.CpuInit">CPU: Chưa đọc</system:String>
     <system:String x:Key="Dash.RamInit">RAM: Chưa đọc</system:String>
@@ -59,9 +59,9 @@
     <system:String x:Key="Dash.ProgressDone">{0}/{1} mục đã xong</system:String>
     <system:String x:Key="Dash.ProgressNone">Chưa có mục kiểm tra</system:String>
     <system:String x:Key="Dash.Progress">{0}/{1} mục đã thử</system:String>
-    <system:String x:Key="Dash.RunDetail">▶  Kiểm tra chi tiết</system:String>
+    <system:String x:Key="Dash.RunDetail">Kiểm tra chi tiết</system:String>
     <system:String x:Key="Dash.RunDetailTip">Bắt đầu hoặc tiếp tục wizard; không tự động chạy test khi khởi động.</system:String>
-    <system:String x:Key="Dash.Export">▤  Xuất báo cáo</system:String>
+    <system:String x:Key="Dash.Export">Xuất báo cáo</system:String>
     <system:String x:Key="Dash.ExportTip">Mở trang Tổng kết để lưu hồ sơ kiểm tra thực tế.</system:String>
     <system:String x:Key="Dash.Row.Screen">Màn hình</system:String>
     <system:String x:Key="Dash.Row.Speakers">Loa</system:String>
