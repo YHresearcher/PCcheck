@@ -26,8 +26,8 @@
                 <Button Content="{DynamicResource Shell.StopHeavy}" Click="OnStopAllHeavyTestsClick" Padding="10,4"
                         Margin="0,0,12,0"
                         ToolTip="{DynamicResource Shell.StopHeavyTip}"/>
-                <Button x:Name="LangButton" Content="EN" Click="OnLangButtonClick" Padding="10,4"
-                        Margin="0,0,12,0" FontWeight="SemiBold"
+                <Button x:Name="LangButton" Content="🇬🇧" Click="OnLangButtonClick" Padding="10,4"
+                        Margin="0,0,12,0" FontWeight="SemiBold" FontFamily="Segoe UI Emoji" FontSize="16"
                         ToolTip="{DynamicResource Shell.LangTip}"/>
                 <TextBlock Text="☀" FontSize="13" Margin="0,0,5,0" VerticalAlignment="Center"/>
                 <ToggleButton x:Name="ThemeSwitch" Style="{StaticResource ThemeSwitch}"

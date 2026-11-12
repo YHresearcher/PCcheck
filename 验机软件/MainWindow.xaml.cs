@@ -542,8 +542,12 @@ public partial class MainWindow : Window
     void OnLangButtonClick(object sender, RoutedEventArgs e) =>
         LanguageManager.Set(LanguageManager.Current == "vi" ? "en" : "vi");
 
+    // Nút đổi ngôn ngữ hiện CỜ của ngôn ngữ sẽ chuyển sang (giữ đúng logic cũ
+    // vốn hiện chữ EN/VI): đang tiếng Việt thì hiện cờ Anh 🇬🇧, đang tiếng Anh
+    // thì hiện cờ Việt 🇻🇳. Cờ vẽ bằng emoji (Segoe UI Emoji, font đã gắn ở
+    // nút trong XAML) nên không cần thêm file ảnh.
     void SyncLangButton() =>
-        LangButton.Content = LanguageManager.Current == "vi" ? "EN" : "VI";
+        LangButton.Content = LanguageManager.Current == "vi" ? "🇬🇧" : "🇻🇳";
 
     void SyncThemeSwitch()
     {
