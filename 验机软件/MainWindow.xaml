@@ -79,7 +79,7 @@
                              BorderThickness="0" Background="Transparent" Visibility="Collapsed"/>
                     <StackPanel DockPanel.Dock="Top" Margin="14,20,14,14">
                         <StackPanel Orientation="Horizontal" Margin="0,0,0,14">
-                            <Image Source="pack://application:,,,/Assets/mascot-checklist-2026.png"
+                            <Image Source="pack://application:,,,/Assets/mascot-sidebar-2026.png"
                                    Width="124" Height="100" Margin="0,0,8,0"
                                    Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality"/>
                             <StackPanel VerticalAlignment="Center">

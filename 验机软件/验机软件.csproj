@@ -162,6 +162,7 @@
     <Resource Include="Assets\logo-antam.png" />
     <Resource Include="Assets\antam-mascot.png" />
     <Resource Include="Assets\mascot-checklist-2026.png" />
+    <Resource Include="Assets\mascot-sidebar-2026.png" />
     <Resource Include="Assets\mascot-thinking-2026.png" />
     <Resource Include="Assets\mascot-new.png" />
     <Resource Include="Assets\mascot-worried.png" />
