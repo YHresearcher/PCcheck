@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using YanJi.PluginSdk;
 using YanJi.Services;
@@ -579,16 +580,31 @@ public partial class MainWindow : Window
     void OnLangButtonClick(object sender, RoutedEventArgs e) =>
         LanguageManager.Set(LanguageManager.Current == "vi" ? "en" : "vi");
 
-    // Nút đổi ngôn ngữ kiểu pill: hiện cờ tròn + mã của ngôn ngữ sẽ chuyển
-    // sang (giữ đúng logic cũ vốn hiện chữ EN/VI): đang tiếng Việt thì pill
-    // "EN" cờ Anh bên trái, đang tiếng Anh thì pill "VI" cờ Việt bên phải.
-    // Cờ vẽ bằng vector trong XAML (không dùng emoji: WPF không vẽ cờ emoji
-    // thành hình mà chỉ hiện 2 chữ GB/VN — chính lỗi user chụp màn hình).
+    // Toggle đổi ngôn ngữ kiểu 3D chìm (theo mẫu SwiftUI user gửi): nút tròn
+    // mang cờ của ngôn ngữ HIỆN TẠI, trượt trái (VI) / phải (EN); nhãn chỉ hiện
+    // phía không có nút tròn (như mask trong code mẫu). Cờ vẽ bằng vector vì
+    // WPF không vẽ cờ emoji thành hình (chỉ hiện chữ GB/VN).
+    bool _langKnobPlaced;
     void SyncLangButton()
     {
-        bool toEnglish = LanguageManager.Current == "vi";
-        LangStateEn.Visibility = toEnglish ? Visibility.Visible : Visibility.Collapsed;
-        LangStateVi.Visibility = toEnglish ? Visibility.Collapsed : Visibility.Visible;
+        bool isVi = LanguageManager.Current == "vi";
+        double targetLeft = isVi ? 8 : 160;
+        LangKnobFlagUk.Visibility = isVi ? Visibility.Collapsed : Visibility.Visible;
+        LangKnobFlagVn.Visibility = isVi ? Visibility.Visible : Visibility.Collapsed;
+        LangLabelVi.Visibility = isVi ? Visibility.Collapsed : Visibility.Visible;
+        LangLabelEn.Visibility = isVi ? Visibility.Visible : Visibility.Collapsed;
+        if (!_langKnobPlaced)
+        {
+            Canvas.SetLeft(LangKnob, targetLeft);
+            _langKnobPlaced = true;
+            return;
+        }
+        var anim = new DoubleAnimation(Canvas.GetLeft(LangKnob), targetLeft,
+            new Duration(TimeSpan.FromMilliseconds(300)))
+        {
+            EasingFunction = new BackEase { Amplitude = 0.2, EasingMode = EasingMode.EaseOut },
+        };
+        LangKnob.BeginAnimation(Canvas.LeftProperty, anim);
     }
 
     void SyncThemeSwitch()

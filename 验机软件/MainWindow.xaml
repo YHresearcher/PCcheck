@@ -26,74 +26,7 @@
                 <Button Content="{DynamicResource Shell.StopHeavy}" Click="OnStopAllHeavyTestsClick" Padding="10,4"
                         Margin="0,0,12,0"
                         ToolTip="{DynamicResource Shell.StopHeavyTip}"/>
-                <!-- Nút đổi ngôn ngữ kiểu pill (như mẫu toggle cờ): 1 nút, 2 trạng
-                     thái — hiện cờ tròn + mã của ngôn ngữ sẽ chuyển sang (giữ logic
-                     cũ): đang VI thì pill "EN" cờ Anh bên trái, đang EN thì pill
-                     "VI" cờ Việt bên phải. Cờ vẽ bằng vector (không dùng emoji vì
-                     WPF chỉ hiện chữ GB/VN thay vì hình cờ). -->
-                <Button x:Name="LangButton" Click="OnLangButtonClick" Padding="10,4"
-                        Margin="0,0,12,0" Style="{StaticResource RaisedButton18}"
-                        ToolTip="{DynamicResource Shell.LangTip}">
-                    <Grid>
-                        <StackPanel x:Name="LangStateEn" Orientation="Horizontal" VerticalAlignment="Center">
-                            <Grid Width="22" Height="22">
-                                <Grid.Clip>
-                                    <EllipseGeometry Center="11,11" RadiusX="11" RadiusY="11"/>
-                                </Grid.Clip>
-                                <Viewbox Stretch="UniformToFill">
-                                    <Canvas Width="60" Height="40">
-                                        <Canvas.Clip>
-                                            <RectangleGeometry Rect="0,0,60,40"/>
-                                        </Canvas.Clip>
-                                        <Rectangle Width="60" Height="40" Fill="#012169"/>
-                                        <Rectangle Canvas.Left="-8" Canvas.Top="16" Width="76" Height="8" Fill="White" RenderTransformOrigin="0.5,0.5">
-                                            <Rectangle.RenderTransform>
-                                                <RotateTransform Angle="33.69"/>
-                                            </Rectangle.RenderTransform>
-                                        </Rectangle>
-                                        <Rectangle Canvas.Left="-8" Canvas.Top="16" Width="76" Height="8" Fill="White" RenderTransformOrigin="0.5,0.5">
-                                            <Rectangle.RenderTransform>
-                                                <RotateTransform Angle="-33.69"/>
-                                            </Rectangle.RenderTransform>
-                                        </Rectangle>
-                                        <Rectangle Canvas.Left="-8" Canvas.Top="18.5" Width="76" Height="3" Fill="#C8102E" RenderTransformOrigin="0.5,0.5">
-                                            <Rectangle.RenderTransform>
-                                                <RotateTransform Angle="33.69"/>
-                                            </Rectangle.RenderTransform>
-                                        </Rectangle>
-                                        <Rectangle Canvas.Left="-8" Canvas.Top="18.5" Width="76" Height="3" Fill="#C8102E" RenderTransformOrigin="0.5,0.5">
-                                            <Rectangle.RenderTransform>
-                                                <RotateTransform Angle="-33.69"/>
-                                            </Rectangle.RenderTransform>
-                                        </Rectangle>
-                                        <Rectangle Canvas.Left="23.33" Canvas.Top="0" Width="13.33" Height="40" Fill="White"/>
-                                        <Rectangle Canvas.Left="0" Canvas.Top="13.33" Width="60" Height="13.33" Fill="White"/>
-                                        <Rectangle Canvas.Left="26" Canvas.Top="0" Width="8" Height="40" Fill="#C8102E"/>
-                                        <Rectangle Canvas.Left="0" Canvas.Top="16" Width="60" Height="8" Fill="#C8102E"/>
-                                    </Canvas>
-                                </Viewbox>
-                            </Grid>
-                            <TextBlock Text="EN" FontSize="14" FontWeight="SemiBold" Margin="7,0,0,0"
-                                       Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center"/>
-                        </StackPanel>
-                        <StackPanel x:Name="LangStateVi" Orientation="Horizontal" VerticalAlignment="Center" Visibility="Collapsed">
-                            <TextBlock Text="VI" FontSize="14" FontWeight="SemiBold" Margin="0,0,7,0"
-                                       Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center"/>
-                            <Grid Width="22" Height="22">
-                                <Grid.Clip>
-                                    <EllipseGeometry Center="11,11" RadiusX="11" RadiusY="11"/>
-                                </Grid.Clip>
-                                <Viewbox Stretch="UniformToFill">
-                                    <Canvas Width="60" Height="40">
-                                        <Rectangle Width="60" Height="40" Fill="#DA251D"/>
-                                        <Polygon Points="30,6 33.23,15.55 43.31,15.67 35.23,21.7 38.23,31.33 30,25.5 21.77,31.33 24.77,21.7 16.69,15.67 26.77,15.55" Fill="#FFFF00"/>
-                                    </Canvas>
-                                </Viewbox>
-                            </Grid>
-                        </StackPanel>
-                    </Grid>
-                </Button>
-                <TextBlock Text="☀" FontSize="13" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="☀" FontSize="13" Margin="0,0,5,0" VerticalAlignment="Center"/>
                 <ToggleButton x:Name="ThemeSwitch" Style="{StaticResource ThemeSwitch}"
                               ToolTip="{DynamicResource Shell.ThemeTip}"
                               Checked="OnThemeSwitch" Unchecked="OnThemeSwitch"/>
@@ -200,6 +133,105 @@
                         </Button>
                     </StackPanel>
                     <StackPanel DockPanel.Dock="Bottom" Margin="18,8,18,17">
+                        <!-- Toggle đổi ngôn ngữ kiểu 3D chìm (neumorphic, theo mẫu
+                             SwiftUI user gửi): track lõm + nút tròn trượt mang cờ
+                             ngôn ngữ hiện tại; bấm để đổi. Nằm cuối sidebar, trên
+                             mascot, canh giữa (rộng 220 như mẫu). -->
+                        <Button x:Name="LangButton" Click="OnLangButtonClick"
+                                ToolTip="{DynamicResource Shell.LangTip}"
+                                Background="Transparent" BorderThickness="0" Padding="0"
+                                Cursor="Hand" HorizontalAlignment="Center" Margin="0,0,0,12">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <ContentPresenter/>
+                                </ControlTemplate>
+                            </Button.Template>
+                            <Grid Width="220" Height="68">
+                                <!-- Vệt sáng trắng lệch lên-trái (bóng nổi kiểu neumorphic) -->
+                                <Border CornerRadius="34" Background="White" Margin="-3,-3,3,3" Opacity="0.9"/>
+                                <!-- Vỏ capsule nổi -->
+                                <Border CornerRadius="34" Background="#EDEDED">
+                                    <Border.Effect>
+                                        <DropShadowEffect Color="Black" Opacity="0.15" BlurRadius="5" ShadowDepth="4" Direction="45"/>
+                                    </Border.Effect>
+                                </Border>
+                                <!-- Track lõm bên trong -->
+                                <Border CornerRadius="29" Background="#DBDBDB" Margin="5"/>
+                                <!-- Nhãn 2 nửa: chỉ hiện nhãn phía không có nút tròn
+                                     (nút che phía ngôn ngữ hiện tại, như mask trong code mẫu) -->
+                                <Grid Margin="5">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock x:Name="LangLabelVi" Grid.Column="0" Text="VI" FontSize="22" FontWeight="Medium"
+                                               Foreground="Gray" Opacity="0.8"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    <TextBlock x:Name="LangLabelEn" Grid.Column="1" Text="EN" FontSize="22" FontWeight="Medium"
+                                               Foreground="Gray" Opacity="0.8"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Grid>
+                                <!-- Nút tròn trượt -->
+                                <Canvas>
+                                    <Grid x:Name="LangKnob" Width="52" Height="52" Canvas.Left="8" Canvas.Top="8">
+                                        <Ellipse>
+                                            <Ellipse.Fill>
+                                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                    <GradientStop Color="White" Offset="0"/>
+                                                    <GradientStop Color="#E0E0E0" Offset="1"/>
+                                                </LinearGradientBrush>
+                                            </Ellipse.Fill>
+                                            <Ellipse.Effect>
+                                                <DropShadowEffect Color="Black" Opacity="0.22" BlurRadius="4" ShadowDepth="3" Direction="45"/>
+                                            </Ellipse.Effect>
+                                        </Ellipse>
+                                        <Grid Width="44" Height="44" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                            <Grid.Clip>
+                                                <EllipseGeometry Center="22,22" RadiusX="22" RadiusY="22"/>
+                                            </Grid.Clip>
+                                            <Viewbox x:Name="LangKnobFlagUk" Stretch="UniformToFill">
+                                                <Canvas Width="60" Height="40">
+                                                    <Canvas.Clip>
+                                                        <RectangleGeometry Rect="0,0,60,40"/>
+                                                    </Canvas.Clip>
+                                                    <Rectangle Width="60" Height="40" Fill="#012169"/>
+                                                    <Rectangle Canvas.Left="-8" Canvas.Top="16" Width="76" Height="8" Fill="White" RenderTransformOrigin="0.5,0.5">
+                                                        <Rectangle.RenderTransform>
+                                                            <RotateTransform Angle="33.69"/>
+                                                        </Rectangle.RenderTransform>
+                                                    </Rectangle>
+                                                    <Rectangle Canvas.Left="-8" Canvas.Top="16" Width="76" Height="8" Fill="White" RenderTransformOrigin="0.5,0.5">
+                                                        <Rectangle.RenderTransform>
+                                                            <RotateTransform Angle="-33.69"/>
+                                                        </Rectangle.RenderTransform>
+                                                    </Rectangle>
+                                                    <Rectangle Canvas.Left="-8" Canvas.Top="18.5" Width="76" Height="3" Fill="#C8102E" RenderTransformOrigin="0.5,0.5">
+                                                        <Rectangle.RenderTransform>
+                                                            <RotateTransform Angle="33.69"/>
+                                                        </Rectangle.RenderTransform>
+                                                    </Rectangle>
+                                                    <Rectangle Canvas.Left="-8" Canvas.Top="18.5" Width="76" Height="3" Fill="#C8102E" RenderTransformOrigin="0.5,0.5">
+                                                        <Rectangle.RenderTransform>
+                                                            <RotateTransform Angle="-33.69"/>
+                                                        </Rectangle.RenderTransform>
+                                                    </Rectangle>
+                                                    <Rectangle Canvas.Left="23.33" Canvas.Top="0" Width="13.33" Height="40" Fill="White"/>
+                                                    <Rectangle Canvas.Left="0" Canvas.Top="13.33" Width="60" Height="13.33" Fill="White"/>
+                                                    <Rectangle Canvas.Left="26" Canvas.Top="0" Width="8" Height="40" Fill="#C8102E"/>
+                                                    <Rectangle Canvas.Left="0" Canvas.Top="16" Width="60" Height="8" Fill="#C8102E"/>
+                                                </Canvas>
+                                            </Viewbox>
+                                            <Viewbox x:Name="LangKnobFlagVn" Stretch="UniformToFill" Visibility="Collapsed">
+                                                <Canvas Width="60" Height="40">
+                                                    <Rectangle Width="60" Height="40" Fill="#DA251D"/>
+                                                    <Polygon Points="30,6 33.23,15.55 43.31,15.67 35.23,21.7 38.23,31.33 30,25.5 21.77,31.33 24.77,21.7 16.69,15.67 26.77,15.55" Fill="#FFFF00"/>
+                                                </Canvas>
+                                            </Viewbox>
+                                        </Grid>
+                                    </Grid>
+                                </Canvas>
+                            </Grid>
+                        </Button>
                         <!-- Mascot ở cuối sidebar, to (~200px), lấp khoảng trống dưới
                              nút Giới thiệu; màn hình thấp thì ẩn (AdjustSidebarForHeight). -->
                         <Image x:Name="SidebarMascot" Source="pack://application:,,,/Assets/mascot-sidebar-2026.png"
