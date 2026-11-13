@@ -5,6 +5,7 @@ using System.Windows.Controls;
 using Microsoft.Win32;
 using System.Runtime.InteropServices;
 using System.Windows.Media;
+using System.Windows.Media.Effects;
 using System.Collections.Generic;
 using YanJi.PluginSdk;
 using YanJi.PluginSdk.Services;
