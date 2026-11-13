@@ -30,12 +30,7 @@
     </UserControl.Resources>
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
                   Background="{DynamicResource WindowBgBrush}">
-        <!-- Thu nhỏ toàn bộ Dashboard còn 2/3 (bớt 1/3) bằng phép co layout:
-             chữ, thẻ, ảnh nhỏ đều, tỉ lệ các cột giữ nguyên, nội dung canh giữa. -->
-        <Grid Margin="20,18,20,12" HorizontalAlignment="Center">
-            <Grid.LayoutTransform>
-                <ScaleTransform ScaleX="0.67" ScaleY="0.67"/>
-            </Grid.LayoutTransform>
+        <Grid Margin="20,18,20,12">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -54,7 +49,8 @@
                 </Button>
             </Grid>
 
-            <!-- 3 cột: sidebar (host) | phần cứng 2/3 | kết quả nhanh 1/3.
+            <!-- 3 cột: sidebar (host) | phần cứng 7/9 | kết quả nhanh 2/9
+                 (cột kết quả nhanh thu hẹp bớt 1/3 so với tỉ lệ 2:1 trước).
                  Thẻ Sức khỏe & Rủi ro đã dời sang trang Báo cáo (2026-11-05). -->
             <Grid x:Name="DashboardBody" Grid.Row="1">
                 <Grid.RowDefinitions>
@@ -64,9 +60,9 @@
 
                 <Grid Grid.Row="0">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="7*"/>
                         <ColumnDefinition Width="16"/>
-                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="2*"/>
                     </Grid.ColumnDefinitions>
 
                     <!-- Cột phần cứng: thẻ máy (tóm tắt) + thẻ sức khỏe ổ. -->

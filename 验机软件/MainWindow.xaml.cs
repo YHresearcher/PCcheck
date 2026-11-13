@@ -587,14 +587,19 @@ public partial class MainWindow : Window
     void OnLangButtonClick(object sender, RoutedEventArgs e) =>
         LanguageManager.Set(LanguageManager.Current == "vi" ? "en" : "vi");
 
-    // Nút chuyển ngữ (style RaisedButton18 như nút Giới thiệu): chỉ hiện cờ
-    // tròn của ngôn ngữ HIỆN TẠI, bấm để đổi. Cờ vẽ bằng vector vì WPF không
-    // vẽ cờ emoji thành hình (chỉ hiện chữ GB/VN).
+    // Nút chuyển ngữ (viên 2 nửa theo ảnh user gửi): nửa ngôn ngữ HIỆN TẠI
+    // tô AccentBrush + chữ trắng, nửa còn lại để trống + chữ tối; bấm để đổi.
+    // Trả lại bằng SetResourceReference để không đứt khi đổi theme.
     void SyncLangButton()
     {
         bool isVi = LanguageManager.Current == "vi";
-        LangFlagUk.Visibility = isVi ? Visibility.Collapsed : Visibility.Visible;
-        LangFlagVn.Visibility = isVi ? Visibility.Visible : Visibility.Collapsed;
+        (Border selHalf, TextBlock selText, Border otherHalf, TextBlock otherText) = isVi
+            ? (LangHalfVi, LangTextVi, LangHalfEn, LangTextEn)
+            : (LangHalfEn, LangTextEn, LangHalfVi, LangTextVi);
+        selHalf.SetResourceReference(Border.BackgroundProperty, "AccentBrush");
+        selText.Foreground = Brushes.White;
+        otherHalf.Background = Brushes.Transparent;
+        otherText.SetResourceReference(TextBlock.ForegroundProperty, "TextBrush");
     }
 
     void SyncThemeSwitch()

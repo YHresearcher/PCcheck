@@ -129,59 +129,32 @@
                         </Button>
                     </StackPanel>
                     <StackPanel DockPanel.Dock="Bottom" Margin="18,8,18,17">
-                                                                        <!-- Nút chuyển ngữ: nút nhỏ nổi 3D bo 18 kiểu Mac, cùng
-                             style RaisedButton18 với nút Giới thiệu phía trên.
-                             Chỉ hiện cờ tròn của ngôn ngữ hiện tại (bấm để đổi),
-                             bằng 1/2 diện tích bản toggle trượt 98x30 trước. -->
+                                                                                                <!-- Nút chuyển ngữ: viên con nhộng 2 nửa đơn giản (theo ảnh
+                             user gửi, tỉ lệ ~2.6:1): nửa ngôn ngữ hiện tại tô cam
+                             + chữ trắng, nửa còn lại để trống + chữ tối; bấm để đổi. -->
                         <Button x:Name="LangButton" Click="OnLangButtonClick"
                                 ToolTip="{DynamicResource Shell.LangTip}"
-                                Style="{StaticResource RaisedButton18}"
-                                Width="49" Height="30" Padding="0" Margin="0,0,0,6"
-                                HorizontalAlignment="Center" HorizontalContentAlignment="Center"
-                                VerticalContentAlignment="Center" Cursor="Hand">
-                            <Grid Width="20" Height="20">
-                                <Grid.Clip>
-                                    <EllipseGeometry Center="10,10" RadiusX="10" RadiusY="10"/>
-                                </Grid.Clip>
-                                <Viewbox x:Name="LangFlagUk" Stretch="UniformToFill">
-                                    <Canvas Width="60" Height="40">
-                                        <Canvas.Clip>
-                                            <RectangleGeometry Rect="0,0,60,40"/>
-                                        </Canvas.Clip>
-                                        <Rectangle Width="60" Height="40" Fill="#012169"/>
-                                        <Rectangle Canvas.Left="-8" Canvas.Top="16" Width="76" Height="8" Fill="White" RenderTransformOrigin="0.5,0.5">
-                                            <Rectangle.RenderTransform>
-                                                <RotateTransform Angle="33.69"/>
-                                            </Rectangle.RenderTransform>
-                                        </Rectangle>
-                                        <Rectangle Canvas.Left="-8" Canvas.Top="16" Width="76" Height="8" Fill="White" RenderTransformOrigin="0.5,0.5">
-                                            <Rectangle.RenderTransform>
-                                                <RotateTransform Angle="-33.69"/>
-                                            </Rectangle.RenderTransform>
-                                        </Rectangle>
-                                        <Rectangle Canvas.Left="-8" Canvas.Top="18.5" Width="76" Height="3" Fill="#C8102E" RenderTransformOrigin="0.5,0.5">
-                                            <Rectangle.RenderTransform>
-                                                <RotateTransform Angle="33.69"/>
-                                            </Rectangle.RenderTransform>
-                                        </Rectangle>
-                                        <Rectangle Canvas.Left="-8" Canvas.Top="18.5" Width="76" Height="3" Fill="#C8102E" RenderTransformOrigin="0.5,0.5">
-                                            <Rectangle.RenderTransform>
-                                                <RotateTransform Angle="-33.69"/>
-                                            </Rectangle.RenderTransform>
-                                        </Rectangle>
-                                        <Rectangle Canvas.Left="23.33" Canvas.Top="0" Width="13.33" Height="40" Fill="White"/>
-                                        <Rectangle Canvas.Left="0" Canvas.Top="13.33" Width="60" Height="13.33" Fill="White"/>
-                                        <Rectangle Canvas.Left="26" Canvas.Top="0" Width="8" Height="40" Fill="#C8102E"/>
-                                        <Rectangle Canvas.Left="0" Canvas.Top="16" Width="60" Height="8" Fill="#C8102E"/>
-                                    </Canvas>
-                                </Viewbox>
-                                <Viewbox x:Name="LangFlagVn" Stretch="UniformToFill" Visibility="Collapsed">
-                                    <Canvas Width="60" Height="40">
-                                        <Rectangle Width="60" Height="40" Fill="#DA251D"/>
-                                        <Polygon Points="30,6 33.23,15.55 43.31,15.67 35.23,21.7 38.23,31.33 30,25.5 21.77,31.33 24.77,21.7 16.69,15.67 26.77,15.55" Fill="#FFFF00"/>
-                                    </Canvas>
-                                </Viewbox>
-                            </Grid>
+                                Width="88" Height="34" Padding="0" Margin="0,0,0,6"
+                                HorizontalAlignment="Center" Cursor="Hand"
+                                Background="Transparent" BorderThickness="0">
+                            <Border CornerRadius="17" BorderBrush="{DynamicResource BorderBrush}"
+                                    BorderThickness="1" Background="{DynamicResource SurfaceBgBrush}"
+                                    Width="88" Height="34">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Border x:Name="LangHalfVi" Grid.Column="0" CornerRadius="16,0,0,16">
+                                        <TextBlock x:Name="LangTextVi" Text="VI" FontSize="13" FontWeight="SemiBold"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <Border x:Name="LangHalfEn" Grid.Column="1" CornerRadius="0,16,16,0">
+                                        <TextBlock x:Name="LangTextEn" Text="EN" FontSize="13" FontWeight="SemiBold"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                </Grid>
+                            </Border>
                         </Button>
                         <!-- Mascot ở cuối sidebar, to (~200px), lấp khoảng trống dưới
                              nút Giới thiệu; màn hình thấp thì ẩn (AdjustSidebarForHeight). -->
