@@ -70,6 +70,7 @@
                                 <TextBlock x:Name="StorageText" Text="{DynamicResource Dash.StorageInit}" FontSize="12" TextWrapping="Wrap" Margin="0,0,0,5"/>
                                 <TextBlock x:Name="OsText" FontSize="12" Margin="0,0,0,5" Visibility="Collapsed"/>
                                 <TextBlock x:Name="BatteryText" FontSize="12" Margin="0,0,0,5" Visibility="Collapsed" TextWrapping="Wrap"/>
+                                <TextBlock x:Name="TempText" Text="{DynamicResource Dash.TempReading}" FontSize="12" Margin="0,0,0,5" TextWrapping="Wrap"/>
                                 <Button Content="{DynamicResource Dash.ViewConfig}" Click="HardwareButton_Click"
                                         HorizontalAlignment="Left" Padding="8,5" Margin="0,10,0,0"/>
                             </StackPanel>

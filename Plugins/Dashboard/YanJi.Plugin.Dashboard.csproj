@@ -12,6 +12,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\PluginSdk\YanJi.PluginSdk.csproj" Private="false" />
+    <!-- Nhiệt độ live ở Dashboard (LHM, MPL-2.0): SetPlatform=x64 như ConfigCheck/StressTest -->
+    <ProjectReference Include="..\..\集成开源项目代码\LibreHardwareMonitor-master\LibreHardwareMonitorLib\LibreHardwareMonitorLib.csproj"
+                      SetPlatform="Platform=x64" />
   </ItemGroup>
 
   <ItemGroup>

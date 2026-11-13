@@ -98,6 +98,9 @@
     <system:String x:Key="Dash.BatteryBandHealthy">còn khỏe</system:String>
     <system:String x:Key="Dash.BatteryBandWorn">chai vừa</system:String>
     <system:String x:Key="Dash.BatteryBandBad">chai nặng</system:String>
+    <system:String x:Key="Dash.TempReading">Nhiệt độ: đang đọc…</system:String>
+    <system:String x:Key="Dash.TempLine">Nhiệt độ: {0}</system:String>
+    <system:String x:Key="Dash.TempNone">Nhiệt độ: chưa đọc được</system:String>
     <!-- Trang Tổng kết / Báo cáo -->
     <system:String x:Key="Sum.Title">Kết luận mua máy — mua được hay không</system:String>
     <system:String x:Key="Sum.Subtitle">Dành cho người mua: chỉ cần đọc 2 dòng dưới là đủ</system:String>

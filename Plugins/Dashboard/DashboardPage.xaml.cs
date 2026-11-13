@@ -34,6 +34,11 @@ public partial class DashboardPage : UserControl
         _host.BatteryWearChanged += Refresh;
         Lang.Changed += Refresh;
         Loaded += (_, _) => Refresh();
+        // Nhiệt độ live ở thẻ máy: mở đọc khi vào Dashboard, dừng khi rời
+        // trang (mỗi trang tự mở Computer LHM của mình, giống trang Tản nhiệt).
+        TempMonitor.Sampled += OnTempSampled;
+        Loaded += (_, _) => TempMonitor.Start();
+        Unloaded += (_, _) => TempMonitor.Stop();
     }
 
     void StartButton_Click(object sender, RoutedEventArgs e)
@@ -269,6 +274,42 @@ public partial class DashboardPage : UserControl
 
         RefreshDriveCard();
         RefreshBatteryCard();
+        RenderTemp();
+    }
+
+    double? _tempCpu, _tempGpu; // nhiệt độ mới nhất (null = đường đó không đọc được)
+    bool _tempSampled;          // đã có lần đọc đầu tiên hay chưa
+
+    void OnTempSampled(double? cpu, double? gpu)
+    {
+        // Sự kiện từ thread nền — đưa về UI thread (giống StressTestPage).
+        if (!Dispatcher.CheckAccess())
+        {
+            Dispatcher.Invoke(() => OnTempSampled(cpu, gpu));
+            return;
+        }
+        _tempCpu = cpu;
+        _tempGpu = gpu;
+        _tempSampled = true;
+        RenderTemp();
+    }
+
+    /// <summary>Dòng nhiệt độ ở thẻ máy: "Nhiệt độ: CPU 45°C • GPU 40°C"
+    /// (đường nào không có thì bỏ, cả 2 đều không có thì "chưa đọc được").
+    /// Chỉ hiển thị, không đưa vào kết luận hay tín hiệu nào.</summary>
+    void RenderTemp()
+    {
+        if (!_tempSampled)
+        {
+            TempText.Text = Lang.Get("Dash.TempReading");
+            return;
+        }
+        var parts = new List<string>();
+        if (_tempCpu != null) parts.Add($"CPU {_tempCpu.Value:0.#}°C");
+        if (_tempGpu != null) parts.Add($"GPU {_tempGpu.Value:0.#}°C");
+        TempText.Text = parts.Count == 0
+            ? Lang.Get("Dash.TempNone")
+            : string.Format(Lang.Get("Dash.TempLine"), string.Join(" • ", parts));
     }
 
     /// <summary>Thẻ sức khỏe ổ: 1 hàng/ổ — tên + dung lượng, gauge tự vẽ theo

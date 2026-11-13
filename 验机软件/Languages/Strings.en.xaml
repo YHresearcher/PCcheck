@@ -98,6 +98,9 @@
     <system:String x:Key="Dash.BatteryBandHealthy">still healthy</system:String>
     <system:String x:Key="Dash.BatteryBandWorn">moderately worn</system:String>
     <system:String x:Key="Dash.BatteryBandBad">heavily worn</system:String>
+    <system:String x:Key="Dash.TempReading">Temperature: reading…</system:String>
+    <system:String x:Key="Dash.TempLine">Temperature: {0}</system:String>
+    <system:String x:Key="Dash.TempNone">Temperature: unavailable</system:String>
     <!-- Summary / Report page -->
     <system:String x:Key="Sum.Title">Buy verdict — worth buying or not</system:String>
     <system:String x:Key="Sum.Subtitle">For the buyer: the 2 lines below are all you need</system:String>
