@@ -52,7 +52,7 @@
         <!-- ═══ 主区：左导航 + 内容 ═══ -->
         <Grid Grid.Row="3">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="440"/>
+                <ColumnDefinition Width="293"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
@@ -156,10 +156,10 @@
                                 </Grid>
                             </Border>
                         </Button>
-                        <!-- Mascot ở cuối sidebar, to (~200px), lấp khoảng trống dưới
-                             nút Giới thiệu; màn hình thấp thì ẩn (AdjustSidebarForHeight). -->
+                        <!-- Mascot ở cuối sidebar, to (~250px, vừa sidebar 293px);
+                             màn hình thấp thì thu nhỏ thay vì ẩn (AdjustSidebarForHeight). -->
                         <Image x:Name="SidebarMascot" Source="pack://application:,,,/Assets/mascot-sidebar-2026.png"
-                               Width="400" Height="400" Stretch="Uniform" Margin="0,0,0,10"
+                               Width="250" Height="250" Stretch="Uniform" Margin="0,0,0,10"
                                HorizontalAlignment="Center"
                                RenderOptions.BitmapScalingMode="HighQuality"/>
                         <TextBlock x:Name="AllDoneHint" Text="{DynamicResource Shell.AllDone}"

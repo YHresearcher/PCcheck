@@ -49,8 +49,7 @@
                 </Button>
             </Grid>
 
-            <!-- 3 cột: sidebar (host) | phần cứng 7/9 | kết quả nhanh 2/9
-                 (cột kết quả nhanh thu hẹp bớt 1/3 so với tỉ lệ 2:1 trước).
+            <!-- 3 cột: sidebar (host) | phần cứng 2/3 | kết quả nhanh 1/3.
                  Thẻ Sức khỏe & Rủi ro đã dời sang trang Báo cáo (2026-11-05). -->
             <Grid x:Name="DashboardBody" Grid.Row="1">
                 <Grid.RowDefinitions>
@@ -60,9 +59,9 @@
 
                 <Grid Grid.Row="0">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="7*"/>
-                        <ColumnDefinition Width="16"/>
                         <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="16"/>
+                        <ColumnDefinition Width="1*"/>
                     </Grid.ColumnDefinitions>
 
                     <!-- Cột phần cứng: thẻ máy (tóm tắt) + thẻ sức khỏe ổ. -->

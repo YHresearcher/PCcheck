@@ -283,7 +283,7 @@ public partial class MainWindow : Window
     {
         // Màn hình laptop thấp: mascot cuối sidebar thu nhỏ thay vì biến mất
         // (ẩn hẳn khiến user tưởng mất mascot — laptop 768px luôn < 850).
-        double size = ActualHeight < 850 ? 220 : 400;
+        double size = ActualHeight < 850 ? 145 : 250;
         SidebarMascot.Width = size;
         SidebarMascot.Height = size;
         SidebarMascot.Visibility = Visibility.Visible;
