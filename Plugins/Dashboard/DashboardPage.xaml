@@ -76,9 +76,17 @@
                         </Grid>
                     </Border>
 
+                    <!-- Thẻ ổ + thẻ pin ngang hàng nhau (1 hàng, 2 cột) và thu
+                         nhỏ lại: donut 84→64, viên pin 200×44→150×36. -->
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="16"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
                     <!-- Sức khỏe ổ: gauge tự vẽ từ dữ liệu SMART (kiểu DiskInfo),
                          dữ liệu do Đối chiếu cấu hình thu thập nền khi mở app. -->
-                    <Border Style="{StaticResource ReferenceCard}">
+                    <Border Grid.Column="0" Style="{StaticResource ReferenceCard}">
                         <StackPanel>
                             <TextBlock Text="{DynamicResource Dash.DriveTitle}" Style="{StaticResource CardHeading}" Margin="0,0,0,10"/>
                             <TextBlock x:Name="DriveEmptyText" Text="{DynamicResource Dash.DriveEmpty}" Style="{StaticResource Muted}"/>
@@ -89,16 +97,16 @@
                     <!-- Độ chai pin: viên pin 3D giống Đối chiếu cấu hình
                          (thân pin + đầu cực + vệt bóng + gradient theo mốc chai),
                          % chai do Đối chiếu cấu hình báo cáo (thu thập nền khi mở app). -->
-                    <Border x:Name="BatteryCard" Style="{StaticResource ReferenceCard}">
+                    <Border Grid.Column="2" x:Name="BatteryCard" Style="{StaticResource ReferenceCard}">
                         <StackPanel>
                             <TextBlock Text="{DynamicResource Dash.BatteryTitle}" Style="{StaticResource CardHeading}" Margin="0,0,0,10"/>
                             <TextBlock x:Name="BatteryEmptyText" Text="{DynamicResource Dash.BatteryEmpty}" Style="{StaticResource Muted}"/>
                             <Grid x:Name="BatteryGaugeGrid" Margin="0,2,0,0">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="200"/>
+                                    <ColumnDefinition Width="150"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
-                                <Grid Grid.Column="0" Height="44" VerticalAlignment="Center">
+                                <Grid Grid.Column="0" Height="36" VerticalAlignment="Center">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="10"/>
@@ -115,18 +123,19 @@
                                                 <ColumnDefinition x:Name="BatteryEmptyColumn" Width="0*"/>
                                             </Grid.ColumnDefinitions>
                                             <Rectangle x:Name="BatteryFill" Grid.Column="0" RadiusX="3" RadiusY="3"/>
-                                            <Rectangle Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Top" Height="12"
+                                            <Rectangle Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Top" Height="10"
                                                        Margin="2,2,2,0" Fill="White" Opacity="0.25" RadiusX="3" RadiusY="3"/>
                                         </Grid>
                                     </Border>
                                     <Border Grid.Column="1" Background="{DynamicResource BorderBrush}"
-                                            CornerRadius="0,4,4,0" Margin="0,12,0,12"/>
+                                            CornerRadius="0,4,4,0" Margin="0,10,0,10"/>
                                 </Grid>
                                 <TextBlock Grid.Column="1" x:Name="BatteryNoteText" TextWrapping="Wrap" FontSize="12"
                                            VerticalAlignment="Center" Margin="14,0,0,0"/>
                             </Grid>
                         </StackPanel>
                     </Border>
+                    </Grid>
                 </StackPanel>
 
                 <!-- Cột kết quả nhanh: 8 hàng, giữ nguyên nội dung. -->

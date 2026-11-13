@@ -352,7 +352,7 @@ public partial class DashboardPage : UserControl
     /// Chỉ dùng cho thẻ sức khỏe ổ (thẻ pin đã dùng viên pin 3D riêng).</summary>
     Grid BuildGauge(double? fill, Color color, string label)
     {
-        const double size = 84;
+        const double size = 64;
         const double stroke = 10;
         double radius = size / 2 - stroke / 2; // 37: đường tâm của vòng
         var donut = new Grid { Width = size, Height = size };
@@ -401,7 +401,7 @@ public partial class DashboardPage : UserControl
         var centerText = new TextBlock
         {
             Text = fill == null ? "?" : $"{fill.Value:0.#}%",
-            FontSize = 18, FontWeight = FontWeights.Bold,
+            FontSize = 14, FontWeight = FontWeights.Bold,
             Foreground = new SolidColorBrush(color),
             HorizontalAlignment = HorizontalAlignment.Center,
             VerticalAlignment = VerticalAlignment.Center,
