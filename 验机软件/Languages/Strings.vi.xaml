@@ -45,7 +45,6 @@
     <system:String x:Key="Shop.Visit">↗  Ghé qua shop</system:String>
 
     <!-- Trang Tổng quan -->
-    <system:String x:Key="Dash.Continue">Kiểm tra tiếp</system:String>
     <system:String x:Key="Dash.MachineTitle">PC / Laptop đang kiểm tra</system:String>
     <system:String x:Key="Dash.CpuInit">CPU: Chưa đọc</system:String>
     <system:String x:Key="Dash.RamInit">RAM: Chưa đọc</system:String>

@@ -31,27 +31,9 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
                   Background="{DynamicResource WindowBgBrush}">
         <Grid Margin="20,18,20,12">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
-            <Grid Grid.Row="0" Margin="0,0,0,16">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <Button Grid.Column="1" VerticalAlignment="Center"
-                        Click="StartButton_Click" Padding="14,9">
-                    <StackPanel Orientation="Horizontal">
-                        <Image Source="pack://application:,,,/Assets/18_refresh_dark.png" Width="16" Height="16" Margin="0,0,8,0" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality"/>
-                        <TextBlock Text="{DynamicResource Dash.Continue}" VerticalAlignment="Center"/>
-                    </StackPanel>
-                </Button>
-            </Grid>
-
             <!-- 3 cột: sidebar (host) | phần cứng 2/3 | kết quả nhanh 1/3.
                  Thẻ Sức khỏe & Rủi ro đã dời sang trang Báo cáo (2026-11-05). -->
-            <Grid x:Name="DashboardBody" Grid.Row="1">
+            <Grid x:Name="DashboardBody">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>

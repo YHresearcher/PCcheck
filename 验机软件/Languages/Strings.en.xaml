@@ -45,7 +45,6 @@
     <system:String x:Key="Shop.Visit">↗  Visit the shop</system:String>
 
     <!-- Dashboard -->
-    <system:String x:Key="Dash.Continue">Continue checking</system:String>
     <system:String x:Key="Dash.MachineTitle">PC / Laptop under check</system:String>
     <system:String x:Key="Dash.CpuInit">CPU: Not read</system:String>
     <system:String x:Key="Dash.RamInit">RAM: Not read</system:String>
