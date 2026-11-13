@@ -92,14 +92,18 @@
     <system:String x:Key="Dash.BatteryHealthy">Pin: còn khỏe</system:String>
     <system:String x:Key="Dash.BatteryWorn">Pin: chai vừa</system:String>
     <system:String x:Key="Dash.BatteryBad">Pin: chai nặng</system:String>
-    <system:String x:Key="Dash.BatteryEmpty">Chưa có dữ liệu pin — đang thu thập…</system:String>
-    <system:String x:Key="Dash.BatteryGaugeNote">Còn {0}% dung lượng • Pin chai {1}% — {2}</system:String>
     <system:String x:Key="Dash.BatteryBandHealthy">còn khỏe</system:String>
     <system:String x:Key="Dash.BatteryBandWorn">chai vừa</system:String>
     <system:String x:Key="Dash.BatteryBandBad">chai nặng</system:String>
     <system:String x:Key="Dash.TempReading">Nhiệt độ: đang đọc…</system:String>
     <system:String x:Key="Dash.TempLine">Nhiệt độ: {0}</system:String>
     <system:String x:Key="Dash.TempNone">Nhiệt độ: chưa đọc được</system:String>
+    <system:String x:Key="Dash.DriveHeader">SSD</system:String>
+    <system:String x:Key="Dash.BatteryHeader">PIN</system:String>
+    <system:String x:Key="Dash.DriveHealthLine">sức khỏe {0} - {1}</system:String>
+    <system:String x:Key="Dash.BatteryHealthLine">Dung lượng còn lại {0} - {1}</system:String>
+    <system:String x:Key="Dash.VerdictBlocked">Chặn</system:String>
+    <system:String x:Key="Dash.HealthUnknown">sức khỏe: Không rõ</system:String>
     <!-- Trang Tổng kết / Báo cáo -->
     <system:String x:Key="Sum.Title">Kết luận mua máy — mua được hay không</system:String>
     <system:String x:Key="Sum.Subtitle">Dành cho người mua: chỉ cần đọc 2 dòng dưới là đủ</system:String>

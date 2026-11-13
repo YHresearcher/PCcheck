@@ -77,15 +77,16 @@
                         </Grid>
                     </Border>
 
-                    <!-- Thẻ sức khỏe chung: mỗi ổ 1 vòng donut riêng, pin 1
-                         vòng riêng, tất cả cùng 1 hàng; viên pin 3D cũ đã bỏ. -->
+                    <!-- Thẻ sức khỏe chung: mỗi ổ 1 vòng donut lớn riêng, pin 1
+                         vòng riêng, cùng 1 hàng, căn giữa; thông tin ghi BÊN
+                         TRONG vòng (tiêu đề SSD/PIN + tên ổ + dòng sức khỏe),
+                         không còn nội dung bên dưới. Vòng ổ xanh dương, vòng
+                         pin cam (màu gốc app) để phân biệt. -->
                     <Border Style="{StaticResource ReferenceCard}">
                         <StackPanel>
                             <TextBlock Text="{DynamicResource Dash.HealthTitle}" Style="{StaticResource CardHeading}" Margin="0,0,0,10"/>
                             <TextBlock x:Name="DriveEmptyText" Text="{DynamicResource Dash.DriveEmpty}" Style="{StaticResource Muted}"/>
-                            <WrapPanel x:Name="RingsRow" Orientation="Horizontal" Margin="0,2,0,0"/>
-                            <StackPanel x:Name="DriveList" Margin="0,10,0,0"/>
-                            <TextBlock x:Name="BatteryNoteText" FontSize="12" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,10,0,0"/>
+                            <WrapPanel x:Name="RingsRow" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,2,0,0"/>
                         </StackPanel>
                     </Border>
                 </StackPanel>

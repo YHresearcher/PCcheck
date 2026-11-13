@@ -92,14 +92,18 @@
     <system:String x:Key="Dash.BatteryHealthy">Battery: healthy</system:String>
     <system:String x:Key="Dash.BatteryWorn">Battery: moderately worn</system:String>
     <system:String x:Key="Dash.BatteryBad">Battery: heavily worn</system:String>
-    <system:String x:Key="Dash.BatteryEmpty">No battery data yet — collecting…</system:String>
-    <system:String x:Key="Dash.BatteryGaugeNote">Still {0}% capacity • Battery worn {1}% — {2}</system:String>
     <system:String x:Key="Dash.BatteryBandHealthy">still healthy</system:String>
     <system:String x:Key="Dash.BatteryBandWorn">moderately worn</system:String>
     <system:String x:Key="Dash.BatteryBandBad">heavily worn</system:String>
     <system:String x:Key="Dash.TempReading">Temperature: reading…</system:String>
     <system:String x:Key="Dash.TempLine">Temperature: {0}</system:String>
     <system:String x:Key="Dash.TempNone">Temperature: unavailable</system:String>
+    <system:String x:Key="Dash.DriveHeader">SSD</system:String>
+    <system:String x:Key="Dash.BatteryHeader">Battery</system:String>
+    <system:String x:Key="Dash.DriveHealthLine">Health {0} - {1}</system:String>
+    <system:String x:Key="Dash.BatteryHealthLine">Capacity left {0} - {1}</system:String>
+    <system:String x:Key="Dash.VerdictBlocked">Blocked</system:String>
+    <system:String x:Key="Dash.HealthUnknown">Health: unknown</system:String>
     <!-- Summary / Report page -->
     <system:String x:Key="Sum.Title">Buy verdict — worth buying or not</system:String>
     <system:String x:Key="Sum.Subtitle">For the buyer: the 2 lines below are all you need</system:String>
