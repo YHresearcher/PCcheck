@@ -77,10 +77,10 @@
                         </Grid>
                     </Border>
 
-                    <!-- Thẻ sức khỏe chung: mỗi ổ 1 vòng donut lớn riêng, pin 1
-                         vòng riêng, cùng 1 hàng, căn giữa; thông tin ghi BÊN
-                         TRONG vòng (tiêu đề SSD/PIN + tên ổ + dòng sức khỏe),
-                         không còn nội dung bên dưới. Vòng ổ xanh dương, vòng
+                    <!-- Thẻ sức khỏe chung: mỗi ổ 1 thanh pin riêng, pin 1
+                         thanh riêng, cùng 1 hàng, căn giữa; thanh hình
+                         battery indicator bo tròn (thân + đầu cực + vệt
+                         bóng + gradient 3D). Thanh ổ xanh dương, thanh
                          pin cam (màu gốc app) để phân biệt. -->
                     <Border Style="{StaticResource ReferenceCard}">
                         <StackPanel>

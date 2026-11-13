@@ -311,42 +311,47 @@ public partial class DashboardPage : UserControl
             : string.Format(Lang.Get("Dash.TempLine"), string.Join(" • ", parts));
     }
 
-    /// <summary>Thẻ sức khỏe chung: mỗi ổ 1 vòng donut lớn riêng, pin 1
-    /// vòng riêng, cùng 1 hàng, căn giữa (WrapPanel, tự xuống hàng nếu
-    /// nhiều ổ). Thông tin ghi BÊN TRONG vòng: tiêu đề (SSD/PIN) + tên ổ +
-    /// dòng sức khỏe (% - kết luận); không còn nội dung bên dưới (chi tiết
-    /// từng ổ + note pin đã bỏ). Vòng ổ màu xanh dương, vòng pin màu cam
-    /// (màu gốc của app) để phân biệt ngay; màu mốc sức khỏe (xanh/cam/đỏ)
-    /// chỉ còn ở dòng kết luận trong vòng. Dữ liệu ổ từ DriveSummaries, %
-    /// chai pin từ BatteryWearPercent (cùng nguồn Đối chiếu cấu hình thu
+    /// <summary>Thẻ sức khỏe chung: mỗi ổ 1 thanh pin riêng, pin 1 thanh
+    /// riêng, cùng 1 hàng, căn giữa (WrapPanel, tự xuống hàng nếu nhiều ổ).
+    /// Thanh hình battery indicator bo tròn (thân + đầu cực + vệt bóng +
+    /// gradient 3D như viên pin ở Đối chiếu cấu hình): phần đầy = % sức
+    /// khỏe ổ / % dung lượng pin còn lại, phần trống = hao hụt, nhìn là
+    /// thấy ngay. Thông tin ghi BÊN DƯỚI thanh: tiêu đề (SSD/PIN) + tên ổ
+    /// + dòng sức khỏe (% - kết luận). Thanh ổ màu xanh dương, thanh pin
+    /// màu cam (màu gốc của app) để phân biệt ngay; màu mốc sức khỏe
+    /// (xanh/cam/đỏ) chỉ còn ở dòng kết luận. Dữ liệu ổ từ DriveSummaries,
+    /// % chai pin từ BatteryWearPercent (cùng nguồn Đối chiếu cấu hình thu
     /// thập nền khi mở app).</summary>
     void RefreshHealthCard()
     {
         var drives = _host.DriveSummaries;
         double? wear = _host.BatteryWearPercent;
 
-        // 1 vòng/ổ (theo thứ tự liệt kê) + 1 vòng pin, cùng 1 hàng.
+        // 1 thanh/ổ (theo thứ tự liệt kê) + 1 thanh pin, cùng 1 hàng.
         RingsRow.Children.Clear();
         for (int i = 0; i < drives.Count; i++)
         {
             var d = drives[i];
             string letters = d.Letters.Count > 0 ? $" ({string.Join(", ", d.Letters)})" : "";
-            RingsRow.Children.Add(BuildDriveRing(d, letters));
+            RingsRow.Children.Add(BuildDriveBar(d, letters));
         }
         if (wear != null)
-            RingsRow.Children.Add(BuildBatteryRing(wear.Value));
+            RingsRow.Children.Add(BuildBatteryBarItem(wear.Value));
 
         bool hasGauge = drives.Count > 0 || wear != null;
         RingsRow.Visibility = hasGauge ? Visibility.Visible : Visibility.Collapsed;
         DriveEmptyText.Visibility = drives.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
     }
 
-    /// <summary>Vòng ổ: tiêu đề SSD + tên ổ (kèm ổ đĩa) + dòng sức khỏe.
-    /// % sức khỏe làm đầy vòng; không đọc được % thì vòng chỉ có track.</summary>
-    Grid BuildDriveRing(DriveSummary d, string letters)
+    /// <summary>Thanh ổ: thanh pin (đầy = % sức khỏe) + tiêu đề SSD + tên
+    /// ổ (kèm ổ đĩa) + dòng sức khỏe. Không đọc được % thì thanh trống.</summary>
+    StackPanel BuildDriveBar(DriveSummary d, string letters)
     {
-        var center = new StackPanel { Width = 124 };
-        center.Children.Add(CenterHeader(Lang.Get("Dash.DriveHeader"), DriveRingColor));
+        var item = new StackPanel { Width = 300, Margin = new Thickness(0, 0, 16, 16) };
+        item.Children.Add(BuildBatteryBar(d.HealthPercent, DriveBarColor));
+        var header = CenterHeader(Lang.Get("Dash.DriveHeader"), DriveBarColor);
+        header.Margin = new Thickness(0, 8, 0, 0);
+        item.Children.Add(header);
         var name = new TextBlock
         {
             Text = $"{d.Model}{letters}", FontSize = 12,
@@ -354,26 +359,29 @@ public partial class DashboardPage : UserControl
             Margin = new Thickness(0, 2, 0, 0),
         };
         name.SetResourceReference(TextBlock.ForegroundProperty, "TextBrush");
-        center.Children.Add(name);
-        center.Children.Add(CenterHealthLine(
+        item.Children.Add(name);
+        item.Children.Add(CenterHealthLine(
             DriveHealthLine(d.HealthPercent), DriveBandColor(d.HealthPercent)));
-        return BuildInfoRing(d.HealthPercent, DriveRingColor, center);
+        return item;
     }
 
-    /// <summary>Vòng pin: tiêu đề PIN + dòng dung lượng còn lại.
-    /// % còn lại làm đầy vòng.</summary>
-    Grid BuildBatteryRing(double wear)
+    /// <summary>Thanh pin: thanh pin (đầy = % dung lượng còn lại) + tiêu
+    /// đề PIN + dòng dung lượng còn lại.</summary>
+    StackPanel BuildBatteryBarItem(double wear)
     {
         double remaining = 100 - wear;
         string band = wear < 20 ? Lang.Get("Dash.BatteryBandHealthy")
             : wear < 40 ? Lang.Get("Dash.BatteryBandWorn")
             : Lang.Get("Dash.BatteryBandBad");
-        var center = new StackPanel { Width = 124 };
-        center.Children.Add(CenterHeader(Lang.Get("Dash.BatteryHeader"), BatteryRingColor));
-        center.Children.Add(CenterHealthLine(
+        var item = new StackPanel { Width = 300, Margin = new Thickness(0, 0, 16, 16) };
+        item.Children.Add(BuildBatteryBar(remaining, BatteryBarColor));
+        var header = CenterHeader(Lang.Get("Dash.BatteryHeader"), BatteryBarColor);
+        header.Margin = new Thickness(0, 8, 0, 0);
+        item.Children.Add(header);
+        item.Children.Add(CenterHealthLine(
             string.Format(Lang.Get("Dash.BatteryHealthLine"), $"{remaining:0.#}%", band),
             BatteryBandColor(wear)));
-        return BuildInfoRing(remaining, BatteryRingColor, center);
+        return item;
     }
 
     /// <summary>Dòng sức khỏe ổ: "sức khỏe 79% - Cảnh báo"; không đọc
@@ -387,7 +395,7 @@ public partial class DashboardPage : UserControl
         return string.Format(Lang.Get("Dash.DriveHealthLine"), $"{health.Value:0.#}%", word);
     }
 
-    /// <summary>Tiêu đề trong vòng (SSD/PIN): đậm, màu của loại vòng.</summary>
+    /// <summary>Tiêu đề dưới thanh (SSD/PIN): đậm, màu của loại thanh.</summary>
     static TextBlock CenterHeader(string text, Color color) => new TextBlock
     {
         Text = text, FontSize = 15, FontWeight = FontWeights.Bold,
@@ -395,7 +403,7 @@ public partial class DashboardPage : UserControl
         TextAlignment = TextAlignment.Center,
     };
 
-    /// <summary>Dòng kết luận trong vòng: 11pt, màu theo mốc, căn giữa,
+    /// <summary>Dòng kết luận dưới thanh: 11pt, màu theo mốc, căn giữa,
     /// tự xuống dòng nếu dài.</summary>
     static TextBlock CenterHealthLine(string text, Color color) => new TextBlock
     {
@@ -405,33 +413,58 @@ public partial class DashboardPage : UserControl
         Margin = new Thickness(0, 2, 0, 0),
     };
 
-    /// <summary>1 vòng donut lớn (160) + nội dung ở giữa vòng: % làm đầy
-    /// vòng; không có số thì chỉ track (dòng kết luận trong vòng tự ghi
-    /// "Không rõ" khi cần).</summary>
-    Grid BuildInfoRing(double? pct, Color ringColor, StackPanel center)
+    /// <summary>Thanh hình battery indicator bo tròn (thân + đầu cực +
+    /// vệt bóng + gradient 3D, giống viên pin ở Đối chiếu cấu hình): phần
+    /// đầy = pct% (null = trống hoàn toàn). Rộng vừa phải (theo cột 300)
+    /// để phần hao hụt nhìn rõ.</summary>
+    Grid BuildBatteryBar(double? pct, Color color)
     {
-        const double size = 160, stroke = 16;
-        var gauge = new Grid
+        double fillPct = pct ?? 0;
+        var outer = new Grid { Height = 40 };
+        outer.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+        outer.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(10) });
+        var body = new Border
         {
-            Width = size, Height = size,
-            HorizontalAlignment = HorizontalAlignment.Center,
-            Margin = new Thickness(0, 0, 16, 0),
+            BorderThickness = new Thickness(2),
+            CornerRadius = new CornerRadius(8), Padding = new Thickness(3),
         };
-        gauge.Children.Add(BuildRing(size, stroke, pct, ringColor));
-        center.HorizontalAlignment = HorizontalAlignment.Center;
-        center.VerticalAlignment = VerticalAlignment.Center;
-        gauge.Children.Add(center);
-        return gauge;
+        body.SetResourceReference(Border.BorderBrushProperty, "BorderBrush");
+        body.SetResourceReference(Border.BackgroundProperty, "SurfaceBgBrush");
+        body.Effect = new DropShadowEffect { ShadowDepth = 2, BlurRadius = 4, Opacity = 0.3 };
+        var inner = new Grid();
+        inner.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(fillPct, GridUnitType.Star) });
+        inner.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(100 - fillPct, GridUnitType.Star) });
+        var fill = new System.Windows.Shapes.Rectangle { RadiusX = 4, RadiusY = 4, Fill = BandBrush(color) };
+        Grid.SetColumn(fill, 0);
+        inner.Children.Add(fill);
+        var gloss = new System.Windows.Shapes.Rectangle
+        {
+            VerticalAlignment = VerticalAlignment.Top, Height = 10,
+            Margin = new Thickness(2, 2, 2, 0), Fill = Brushes.White, Opacity = 0.25,
+            RadiusX = 3, RadiusY = 3,
+        };
+        Grid.SetColumn(gloss, 0);
+        Grid.SetColumnSpan(gloss, 2);
+        inner.Children.Add(gloss);
+        body.Child = inner;
+        Grid.SetColumn(body, 0);
+        outer.Children.Add(body);
+        var tip = new Border { CornerRadius = new CornerRadius(0, 4, 4, 0), Margin = new Thickness(0, 11, 0, 11) };
+        tip.SetResourceReference(Border.BackgroundProperty, "BorderBrush");
+        Grid.SetColumn(tip, 1);
+        outer.Children.Add(tip);
+        return outer;
     }
 
-    /// <summary>Màu vòng ổ: xanh dương cố định (để phân biệt với vòng pin);
-    /// màu mốc sức khỏe chỉ dùng cho dòng kết luận, xem DriveBandColor.</summary>
-    static readonly Color DriveRingColor = (Color)ColorConverter.ConvertFromString("#1688ED");
+    /// <summary>Màu thanh ổ: xanh dương cố định (để phân biệt với thanh
+    /// pin); màu mốc sức khỏe chỉ dùng cho dòng kết luận, xem
+    /// DriveBandColor.</summary>
+    static readonly Color DriveBarColor = (Color)ColorConverter.ConvertFromString("#1688ED");
 
-    /// <summary>Màu vòng pin: cam (màu gốc của app) cố định (để phân biệt
-    /// với vòng ổ); màu mốc chai pin chỉ dùng cho dòng kết luận, xem
+    /// <summary>Màu thanh pin: cam (màu gốc của app) cố định (để phân biệt
+    /// với thanh ổ); màu mốc chai pin chỉ dùng cho dòng kết luận, xem
     /// BatteryBandColor.</summary>
-    static readonly Color BatteryRingColor = (Color)ColorConverter.ConvertFromString("#F06E0F");
+    static readonly Color BatteryBarColor = (Color)ColorConverter.ConvertFromString("#F06E0F");
 
     /// <summary>Màu dòng kết luận ổ theo mốc: không rõ xám, ≥90% xanh,
     /// 70–89% cam, &lt;70% đỏ.</summary>
@@ -448,56 +481,6 @@ public partial class DashboardPage : UserControl
         : wear < 20 ? Colors.ForestGreen
         : wear < 40 ? (Color)ColorConverter.ConvertFromString("#DE870F")
         : (Color)ColorConverter.ConvertFromString("#D33D42");
-
-    /// <summary>Một vòng donut (track + cung đầy theo %): 100% → vẽ hẳn
-    /// ellipse đầy (arc đầu=cuối vẽ không ra), 0% hoặc null → chỉ track.</summary>
-    Grid BuildRing(double size, double stroke, double? pct, Color color)
-    {
-        double radius = size / 2 - stroke / 2;
-        var ring = new Grid { Width = size, Height = size };
-        var track = new System.Windows.Shapes.Ellipse
-        {
-            Width = size, Height = size, StrokeThickness = stroke,
-            Fill = Brushes.Transparent,
-        };
-        track.SetResourceReference(System.Windows.Shapes.Shape.StrokeProperty, "BorderBrush");
-        ring.Children.Add(track);
-        double p = pct ?? 0;
-        if (p >= 100)
-        {
-            // Vòng tròn đầy: arc có điểm đầu = điểm cuối thì vẽ không ra gì,
-            // nên vẽ hẳn 1 ellipse đầy thay cho arc.
-            ring.Children.Add(new System.Windows.Shapes.Ellipse
-            {
-                Width = size, Height = size, StrokeThickness = stroke,
-                Stroke = BandBrush(color), Fill = Brushes.Transparent,
-            });
-        }
-        else if (p > 0)
-        {
-            double angle = p / 100 * 360;
-            double rad = angle * Math.PI / 180;
-            var end = new Point(
-                size / 2 + radius * Math.Sin(rad),
-                size / 2 - radius * Math.Cos(rad));
-            ring.Children.Add(new System.Windows.Shapes.Path
-            {
-                Stroke = BandBrush(color), StrokeThickness = stroke,
-                StrokeStartLineCap = PenLineCap.Round,
-                StrokeEndLineCap = PenLineCap.Round,
-                Data = new PathGeometry(new[]
-                {
-                    new PathFigure(new Point(size / 2, size / 2 - radius),
-                        new[]
-                        {
-                            new ArcSegment(end, new Size(radius, radius), 0,
-                                angle > 180, SweepDirection.Clockwise, true),
-                        }, false),
-                }),
-            });
-        }
-        return ring;
-    }
 
     /// <summary>Gradient dọc cho fill gauge (sáng trên -> màu gốc -> đậm dưới),
     /// giống viên pin ở Đối chiếu cấu hình để gauge nhìn nổi 3D.</summary>
