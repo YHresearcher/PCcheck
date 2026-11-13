@@ -272,8 +272,7 @@ public partial class DashboardPage : UserControl
         BatteryText.Text = battery ?? "";
         BatteryText.Visibility = battery == null ? Visibility.Collapsed : Visibility.Visible;
 
-        RefreshDriveCard();
-        RefreshBatteryCard();
+        RefreshHealthCard();
         RenderTemp();
     }
 
@@ -312,27 +311,91 @@ public partial class DashboardPage : UserControl
             : string.Format(Lang.Get("Dash.TempLine"), string.Join(" • ", parts));
     }
 
-    /// <summary>Thẻ sức khỏe ổ: 1 hàng/ổ — tên + dung lượng, gauge tự vẽ theo
-    /// % sức khỏe (màu theo mốc kết luận ổ: ≥90% xanh, 70–89% cam, &lt;70% đỏ,
-    /// không rõ xám), lý do chặn/cảnh báo nếu có. Dữ liệu từ DriveSummaries do
-    /// Đối chiếu cấu hình báo cáo (thu thập nền khi mở app).</summary>
-    void RefreshDriveCard()
+    /// <summary>Thẻ sức khỏe chung: 2 vòng donut lồng nhau (vòng ngoài =
+    /// sức khỏe ổ, vòng trong = dung lượng pin còn lại) + chú giải + chi
+    /// tiết từng ổ. Vòng ngoài lấy ổ yếu nhất (quyết định kết luận ổ);
+    /// không có pin thì chỉ vẽ vòng ngoài, không có ổ thì chỉ vẽ vòng
+    /// trong. Dữ liệu ổ từ DriveSummaries, % chai pin từ BatteryWearPercent
+    /// (cùng nguồn Đối chiếu cấu hình thu thập nền khi mở app).</summary>
+    void RefreshHealthCard()
     {
         var drives = _host.DriveSummaries;
+        double? wear = _host.BatteryWearPercent;
+
+        // Ổ yếu nhất (theo % sức khỏe) = vòng ngoài; ổ nào cũng không đọc
+        // được % thì vòng ngoài xám + "?".
+        var worst = drives
+            .Where(d => d.HealthPercent != null)
+            .OrderBy(d => d.HealthPercent)
+            .FirstOrDefault();
+        double? driveHealth = worst?.HealthPercent;
+        Color driveColor = DriveBandColor(driveHealth);
+        double? batteryRemaining = wear == null ? null : 100 - wear.Value;
+        Color batteryColor = BatteryBandColor(wear);
+
+        bool hasGauge = drives.Count > 0 || wear != null;
+        HealthGaugeRow.Visibility = hasGauge ? Visibility.Visible : Visibility.Collapsed;
         DriveEmptyText.Visibility = drives.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
+
+        NestedGaugeHost.Children.Clear();
+        if (hasGauge)
+            NestedGaugeHost.Children.Add(BuildNestedGauge(
+                drives.Count > 0, driveHealth, driveColor,
+                wear != null, batteryRemaining, batteryColor));
+
+        // Chú giải ổ: câu kết luận nguyên văn của ổ yếu nhất (đã có sẵn %
+        // trong câu); ổ không đọc được % thì lấy ổ đầu tiên.
+        DriveLegendRow.Visibility = drives.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
+        if (drives.Count > 0)
+        {
+            DriveDot.Fill = new SolidColorBrush(driveColor);
+            DriveLegendText.Text = (worst ?? drives[0]).VerdictText;
+            DriveLegendText.Foreground = new SolidColorBrush(driveColor);
+        }
+
+        // Chú giải pin: chưa thu thập xong → dòng chờ; có số → câu note
+        // (còn % dung lượng • chai % — mức); đã thu thập mà không có pin
+        // (desktop) → ẩn hẳn hàng.
+        if (wear == null && _host.Signals.ContainsKey("config"))
+        {
+            BatteryLegendRow.Visibility = Visibility.Collapsed;
+        }
+        else
+        {
+            BatteryLegendRow.Visibility = Visibility.Visible;
+            if (wear == null)
+            {
+                BatteryDot.Fill = HexBrush("#888080");
+                BatteryLegendText.Text = Lang.Get("Dash.BatteryEmpty");
+                BatteryLegendText.Foreground = HexBrush("#888080");
+            }
+            else
+            {
+                string band = wear < 20 ? Lang.Get("Dash.BatteryBandHealthy")
+                    : wear < 40 ? Lang.Get("Dash.BatteryBandWorn")
+                    : Lang.Get("Dash.BatteryBandBad");
+                BatteryDot.Fill = new SolidColorBrush(batteryColor);
+                BatteryLegendText.Text = string.Format(Lang.Get("Dash.BatteryGaugeNote"),
+                    $"{batteryRemaining:0.#}", $"{wear.Value:0.#}", band);
+                BatteryLegendText.Foreground = new SolidColorBrush(batteryColor);
+            }
+        }
+
+        // Chi tiết từng ổ (chỉ chữ, không còn donut riêng): model • dung
+        // lượng (ổ đĩa) + % sức khỏe + lý do chặn/cảnh báo nếu có.
         DriveList.Children.Clear();
         foreach (var d in drives)
         {
             var letters = d.Letters.Count > 0 ? $" ({string.Join(", ", d.Letters)})" : "";
+            string health = d.HealthPercent == null ? "Không rõ" : $"{d.HealthPercent}%";
             var row = new StackPanel { Margin = new Thickness(0, 0, 0, 10) };
             row.Children.Add(new TextBlock
             {
-                Text = $"{d.Model} • {d.Capacity}{letters}",
+                Text = $"{d.Model} • {d.Capacity}{letters} — {health}",
                 FontSize = 13, FontWeight = FontWeights.SemiBold,
                 TextTrimming = TextTrimming.CharacterEllipsis,
                 Margin = new Thickness(0, 0, 0, 4),
             });
-            row.Children.Add(BuildDriveGauge(d));
             string reasons = string.Join("; ", d.BlockReasons.Concat(d.WarningReasons));
             if (!string.IsNullOrWhiteSpace(reasons))
                 row.Children.Add(new TextBlock
@@ -345,84 +408,83 @@ public partial class DashboardPage : UserControl
         }
     }
 
-    /// <summary>Thẻ độ chai pin: viên pin 3D giống Đối chiếu cấu hình — mức đầy
-    /// = dung lượng còn lại (100 - % chai), màu theo mốc chai (<20% xanh,
-    /// 20–<40% cam, ≥40% đỏ), nhãn chỉ trạng thái + mức chai (không khuyên chi
-    /// phí thay pin). Chưa thu thập thì hiện dòng chờ; đã thu thập mà không có
-    /// pin (desktop / không đọc được) thì ẩn cả thẻ, không đoán.</summary>
-    void RefreshBatteryCard()
+    /// <summary>Màu vòng ngoài theo mốc kết luận ổ: không rõ xám, ≥90% xanh,
+    /// 70–89% cam, &lt;70% đỏ.</summary>
+    static Color DriveBandColor(double? health) => health == null
+        ? (Color)ColorConverter.ConvertFromString("#888080")
+        : health >= 90 ? Colors.ForestGreen
+        : health >= 70 ? (Color)ColorConverter.ConvertFromString("#DE870F")
+        : (Color)ColorConverter.ConvertFromString("#D33D42");
+
+    /// <summary>Màu vòng trong theo mốc chai pin: &lt;20% xanh, 20–&lt;40%
+    /// cam, ≥40% đỏ; chưa có số thì xám.</summary>
+    static Color BatteryBandColor(double? wear) => wear == null
+        ? (Color)ColorConverter.ConvertFromString("#888080")
+        : wear < 20 ? Colors.ForestGreen
+        : wear < 40 ? (Color)ColorConverter.ConvertFromString("#DE870F")
+        : (Color)ColorConverter.ConvertFromString("#D33D42");
+
+    /// <summary>2 vòng donut lồng nhau: vòng ngoài (120) = sức khỏe ổ, vòng
+    /// trong (84) = dung lượng pin còn lại; % hiện giữa vòng (của vòng ngoài
+    /// nếu có, không thì của vòng trong; không có số nào thì "?"). Vòng nào
+    /// không có dữ liệu thì không vẽ.</summary>
+    Grid BuildNestedGauge(bool hasDrive, double? driveHealth, Color driveColor,
+                          bool hasBattery, double? batteryRemaining, Color batteryColor)
     {
-        double? wear = _host.BatteryWearPercent;
-        if (wear == null && _host.Signals.ContainsKey("config"))
+        const double outerSize = 120, innerSize = 84, stroke = 12;
+        var host = new Grid { Width = outerSize, Height = outerSize };
+        if (hasDrive) host.Children.Add(BuildRing(outerSize, stroke, driveHealth, driveColor));
+        if (hasBattery)
         {
-            BatteryCard.Visibility = Visibility.Collapsed;
-            return;
+            var inner = BuildRing(innerSize, stroke, batteryRemaining, batteryColor);
+            inner.HorizontalAlignment = HorizontalAlignment.Center;
+            inner.VerticalAlignment = VerticalAlignment.Center;
+            host.Children.Add(inner);
         }
-        BatteryCard.Visibility = Visibility.Visible;
-        BatteryEmptyText.Visibility = wear == null ? Visibility.Visible : Visibility.Collapsed;
-        BatteryGaugeGrid.Visibility = wear == null ? Visibility.Collapsed : Visibility.Visible;
-        if (wear == null) return;
-        double remaining = 100 - wear.Value;
-        BatteryFillColumn.Width = new GridLength(remaining, GridUnitType.Star);
-        BatteryEmptyColumn.Width = new GridLength(wear.Value, GridUnitType.Star);
-        Color color = wear < 20 ? Colors.ForestGreen
-            : wear < 40 ? (Color)ColorConverter.ConvertFromString("#DE870F")
-            : (Color)ColorConverter.ConvertFromString("#D33D42");
-        BatteryFill.Fill = BandBrush(color);
-        string band = wear < 20 ? Lang.Get("Dash.BatteryBandHealthy")
-            : wear < 40 ? Lang.Get("Dash.BatteryBandWorn")
-            : Lang.Get("Dash.BatteryBandBad");
-        BatteryNoteText.Text = string.Format(Lang.Get("Dash.BatteryGaugeNote"),
-            $"{remaining:0.#}", $"{wear.Value:0.#}", band);
+        double? center = hasDrive ? driveHealth : batteryRemaining;
+        host.Children.Add(new TextBlock
+        {
+            Text = center == null ? "?" : $"{center.Value:0.#}%",
+            FontSize = 16, FontWeight = FontWeights.Bold,
+            Foreground = new SolidColorBrush(hasDrive ? driveColor : batteryColor),
+            HorizontalAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Center,
+        });
+        return host;
     }
 
-    Grid BuildDriveGauge(DriveSummary d)
+    /// <summary>Một vòng donut (track + cung đầy theo %): 100% → vẽ hẳn
+    /// ellipse đầy (arc đầu=cuối vẽ không ra), 0% hoặc null → chỉ track.</summary>
+    Grid BuildRing(double size, double stroke, double? pct, Color color)
     {
-        // Màu theo mốc kết luận ổ (giống ConfigCheck): không rõ xám, ≥90 xanh,
-        // 70–89 cam, <70 đỏ. Gauge đầy = % sức khỏe còn lại.
-        Color color = d.HealthPercent == null ? (Color)ColorConverter.ConvertFromString("#888080")
-            : d.HealthPercent >= 90 ? Colors.ForestGreen
-            : d.HealthPercent >= 70 ? (Color)ColorConverter.ConvertFromString("#DE870F")
-            : (Color)ColorConverter.ConvertFromString("#D33D42");
-        // % sức khỏe hiện giữa vòng donut nên nhãn chỉ còn câu kết luận.
-        return BuildGauge(d.HealthPercent, color, d.VerdictText);
-    }
-
-    /// <summary>Gauge tròn (donut) tự vẽ: vòng đầy = fill% sức khỏe, % hiện
-    /// giữa vòng, nhãn kết luận bên phải. Không rõ % thì vòng xám + dấu "?".
-    /// Chỉ dùng cho thẻ sức khỏe ổ (thẻ pin đã dùng viên pin 3D riêng).</summary>
-    Grid BuildGauge(double? fill, Color color, string label)
-    {
-        const double size = 64;
-        const double stroke = 10;
-        double radius = size / 2 - stroke / 2; // 37: đường tâm của vòng
-        var donut = new Grid { Width = size, Height = size };
+        double radius = size / 2 - stroke / 2;
+        var ring = new Grid { Width = size, Height = size };
         var track = new System.Windows.Shapes.Ellipse
         {
             Width = size, Height = size, StrokeThickness = stroke,
             Fill = Brushes.Transparent,
         };
         track.SetResourceReference(System.Windows.Shapes.Shape.StrokeProperty, "BorderBrush");
-        donut.Children.Add(track);
-        double pct = fill ?? 0;
-        if (pct >= 100)
+        ring.Children.Add(track);
+        double p = pct ?? 0;
+        if (p >= 100)
         {
             // Vòng tròn đầy: arc có điểm đầu = điểm cuối thì vẽ không ra gì,
             // nên vẽ hẳn 1 ellipse đầy thay cho arc.
-            donut.Children.Add(new System.Windows.Shapes.Ellipse
+            ring.Children.Add(new System.Windows.Shapes.Ellipse
             {
                 Width = size, Height = size, StrokeThickness = stroke,
                 Stroke = BandBrush(color), Fill = Brushes.Transparent,
             });
         }
-        else if (pct > 0)
+        else if (p > 0)
         {
-            double angle = pct / 100 * 360;
+            double angle = p / 100 * 360;
             double rad = angle * Math.PI / 180;
             var end = new Point(
                 size / 2 + radius * Math.Sin(rad),
                 size / 2 - radius * Math.Cos(rad));
-            var arc = new System.Windows.Shapes.Path
+            ring.Children.Add(new System.Windows.Shapes.Path
             {
                 Stroke = BandBrush(color), StrokeThickness = stroke,
                 StrokeStartLineCap = PenLineCap.Round,
@@ -436,32 +498,9 @@ public partial class DashboardPage : UserControl
                                 angle > 180, SweepDirection.Clockwise, true),
                         }, false),
                 }),
-            };
-            donut.Children.Add(arc);
+            });
         }
-        var centerText = new TextBlock
-        {
-            Text = fill == null ? "?" : $"{fill.Value:0.#}%",
-            FontSize = 14, FontWeight = FontWeights.Bold,
-            Foreground = new SolidColorBrush(color),
-            HorizontalAlignment = HorizontalAlignment.Center,
-            VerticalAlignment = VerticalAlignment.Center,
-        };
-        donut.Children.Add(centerText);
-        var labelText = new TextBlock
-        {
-            Text = label, FontSize = 11, FontWeight = FontWeights.SemiBold,
-            Foreground = new SolidColorBrush(color), Margin = new Thickness(12, 0, 0, 0),
-            VerticalAlignment = VerticalAlignment.Center, TextWrapping = TextWrapping.Wrap,
-        };
-        var grid = new Grid();
-        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-        Grid.SetColumn(donut, 0);
-        Grid.SetColumn(labelText, 1);
-        grid.Children.Add(donut);
-        grid.Children.Add(labelText);
-        return grid;
+        return ring;
     }
 
     /// <summary>Gradient dọc cho fill gauge (sáng trên -> màu gốc -> đậm dưới),

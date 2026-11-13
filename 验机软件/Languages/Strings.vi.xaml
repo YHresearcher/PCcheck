@@ -86,13 +86,12 @@
     <system:String x:Key="Dash.FolderFailed">Không mở được thư mục hồ sơ ({0}): {1}</system:String>
     <system:String x:Key="Dash.BrandModel">Hãng / Model: {0}</system:String>
     <system:String x:Key="Dash.SerialLine">S/N: {0}</system:String>
-    <system:String x:Key="Dash.DriveTitle">Sức khỏe ổ đĩa</system:String>
+    <system:String x:Key="Dash.HealthTitle">Sức khỏe ổ đĩa &amp; Pin</system:String>
     <system:String x:Key="Dash.DriveEmpty">Chưa có dữ liệu ổ — đang thu thập…</system:String>
     <system:String x:Key="Dash.OsLine">Hệ điều hành: {0}</system:String>
     <system:String x:Key="Dash.BatteryHealthy">Pin: còn khỏe</system:String>
     <system:String x:Key="Dash.BatteryWorn">Pin: chai vừa</system:String>
     <system:String x:Key="Dash.BatteryBad">Pin: chai nặng</system:String>
-    <system:String x:Key="Dash.BatteryTitle">Pin</system:String>
     <system:String x:Key="Dash.BatteryEmpty">Chưa có dữ liệu pin — đang thu thập…</system:String>
     <system:String x:Key="Dash.BatteryGaugeNote">Còn {0}% dung lượng • Pin chai {1}% — {2}</system:String>
     <system:String x:Key="Dash.BatteryBandHealthy">còn khỏe</system:String>
