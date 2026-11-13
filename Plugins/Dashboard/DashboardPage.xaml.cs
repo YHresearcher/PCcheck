@@ -311,78 +311,35 @@ public partial class DashboardPage : UserControl
             : string.Format(Lang.Get("Dash.TempLine"), string.Join(" • ", parts));
     }
 
-    /// <summary>Thẻ sức khỏe chung: 2 vòng donut lồng nhau (vòng ngoài =
-    /// sức khỏe ổ, vòng trong = dung lượng pin còn lại) + chú giải + chi
-    /// tiết từng ổ. Vòng ngoài lấy ổ yếu nhất (quyết định kết luận ổ);
-    /// không có pin thì chỉ vẽ vòng ngoài, không có ổ thì chỉ vẽ vòng
-    /// trong. Dữ liệu ổ từ DriveSummaries, % chai pin từ BatteryWearPercent
+    /// <summary>Thẻ sức khỏe chung: mỗi ổ 1 vòng donut riêng, pin 1 vòng
+    /// riêng, tất cả cùng 1 hàng (WrapPanel, tự xuống hàng nếu nhiều ổ) +
+    /// chi tiết từng ổ + dòng note pin. Vòng nào không có dữ liệu thì không
+    /// vẽ. Dữ liệu ổ từ DriveSummaries, % chai pin từ BatteryWearPercent
     /// (cùng nguồn Đối chiếu cấu hình thu thập nền khi mở app).</summary>
     void RefreshHealthCard()
     {
         var drives = _host.DriveSummaries;
         double? wear = _host.BatteryWearPercent;
 
-        // Ổ yếu nhất (theo % sức khỏe) = vòng ngoài; ổ nào cũng không đọc
-        // được % thì vòng ngoài xám + "?".
-        var worst = drives
-            .Where(d => d.HealthPercent != null)
-            .OrderBy(d => d.HealthPercent)
-            .FirstOrDefault();
-        double? driveHealth = worst?.HealthPercent;
-        Color driveColor = DriveBandColor(driveHealth);
-        double? batteryRemaining = wear == null ? null : 100 - wear.Value;
-        Color batteryColor = BatteryBandColor(wear);
+        // 1 vòng/ổ (theo thứ tự liệt kê) + 1 vòng pin, cùng 1 hàng.
+        RingsRow.Children.Clear();
+        for (int i = 0; i < drives.Count; i++)
+        {
+            var d = drives[i];
+            string letters = d.Letters.Count > 0 ? $" ({string.Join(", ", d.Letters)})" : "";
+            RingsRow.Children.Add(BuildLabeledRing(
+                d.HealthPercent, DriveBandColor(d.HealthPercent), $"Ổ {i + 1}{letters}"));
+        }
+        if (wear != null)
+            RingsRow.Children.Add(BuildLabeledRing(
+                100 - wear.Value, BatteryBandColor(wear), "Pin"));
 
         bool hasGauge = drives.Count > 0 || wear != null;
-        HealthGaugeRow.Visibility = hasGauge ? Visibility.Visible : Visibility.Collapsed;
+        RingsRow.Visibility = hasGauge ? Visibility.Visible : Visibility.Collapsed;
         DriveEmptyText.Visibility = drives.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
 
-        NestedGaugeHost.Children.Clear();
-        if (hasGauge)
-            NestedGaugeHost.Children.Add(BuildNestedGauge(
-                drives.Count > 0, driveHealth, driveColor,
-                wear != null, batteryRemaining, batteryColor));
-
-        // Chú giải ổ: câu kết luận nguyên văn của ổ yếu nhất (đã có sẵn %
-        // trong câu); ổ không đọc được % thì lấy ổ đầu tiên.
-        DriveLegendRow.Visibility = drives.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
-        if (drives.Count > 0)
-        {
-            DriveDot.Fill = new SolidColorBrush(driveColor);
-            DriveLegendText.Text = (worst ?? drives[0]).VerdictText;
-            DriveLegendText.Foreground = new SolidColorBrush(driveColor);
-        }
-
-        // Chú giải pin: chưa thu thập xong → dòng chờ; có số → câu note
-        // (còn % dung lượng • chai % — mức); đã thu thập mà không có pin
-        // (desktop) → ẩn hẳn hàng.
-        if (wear == null && _host.Signals.ContainsKey("config"))
-        {
-            BatteryLegendRow.Visibility = Visibility.Collapsed;
-        }
-        else
-        {
-            BatteryLegendRow.Visibility = Visibility.Visible;
-            if (wear == null)
-            {
-                BatteryDot.Fill = HexBrush("#888080");
-                BatteryLegendText.Text = Lang.Get("Dash.BatteryEmpty");
-                BatteryLegendText.Foreground = HexBrush("#888080");
-            }
-            else
-            {
-                string band = wear < 20 ? Lang.Get("Dash.BatteryBandHealthy")
-                    : wear < 40 ? Lang.Get("Dash.BatteryBandWorn")
-                    : Lang.Get("Dash.BatteryBandBad");
-                BatteryDot.Fill = new SolidColorBrush(batteryColor);
-                BatteryLegendText.Text = string.Format(Lang.Get("Dash.BatteryGaugeNote"),
-                    $"{batteryRemaining:0.#}", $"{wear.Value:0.#}", band);
-                BatteryLegendText.Foreground = new SolidColorBrush(batteryColor);
-            }
-        }
-
-        // Chi tiết từng ổ (chỉ chữ, không còn donut riêng): model • dung
-        // lượng (ổ đĩa) + % sức khỏe + lý do chặn/cảnh báo nếu có.
+        // Chi tiết từng ổ (chỉ chữ): model • dung lượng (ổ đĩa) + % sức
+        // khỏe + lý do chặn/cảnh báo nếu có.
         DriveList.Children.Clear();
         foreach (var d in drives)
         {
@@ -406,9 +363,33 @@ public partial class DashboardPage : UserControl
                 });
             DriveList.Children.Add(row);
         }
+
+        // Dòng note pin: chưa thu thập xong → dòng chờ; có số → câu note
+        // (còn % dung lượng • chai % — mức); đã thu thập mà không có pin
+        // (desktop) → ẩn hẳn.
+        if (wear == null && _host.Signals.ContainsKey("config"))
+        {
+            BatteryNoteText.Visibility = Visibility.Collapsed;
+        }
+        else if (wear == null)
+        {
+            BatteryNoteText.Visibility = Visibility.Visible;
+            BatteryNoteText.Text = Lang.Get("Dash.BatteryEmpty");
+            BatteryNoteText.Foreground = HexBrush("#888080");
+        }
+        else
+        {
+            string band = wear < 20 ? Lang.Get("Dash.BatteryBandHealthy")
+                : wear < 40 ? Lang.Get("Dash.BatteryBandWorn")
+                : Lang.Get("Dash.BatteryBandBad");
+            BatteryNoteText.Visibility = Visibility.Visible;
+            BatteryNoteText.Text = string.Format(Lang.Get("Dash.BatteryGaugeNote"),
+                $"{100 - wear.Value:0.#}", $"{wear.Value:0.#}", band);
+            BatteryNoteText.Foreground = new SolidColorBrush(BatteryBandColor(wear));
+        }
     }
 
-    /// <summary>Màu vòng ngoài theo mốc kết luận ổ: không rõ xám, ≥90% xanh,
+    /// <summary>Màu vòng ổ theo mốc kết luận ổ: không rõ xám, ≥90% xanh,
     /// 70–89% cam, &lt;70% đỏ.</summary>
     static Color DriveBandColor(double? health) => health == null
         ? (Color)ColorConverter.ConvertFromString("#888080")
@@ -416,7 +397,7 @@ public partial class DashboardPage : UserControl
         : health >= 70 ? (Color)ColorConverter.ConvertFromString("#DE870F")
         : (Color)ColorConverter.ConvertFromString("#D33D42");
 
-    /// <summary>Màu vòng trong theo mốc chai pin: &lt;20% xanh, 20–&lt;40%
+    /// <summary>Màu vòng pin theo mốc chai pin: &lt;20% xanh, 20–&lt;40%
     /// cam, ≥40% đỏ; chưa có số thì xám.</summary>
     static Color BatteryBandColor(double? wear) => wear == null
         ? (Color)ColorConverter.ConvertFromString("#888080")
@@ -424,33 +405,38 @@ public partial class DashboardPage : UserControl
         : wear < 40 ? (Color)ColorConverter.ConvertFromString("#DE870F")
         : (Color)ColorConverter.ConvertFromString("#D33D42");
 
-    /// <summary>2 vòng donut lồng nhau: vòng ngoài (120) = sức khỏe ổ, vòng
-    /// trong (84) = dung lượng pin còn lại; % hiện giữa vòng (của vòng ngoài
-    /// nếu có, không thì của vòng trong; không có số nào thì "?"). Vòng nào
-    /// không có dữ liệu thì không vẽ.</summary>
-    Grid BuildNestedGauge(bool hasDrive, double? driveHealth, Color driveColor,
-                          bool hasBattery, double? batteryRemaining, Color batteryColor)
+    /// <summary>1 vòng donut + nhãn bên dưới (tên ổ/pin): vòng 84, % hiện
+    /// giữa vòng (không có số thì "?"), nhãn căn giữa, rộng 100.</summary>
+    StackPanel BuildLabeledRing(double? pct, Color color, string label)
     {
-        const double outerSize = 120, innerSize = 84, stroke = 12;
-        var host = new Grid { Width = outerSize, Height = outerSize };
-        if (hasDrive) host.Children.Add(BuildRing(outerSize, stroke, driveHealth, driveColor));
-        if (hasBattery)
+        var item = new StackPanel { Width = 100, Margin = new Thickness(0, 0, 12, 0) };
+        var gauge = BuildSingleGauge(pct, color);
+        gauge.HorizontalAlignment = HorizontalAlignment.Center;
+        item.Children.Add(gauge);
+        item.Children.Add(new TextBlock
         {
-            var inner = BuildRing(innerSize, stroke, batteryRemaining, batteryColor);
-            inner.HorizontalAlignment = HorizontalAlignment.Center;
-            inner.VerticalAlignment = VerticalAlignment.Center;
-            host.Children.Add(inner);
-        }
-        double? center = hasDrive ? driveHealth : batteryRemaining;
-        host.Children.Add(new TextBlock
+            Text = label, FontSize = 12, FontWeight = FontWeights.SemiBold,
+            TextAlignment = TextAlignment.Center, TextWrapping = TextWrapping.Wrap,
+            Margin = new Thickness(0, 6, 0, 0),
+        });
+        return item;
+    }
+
+    /// <summary>1 vòng donut đơn (track + cung đầy theo % + % ở giữa):
+    /// 100% → ellipse đầy, 0%/null → chỉ track.</summary>
+    Grid BuildSingleGauge(double? pct, Color color)
+    {
+        const double size = 84, stroke = 12;
+        var gauge = BuildRing(size, stroke, pct, color);
+        gauge.Children.Add(new TextBlock
         {
-            Text = center == null ? "?" : $"{center.Value:0.#}%",
-            FontSize = 16, FontWeight = FontWeights.Bold,
-            Foreground = new SolidColorBrush(hasDrive ? driveColor : batteryColor),
+            Text = pct == null ? "?" : $"{pct.Value:0.#}%",
+            FontSize = 18, FontWeight = FontWeights.Bold,
+            Foreground = new SolidColorBrush(color),
             HorizontalAlignment = HorizontalAlignment.Center,
             VerticalAlignment = VerticalAlignment.Center,
         });
-        return host;
+        return gauge;
     }
 
     /// <summary>Một vòng donut (track + cung đầy theo %): 100% → vẽ hẳn

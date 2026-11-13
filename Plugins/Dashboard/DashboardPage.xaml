@@ -77,31 +77,15 @@
                         </Grid>
                     </Border>
 
-                    <!-- Thẻ sức khỏe chung: 2 vòng donut lồng nhau — vòng ngoài
-                         = sức khỏe ổ (ổ yếu nhất nếu nhiều ổ), vòng trong =
-                         dung lượng pin còn lại; viên pin 3D cũ đã bỏ. -->
+                    <!-- Thẻ sức khỏe chung: mỗi ổ 1 vòng donut riêng, pin 1
+                         vòng riêng, tất cả cùng 1 hàng; viên pin 3D cũ đã bỏ. -->
                     <Border Style="{StaticResource ReferenceCard}">
                         <StackPanel>
                             <TextBlock Text="{DynamicResource Dash.HealthTitle}" Style="{StaticResource CardHeading}" Margin="0,0,0,10"/>
                             <TextBlock x:Name="DriveEmptyText" Text="{DynamicResource Dash.DriveEmpty}" Style="{StaticResource Muted}"/>
-                            <Grid x:Name="HealthGaugeRow" Margin="0,2,0,0">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <Grid x:Name="NestedGaugeHost" Grid.Column="0" Width="120" Height="120" Margin="0,0,14,0"/>
-                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                    <StackPanel x:Name="DriveLegendRow" Orientation="Horizontal" Margin="0,0,0,6">
-                                        <Ellipse x:Name="DriveDot" Width="10" Height="10" Margin="0,0,6,0" VerticalAlignment="Center"/>
-                                        <TextBlock x:Name="DriveLegendText" FontSize="12" FontWeight="SemiBold" TextWrapping="Wrap" VerticalAlignment="Center"/>
-                                    </StackPanel>
-                                    <StackPanel x:Name="BatteryLegendRow" Orientation="Horizontal">
-                                        <Ellipse x:Name="BatteryDot" Width="10" Height="10" Margin="0,0,6,0" VerticalAlignment="Center"/>
-                                        <TextBlock x:Name="BatteryLegendText" FontSize="12" FontWeight="SemiBold" TextWrapping="Wrap" VerticalAlignment="Center"/>
-                                    </StackPanel>
-                                </StackPanel>
-                            </Grid>
+                            <WrapPanel x:Name="RingsRow" Orientation="Horizontal" Margin="0,2,0,0"/>
                             <StackPanel x:Name="DriveList" Margin="0,10,0,0"/>
+                            <TextBlock x:Name="BatteryNoteText" FontSize="12" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,10,0,0"/>
                         </StackPanel>
                     </Border>
                 </StackPanel>
