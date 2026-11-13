@@ -3,7 +3,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using YanJi.PluginSdk;
 using YanJi.Services;
@@ -588,31 +587,14 @@ public partial class MainWindow : Window
     void OnLangButtonClick(object sender, RoutedEventArgs e) =>
         LanguageManager.Set(LanguageManager.Current == "vi" ? "en" : "vi");
 
-    // Toggle đổi ngôn ngữ kiểu 3D chìm (theo mẫu SwiftUI user gửi): nút tròn
-    // mang cờ của ngôn ngữ HIỆN TẠI, trượt trái (VI) / phải (EN); nhãn chỉ hiện
-    // phía không có nút tròn (như mask trong code mẫu). Cờ vẽ bằng vector vì
-    // WPF không vẽ cờ emoji thành hình (chỉ hiện chữ GB/VN).
-    bool _langKnobPlaced;
+    // Nút chuyển ngữ (style RaisedButton18 như nút Giới thiệu): chỉ hiện cờ
+    // tròn của ngôn ngữ HIỆN TẠI, bấm để đổi. Cờ vẽ bằng vector vì WPF không
+    // vẽ cờ emoji thành hình (chỉ hiện chữ GB/VN).
     void SyncLangButton()
     {
         bool isVi = LanguageManager.Current == "vi";
-        double targetLeft = isVi ? 4 : 70;
-        LangKnobFlagUk.Visibility = isVi ? Visibility.Collapsed : Visibility.Visible;
-        LangKnobFlagVn.Visibility = isVi ? Visibility.Visible : Visibility.Collapsed;
-        LangLabelVi.Visibility = isVi ? Visibility.Collapsed : Visibility.Visible;
-        LangLabelEn.Visibility = isVi ? Visibility.Visible : Visibility.Collapsed;
-        if (!_langKnobPlaced)
-        {
-            Canvas.SetLeft(LangKnob, targetLeft);
-            _langKnobPlaced = true;
-            return;
-        }
-        var anim = new DoubleAnimation(Canvas.GetLeft(LangKnob), targetLeft,
-            new Duration(TimeSpan.FromMilliseconds(300)))
-        {
-            EasingFunction = new BackEase { Amplitude = 0.2, EasingMode = EasingMode.EaseOut },
-        };
-        LangKnob.BeginAnimation(Canvas.LeftProperty, anim);
+        LangFlagUk.Visibility = isVi ? Visibility.Collapsed : Visibility.Visible;
+        LangFlagVn.Visibility = isVi ? Visibility.Visible : Visibility.Collapsed;
     }
 
     void SyncThemeSwitch()

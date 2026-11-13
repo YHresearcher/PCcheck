@@ -304,11 +304,11 @@ public partial class DashboardPage : UserControl
         }
     }
 
-    /// <summary>Thẻ độ chai pin: gauge tự vẽ giống thẻ ổ — mức đầy = dung lượng
-    /// còn lại (100 - % chai), màu theo mốc chai (<20% xanh, 20–<40% cam,
-    /// ≥40% đỏ), nhãn chỉ báo trạng thái (không khuyên chi phí thay pin).
-    /// Chưa thu thập thì hiện dòng chờ; đã thu thập mà không có pin (desktop /
-    /// không đọc được) thì ẩn cả thẻ, không đoán.</summary>
+    /// <summary>Thẻ độ chai pin: viên pin 3D giống Đối chiếu cấu hình — mức đầy
+    /// = dung lượng còn lại (100 - % chai), màu theo mốc chai (<20% xanh,
+    /// 20–<40% cam, ≥40% đỏ), nhãn chỉ trạng thái + mức chai (không khuyên chi
+    /// phí thay pin). Chưa thu thập thì hiện dòng chờ; đã thu thập mà không có
+    /// pin (desktop / không đọc được) thì ẩn cả thẻ, không đoán.</summary>
     void RefreshBatteryCard()
     {
         double? wear = _host.BatteryWearPercent;
@@ -319,14 +319,20 @@ public partial class DashboardPage : UserControl
         }
         BatteryCard.Visibility = Visibility.Visible;
         BatteryEmptyText.Visibility = wear == null ? Visibility.Visible : Visibility.Collapsed;
-        BatteryGaugeHost.Children.Clear();
+        BatteryGaugeGrid.Visibility = wear == null ? Visibility.Collapsed : Visibility.Visible;
         if (wear == null) return;
         double remaining = 100 - wear.Value;
+        BatteryFillColumn.Width = new GridLength(remaining, GridUnitType.Star);
+        BatteryEmptyColumn.Width = new GridLength(wear.Value, GridUnitType.Star);
         Color color = wear < 20 ? Colors.ForestGreen
             : wear < 40 ? (Color)ColorConverter.ConvertFromString("#DE870F")
             : (Color)ColorConverter.ConvertFromString("#D33D42");
-        BatteryGaugeHost.Children.Add(BuildGauge(remaining, color,
-            $"Còn {remaining:0.#}% dung lượng • Pin chai {wear:0.#}%"));
+        BatteryFill.Fill = BandBrush(color);
+        string band = wear < 20 ? Lang.Get("Dash.BatteryBandHealthy")
+            : wear < 40 ? Lang.Get("Dash.BatteryBandWorn")
+            : Lang.Get("Dash.BatteryBandBad");
+        BatteryNoteText.Text = string.Format(Lang.Get("Dash.BatteryGaugeNote"),
+            $"{remaining:0.#}", $"{wear.Value:0.#}", band);
     }
 
     Grid BuildDriveGauge(DriveSummary d)
