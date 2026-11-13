@@ -343,41 +343,82 @@ public partial class DashboardPage : UserControl
             : d.HealthPercent >= 90 ? Colors.ForestGreen
             : d.HealthPercent >= 70 ? (Color)ColorConverter.ConvertFromString("#DE870F")
             : (Color)ColorConverter.ConvertFromString("#D33D42");
-        double health = d.HealthPercent ?? 0;
-        string label = d.HealthPercent == null ? d.VerdictText : $"{d.HealthPercent}% • {d.VerdictText}";
-        return BuildGauge(health, color, label);
+        // % sức khỏe hiện giữa vòng donut nên nhãn chỉ còn câu kết luận.
+        return BuildGauge(d.HealthPercent, color, d.VerdictText);
     }
 
-    /// <summary>Gauge ngang tự vẽ: mức đầy = fill%, màu theo tham số, nhãn bên
-    /// phải. Dùng chung cho gauge sức khỏe ổ và gauge độ chai pin.</summary>
-    Grid BuildGauge(double fill, Color color, string label)
+    /// <summary>Gauge tròn (donut) tự vẽ: vòng đầy = fill% sức khỏe, % hiện
+    /// giữa vòng, nhãn kết luận bên phải. Không rõ % thì vòng xám + dấu "?".
+    /// Chỉ dùng cho thẻ sức khỏe ổ (thẻ pin đã dùng viên pin 3D riêng).</summary>
+    Grid BuildGauge(double? fill, Color color, string label)
     {
-        var trackGrid = new Grid();
-        trackGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(fill, GridUnitType.Star) });
-        trackGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(100 - fill, GridUnitType.Star) });
-        var fillRect = new System.Windows.Shapes.Rectangle { Fill = BandBrush(color), RadiusX = 3, RadiusY = 3 };
-        Grid.SetColumn(fillRect, 0);
-        trackGrid.Children.Add(fillRect);
-        var track = new Border
+        const double size = 84;
+        const double stroke = 10;
+        double radius = size / 2 - stroke / 2; // 37: đường tâm của vòng
+        var donut = new Grid { Width = size, Height = size };
+        var track = new System.Windows.Shapes.Ellipse
         {
-            Height = 12, CornerRadius = new CornerRadius(6),
-            BorderThickness = new Thickness(1), Padding = new Thickness(2),
+            Width = size, Height = size, StrokeThickness = stroke,
+            Fill = Brushes.Transparent,
         };
-        track.SetResourceReference(Border.BorderBrushProperty, "BorderBrush");
-        track.SetResourceReference(Border.BackgroundProperty, "SurfaceBgBrush");
-        track.Child = trackGrid;
+        track.SetResourceReference(System.Windows.Shapes.Shape.StrokeProperty, "BorderBrush");
+        donut.Children.Add(track);
+        double pct = fill ?? 0;
+        if (pct >= 100)
+        {
+            // Vòng tròn đầy: arc có điểm đầu = điểm cuối thì vẽ không ra gì,
+            // nên vẽ hẳn 1 ellipse đầy thay cho arc.
+            donut.Children.Add(new System.Windows.Shapes.Ellipse
+            {
+                Width = size, Height = size, StrokeThickness = stroke,
+                Stroke = BandBrush(color), Fill = Brushes.Transparent,
+            });
+        }
+        else if (pct > 0)
+        {
+            double angle = pct / 100 * 360;
+            double rad = angle * Math.PI / 180;
+            var end = new Point(
+                size / 2 + radius * Math.Sin(rad),
+                size / 2 - radius * Math.Cos(rad));
+            var arc = new System.Windows.Shapes.Path
+            {
+                Stroke = BandBrush(color), StrokeThickness = stroke,
+                StrokeStartLineCap = PenLineCap.Round,
+                StrokeEndLineCap = PenLineCap.Round,
+                Data = new PathGeometry(new[]
+                {
+                    new PathFigure(new Point(size / 2, size / 2 - radius),
+                        new[]
+                        {
+                            new ArcSegment(end, new Size(radius, radius), 0,
+                                angle > 180, SweepDirection.Clockwise, true),
+                        }, false),
+                }),
+            };
+            donut.Children.Add(arc);
+        }
+        var centerText = new TextBlock
+        {
+            Text = fill == null ? "?" : $"{fill.Value:0.#}%",
+            FontSize = 18, FontWeight = FontWeights.Bold,
+            Foreground = new SolidColorBrush(color),
+            HorizontalAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Center,
+        };
+        donut.Children.Add(centerText);
         var labelText = new TextBlock
         {
             Text = label, FontSize = 11, FontWeight = FontWeights.SemiBold,
-            Foreground = new SolidColorBrush(color), Margin = new Thickness(8, 0, 0, 0),
-            VerticalAlignment = VerticalAlignment.Center,
+            Foreground = new SolidColorBrush(color), Margin = new Thickness(12, 0, 0, 0),
+            VerticalAlignment = VerticalAlignment.Center, TextWrapping = TextWrapping.Wrap,
         };
         var grid = new Grid();
-        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-        Grid.SetColumn(track, 0);
+        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+        Grid.SetColumn(donut, 0);
         Grid.SetColumn(labelText, 1);
-        grid.Children.Add(track);
+        grid.Children.Add(donut);
         grid.Children.Add(labelText);
         return grid;
     }
