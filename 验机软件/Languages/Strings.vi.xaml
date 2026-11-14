@@ -32,6 +32,7 @@
     <system:String x:Key="Wiz.FastDesc">Kiểm tra nhanh hệ thống, dưới 5 phút — không nướng máy, không đo tốc độ ổ.</system:String>
     <system:String x:Key="Wiz.DeepTitle">Kiểm tra sâu</system:String>
     <system:String x:Key="Wiz.DeepDesc">Kiểm tra tất cả phần cứng, kể cả nướng máy và đo tốc độ ổ.</system:String>
+    <system:String x:Key="Wiz.GridTitle">Kiểm tra từng bước</system:String>
     <!-- Menu bên trái: nút chỉ còn chữ, icon là ảnh trong XAML -->
     <system:String x:Key="Nav.Overview">Tổng quan</system:String>
     <system:String x:Key="Nav.Inspection">Kiểm tra chi tiết</system:String>
@@ -104,6 +105,20 @@
     <system:String x:Key="Dash.BatteryHealthLine">Dung lượng còn lại {0} - {1}</system:String>
     <system:String x:Key="Dash.VerdictBlocked">Chặn</system:String>
     <system:String x:Key="Dash.HealthUnknown">sức khỏe: Không rõ</system:String>
+    <system:String x:Key="Dash.OverviewTitle">Tổng quan thiết bị</system:String>
+    <system:String x:Key="Dash.OverviewSubtitle">Màn hình này hiển thị thông tin máy, tình trạng pin/ổ và tiến độ các bài kiểm tra.</system:String>
+    <system:String x:Key="Dash.Refresh">Kiểm tra lại</system:String>
+    <system:String x:Key="Dash.DeviceTitle">Thông tin máy</system:String>
+    <system:String x:Key="Dash.TileRam">RAM</system:String>
+    <system:String x:Key="Dash.TileSsd">SSD</system:String>
+    <system:String x:Key="Dash.TileBattery">Pin</system:String>
+    <system:String x:Key="Dash.TileBatteryState">Trạng thái pin</system:String>
+    <system:String x:Key="Dash.TileOs">Hệ điều hành</system:String>
+    <system:String x:Key="Dash.BatteryTileValue">{0}% (chai {1}%)</system:String>
+    <system:String x:Key="Dash.PassedPrefix">Đã pass</system:String>
+    <system:String x:Key="Dash.PassedSuffix">bài kiểm tra.</system:String>
+    <system:String x:Key="Dash.TestListTitle">Danh sách bài kiểm tra ({0})</system:String>
+    <system:String x:Key="Dash.ContinueDetail">Tiếp tục kiểm tra chi tiết</system:String>
     <!-- Trang Tổng kết / Báo cáo -->
     <system:String x:Key="Sum.Title">Kết luận mua máy — mua được hay không</system:String>
     <system:String x:Key="Sum.Subtitle">Dành cho người mua: chỉ cần đọc 2 dòng dưới là đủ</system:String>
@@ -139,6 +154,20 @@
     <system:String x:Key="Sum.Save.Done">Đã lưu hồ sơ vào {0}.{1} Lưu xong mới test máy tiếp theo, vì kết quả đo ổ của máy sau sẽ ghi đè file gốc.</system:String>
     <system:String x:Key="Sum.Save.Failed">Lưu hồ sơ thất bại: {0}. Thử kiểm tra USB còn ghi được không, rồi bấm Lưu lại.</system:String>
     <system:String x:Key="Sum.AnTamNoteLabel">An Tâm nhắn bạn:</system:String>
+    <system:String x:Key="Sum.ReportTitle">Kết luận kiểm tra</system:String>
+    <system:String x:Key="Sum.ReportNote">Kết luận tổng hợp tự động từ các bài kiểm tra chức năng, pin, ổ lưu trữ/SMART; bài stress ngắn không chứng minh ổn định lâu dài.</system:String>
+    <system:String x:Key="Sum.ProgressTitle">Tiến độ phiên kiểm tra</system:String>
+    <system:String x:Key="Sum.ProgressCount">{0}/{1} hạng mục</system:String>
+    <system:String x:Key="Sum.ProgressDone">Đã hoàn tất phiên kiểm tra.</system:String>
+    <system:String x:Key="Sum.ProgressLeft">Còn bài chưa kiểm tra.</system:String>
+    <system:String x:Key="Sum.ContinueTest">Tiếp tục kiểm tra</system:String>
+    <system:String x:Key="Sum.DetailTitle">Kết quả chi tiết</system:String>
+    <system:String x:Key="Sum.PinStorageTitle">Pin &amp; Lưu trữ</system:String>
+    <system:String x:Key="Sum.PinLine">Pin: {0}% (ước tính)</system:String>
+    <system:String x:Key="Sum.PinUnknown">Pin: chưa đủ dữ liệu</system:String>
+    <system:String x:Key="Sum.DrivesLine">Ổ lưu trữ nhận diện: {0}</system:String>
+    <system:String x:Key="Sum.SmartNote">SMART không khả dụng không được coi là lỗi ổ.</system:String>
+    <system:String x:Key="Sum.AnTamTitle">An Tâm nhắn bạn</system:String>
     <system:String x:Key="Sum.FreeSpaceWarn"> Cảnh báo: ổ chứa hồ sơ còn {0:0} MB trống.</system:String>
 
     <!-- Nút popup riêng của app -->

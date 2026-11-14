@@ -59,9 +59,8 @@ public partial class DashboardPage : UserControl
     }
 
     public sealed record TestLine(
-        string Icon, string Name, string Status, Brush StatusBrush,
-        Brush RowBrush, Brush IconBrush, Brush IconBackground, string Indicator, string Detail,
-        string? IconPath, string? StatusIcon);
+        string Name, string Status, Brush StatusBrush, Brush PillBrush,
+        string? StatusIcon, string Indicator);
 
     static Brush HexBrush(string hex)
     {
@@ -70,24 +69,22 @@ public partial class DashboardPage : UserControl
         return b;
     }
 
-    // Các hàng đúng thứ tự và màu của bản thiết kế đã duyệt.
+    // Các hàng đúng thứ tự bản thiết kế đã duyệt (thẻ danh sách kiểu Mac:
+    // icon trạng thái + tên + viên thuốc, không còn hàng pastel).
     // AV bao gồm 3 phép kiểm tra (loa / webcam / microphone) trong 1 plugin.
     // Trackpad chỉ được tính sau khi kỹ thuật viên đánh dấu xác minh ở Ngoại quan.
-    // Name là key chuỗi ngôn ngữ (Lang.Get lúc vẽ), không phải chữ hiện thẳng.
-    // IconPath: ảnh icon thật trong bộ icon An Tâm Mac Check (Assets, file gốc
-    // user gửi, pack URI host) — 24 icon đợt 1 + 5 icon kiểm tra đợt 2; đủ cả
-    // 8 hàng. null = chưa có icon cho hàng này → giữ ký tự Icon như cũ.
+    // NameKey là key chuỗi ngôn ngữ (Lang.Get lúc vẽ), không phải chữ hiện thẳng.
     const string IconAssets = "pack://application:,,,/Assets/";
-    static readonly (string Id, string NameKey, string Icon, string? IconPath, string Row, string IconBg, string Fg)[] Rows =
+    static readonly (string Id, string NameKey)[] Rows =
     [
-        ("screen",   "Dash.Row.Screen",   "▣", IconAssets + "01_laptop_orange.png",     "#E5F4FF", "#D2EAFF", "#1688ED"),
-        ("av",       "Dash.Row.Speakers", "♫", IconAssets + "loa_speaker.png",          "#EEECFF", "#E1E0FF", "#536BFF"),
-        ("av",       "Dash.Row.Webcam",   "▣", IconAssets + "webcam_camera.png",        "#F1E5FF", "#E5D2FF", "#8645E8"),
-        ("keyboard", "Dash.Row.Keyboard", "⌨", IconAssets + "ban_phim_keyboard.png",    "#FFE7F2", "#FFD5EC", "#E83B9B"),
-        ("trackpad", "Dash.Row.Trackpad", "▭", IconAssets + "trackpad.png",             "#DFF8F0", "#C8F1E4", "#08BA87"),
-        ("av",       "Dash.Row.Mic",      "♩", IconAssets + "microphone.png",           "#E6F8E7", "#D2F3D5", "#12AF37"),
-        ("ports",    "Dash.Row.Ports",    "ϟ", IconAssets + "08_lightning_orange.png",  "#FFE9E3", "#FFDAD0", "#F26427"),
-        ("visual",   "Dash.Row.Visual",   "▦", IconAssets + "15_search_gray.png",       "#FFF2D4", "#FFE8B0", "#E8A600")
+        ("screen",   "Dash.Row.Screen"),
+        ("av",       "Dash.Row.Speakers"),
+        ("av",       "Dash.Row.Webcam"),
+        ("keyboard", "Dash.Row.Keyboard"),
+        ("trackpad", "Dash.Row.Trackpad"),
+        ("av",       "Dash.Row.Mic"),
+        ("ports",    "Dash.Row.Ports"),
+        ("visual",   "Dash.Row.Visual")
     ];
 
 
@@ -150,6 +147,14 @@ public partial class DashboardPage : UserControl
     }
 
     void HardwareButton_Click(object sender, RoutedEventArgs e) => _host.NavigateTo("config");
+
+    // Nút "Kiểm tra lại" ở header kiểu Mac: đọc lại SMBIOS rồi vẽ lại toàn
+    // bộ Dashboard từ dữ liệu mới nhất của host.
+    void RefreshButton_Click(object sender, RoutedEventArgs e)
+    {
+        _smbios = SmbiosService.Read();
+        Refresh();
+    }
     void HealthButton_Click(object sender, RoutedEventArgs e) => _host.NavigateTo("health");
     void SummaryButton_Click(object sender, RoutedEventArgs e) => _host.NavigateTo("summary");
 
@@ -169,13 +174,6 @@ public partial class DashboardPage : UserControl
 
     void Refresh()
     {
-        var passable = _host.Modules.Where(m => !m.Terminal).OrderBy(m => m.Order).ToList();
-        int done = passable.Count(m => _host.IsDone(m.Id));
-        int total = passable.Count;
-        ProgressText.Text = total > 0
-            ? string.Format(Lang.Get("Dash.ProgressDone"), done, total)
-            : Lang.Get("Dash.ProgressNone");
-
         var tests = new List<TestLine>();
         bool trackpadVerified = _host.IsDone("visual")
             && _host.Signals.TryGetValue("visual", out var visualSignals)
@@ -208,6 +206,14 @@ public partial class DashboardPage : UserControl
                 ModuleVerdictLevel.Chan => HexBrush("#D33D42"),
                 _ => HexBrush("#888080")
             };
+            // Nền viên thuốc = 8% màu trạng thái (kiểu Mac).
+            Brush pill = grade switch
+            {
+                ModuleVerdictLevel.Dat => HexBrush("#1418AD4D"),
+                ModuleVerdictLevel.CanhBao => HexBrush("#14DE870F"),
+                ModuleVerdictLevel.Chan => HexBrush("#14D33D42"),
+                _ => HexBrush("#14888080")
+            };
             // Cột trạng thái: ảnh icon thật trong bộ 24 icon Mac. Bộ không có
             // icon cảnh báo nên CanhBao giữ dấu "!" chữ như cũ (không lấy nhầm
             // icon lỗi đỏ — cảnh báo khác lỗi).
@@ -225,18 +231,25 @@ public partial class DashboardPage : UserControl
                 ModuleVerdictLevel.Chan => "✕",
                 _ => "○"
             };
-            string detail = spec.Id == "trackpad"
-                ? Lang.Get("Dash.Detail.Trackpad")
-                : spec.Id == "av" ? Lang.Get("Dash.Detail.Av")
-                : Lang.Get("Dash.Detail.Default");
-
-            tests.Add(new TestLine(spec.Icon, Lang.Get(spec.NameKey), label, color,
-                HexBrush(spec.Row), HexBrush(spec.Fg), HexBrush(spec.IconBg), indicator, detail,
-                spec.IconPath, statusIcon));
+            tests.Add(new TestLine(Lang.Get(spec.NameKey), label, color, pill, statusIcon, indicator));
         }
-        QuickTestList.ItemsSource = tests;
-        ProgressText.Text = string.Format(Lang.Get("Dash.Progress"),
-            tests.Count(t => t.Status != Lang.Get("Dash.Status.Untried")), tests.Count);
+        // Thẻ kết quả nhanh kiểu Mac: số pass lớn + thanh tiến độ + 3 ô số.
+        // 3 ô: Đạt = Dat, Có lỗi = Chan, Chưa thử = ChuaTest; module Cảnh báo
+        // không vào ô nào — nó hiện viên thuốc cam ở danh sách bên phải.
+        int passCount = tests.Count(t => t.Status == Lang.Get("Dash.Status.Pass"));
+        int failCount = tests.Count(t => t.Status == Lang.Get("Dash.Status.Fail"));
+        int untriedCount = tests.Count(t => t.Status == Lang.Get("Dash.Status.Untried"));
+        PassedCountText.Text = $"{passCount}/{tests.Count}";
+        SummaryProgressBar.Maximum = tests.Count;
+        SummaryProgressBar.Value = passCount;
+        PassTileCount.Text = passCount.ToString();
+        FailTileCount.Text = failCount.ToString();
+        LeftTileCount.Text = untriedCount.ToString();
+        // Thẻ danh sách kiểu Mac: 2 cột, chia đôi ở giữa, vạch chia ở giữa.
+        TestListTitleText.Text = string.Format(Lang.Get("Dash.TestListTitle"), tests.Count);
+        int midpoint = (tests.Count + 1) / 2;
+        TestListLeft.ItemsSource = tests.Take(midpoint).ToList();
+        TestListRight.ItemsSource = tests.Skip(midpoint).ToList();
         MachineText.Text = string.Format(Lang.Get("Dash.Device"), Environment.MachineName);
         CpuText.Text = "CPU: " + ReadCpuName();
         // Hãng / Model / S/N từ SMBIOS thô (cùng nguồn với Đối chiếu cấu hình);
@@ -252,26 +265,29 @@ public partial class DashboardPage : UserControl
         BrandModelText.Visibility = brandModel == null ? Visibility.Collapsed : Visibility.Visible;
         SerialText.Text = _smbios?.SystemSerial == null ? "" : string.Format(Lang.Get("Dash.SerialLine"), _smbios.SystemSerial);
         SerialText.Visibility = _smbios?.SystemSerial == null ? Visibility.Collapsed : Visibility.Visible;
-        RamText.Text = "RAM: " + ReadPhysicalMemory();
         GpuText.Text = Lang.Get("Dash.GpuLine");
-        StorageText.Text = _host.DriveSummaries.Count > 0
-            ? string.Format(Lang.Get("Dash.StorageFound"), _host.DriveSummaries.Count)
-            : Lang.Get("Dash.StorageEmpty");
+        // 5 ô tóm tắt kiểu Mac ở thẻ Thông tin máy.
+        RamTileValue.Text = ReadPhysicalMemory();
+        SsdTileValue.Text = _host.DriveSummaries.Count > 0
+            ? _host.DriveSummaries[0].Capacity
+            : Lang.Get("Dash.CpuUnread");
+        double? wear = _host.BatteryWearPercent;
+        BatteryTileValue.Text = wear == null
+            ? Lang.Get("Dash.CpuUnread")
+            : string.Format(Lang.Get("Dash.BatteryTileValue"), $"{100 - wear.Value:0.#}", $"{wear.Value:0.#}");
 
-        // Dòng hệ điều hành (registry) + dòng pin (tín hiệu từ Đối chiếu cấu hình):
-        // không có pin / không đọc được thì ẩn dòng, không đoán.
+        // Ô hệ điều hành (registry) + ô trạng thái pin (tín hiệu từ Đối chiếu
+        // cấu hình): không có pin / không đọc được thì ghi "Chưa đọc", không đoán.
         string? os = ReadOsName();
-        OsText.Text = os == null ? "" : string.Format(Lang.Get("Dash.OsLine"), os);
-        OsText.Visibility = os == null ? Visibility.Collapsed : Visibility.Visible;
+        OsTileValue.Text = os ?? Lang.Get("Dash.CpuUnread");
         string? battery = null;
         if (_host.Signals.TryGetValue("config", out var configSignals))
         {
-            if (configSignals.Contains("batteryHealthy")) battery = Lang.Get("Dash.BatteryHealthy");
-            else if (configSignals.Contains("batteryWorn20_30")) battery = Lang.Get("Dash.BatteryWorn");
-            else if (configSignals.Contains("batteryWornOver40")) battery = Lang.Get("Dash.BatteryBad");
+            if (configSignals.Contains("batteryHealthy")) battery = Lang.Get("Dash.BatteryBandHealthy");
+            else if (configSignals.Contains("batteryWorn20_30")) battery = Lang.Get("Dash.BatteryBandWorn");
+            else if (configSignals.Contains("batteryWornOver40")) battery = Lang.Get("Dash.BatteryBandBad");
         }
-        BatteryText.Text = battery ?? "";
-        BatteryText.Visibility = battery == null ? Visibility.Collapsed : Visibility.Visible;
+        BatteryStateTileValue.Text = battery ?? Lang.Get("Dash.CpuUnread");
 
         RefreshHealthCard();
         RenderTemp();

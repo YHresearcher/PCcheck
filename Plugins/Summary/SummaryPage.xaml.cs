@@ -38,7 +38,17 @@ public partial class SummaryPage : UserControl
     string _lastSentenceLang = Lang.CurrentLanguage; // ngôn ngữ lúc câu kết luận đang hiện được chọn
 
     /// <summary>1 dòng kết luận từng module hiển thị trong danh sách.</summary>
-    public record ModuleRow(string Name, string Grade, string Note);
+    public record ModuleRow(string Name, string Grade, Brush GradeBrush, string Note);
+
+    /// <summary>Màu mức kết luận trong danh sách chi tiết kiểu Mac: Đạt xanh,
+    /// Cảnh báo cam, Chặn đỏ, chưa test xám.</summary>
+    static Brush GradeBrushFor(ModuleVerdictLevel level) => level switch
+    {
+        ModuleVerdictLevel.Dat => Brushes.ForestGreen,
+        ModuleVerdictLevel.CanhBao => new SolidColorBrush((Color)ColorConverter.ConvertFromString("#DE870F")),
+        ModuleVerdictLevel.Chan => new SolidColorBrush((Color)ColorConverter.ConvertFromString("#D33D42")),
+        _ => Brushes.Gray,
+    };
 
     /// <summary>Kịch bản kết luận (pool câu lấy từ Phrasings.json qua PhrasingBank,
     /// không viết cố định trong C#). Thứ tự ưu tiên khi chọn kịch bản:
@@ -92,6 +102,10 @@ public partial class SummaryPage : UserControl
         _markedLoai = !_markedLoai;
         Refresh();
     }
+
+    // Nút "Tiếp tục kiểm tra" ở thẻ tiến độ kiểu Mac: vào lại wizard, host
+    // nhảy tới bài chưa xong đầu tiên theo chế độ đã chọn.
+    void ContinueButton_Click(object sender, RoutedEventArgs e) => _host.BeginWizardCheck();
 
 
     /// <summary>Lưu hồ sơ phiên này: 1 máy = 1 thư mục riêng, không ghi đè.
@@ -371,8 +385,10 @@ public partial class SummaryPage : UserControl
 
     void ShowAnTamNote()
     {
-        AnTamNoteText.Text = $"{Lang.Get("Sum.AnTamNoteLabel")}\n{_lastAnTamNote}";
-        AnTamNoteText.Visibility = Visibility.Visible;
+        // Tiêu đề đã là header của thẻ (Sum.AnTamTitle) nên dòng này chỉ còn
+        // câu thơ, không lặp lại nhãn.
+        AnTamNoteText.Text = _lastAnTamNote;
+        AnTamCard.Visibility = Visibility.Visible;
     }
 
     /// <summary>Đổi ngôn ngữ: giữ nguyên câu đang hiện (cùng chỉ số trong nhóm),
@@ -394,10 +410,10 @@ public partial class SummaryPage : UserControl
         string? groupKey = AnTamGroupKey();
         if (groupKey == null)
         {
-            // Chưa đủ dữ liệu (hoặc kịch bản lạ) → ẩn, báo cáo lưu cũng không có dòng này.
+            // Chưa đủ dữ liệu (hoặc kịch bản lạ) → ẩn cả thẻ, báo cáo lưu cũng không có dòng này.
             _lastAnTamNote = "";
             AnTamNoteText.Text = "";
-            AnTamNoteText.Visibility = Visibility.Collapsed;
+            AnTamCard.Visibility = Visibility.Collapsed;
             return;
         }
         if (_bank.AnTamGroup(groupKey) is { Length: > 0 } group)
@@ -416,7 +432,7 @@ public partial class SummaryPage : UserControl
         {
             _lastAnTamNote = "";
             AnTamNoteText.Text = "";
-            AnTamNoteText.Visibility = Visibility.Collapsed;
+            AnTamCard.Visibility = Visibility.Collapsed;
             return;
         }
         int idx2;
@@ -452,7 +468,7 @@ public partial class SummaryPage : UserControl
                 note = Lang.Get("Sum.UndoneNote");
             }
             grades.Add(grade);
-            rows.Add(new(m.DisplayName, GradeText(grade), note));
+            rows.Add(new(m.DisplayName, GradeText(grade), GradeBrushFor(grade), note));
         }
         ModuleList.ItemsSource = rows;
         _lastRows = rows;
@@ -575,6 +591,23 @@ public partial class SummaryPage : UserControl
                 "Dat" => Lang.Get("Sum.Reason.Good"),
                 _ => Lang.Get("Sum.Reason.Incomplete"),
             };
+
+        // Thẻ tiến độ kiểu Mac: x/y hạng mục + thanh tiến độ + trạng thái;
+        // còn bài chưa xong thì hiện nút vào lại wizard.
+        ProgressCountText.Text = string.Format(Lang.Get("Sum.ProgressCount"), doneCount, totalCount);
+        SessionProgressBar.Maximum = totalCount;
+        SessionProgressBar.Value = doneCount;
+        bool allDone = totalCount > 0 && doneCount == totalCount;
+        ProgressStatusText.Text = allDone ? Lang.Get("Sum.ProgressDone") : Lang.Get("Sum.ProgressLeft");
+        if (allDone) ProgressStatusText.Foreground = Brushes.ForestGreen;
+        else ProgressStatusText.SetResourceReference(TextBlock.ForegroundProperty, "TextSecondaryBrush");
+        ContinueButton.Visibility = allDone ? Visibility.Collapsed : Visibility.Visible;
+        // Thẻ Pin & Lưu trữ kiểu Mac: % pin còn lại + số ổ nhận diện.
+        double? wear = _host.BatteryWearPercent;
+        PinLineText.Text = wear == null
+            ? Lang.Get("Sum.PinUnknown")
+            : string.Format(Lang.Get("Sum.PinLine"), $"{100 - wear.Value:0.#}");
+        DrivesLineText.Text = string.Format(Lang.Get("Sum.DrivesLine"), _host.DriveSummaries.Count);
     }
 
     static string GradeText(ModuleVerdictLevel level) => level switch

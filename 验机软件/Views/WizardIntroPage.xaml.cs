@@ -6,9 +6,8 @@ using YanJi.PluginSdk;
 namespace YanJi.Views;
 
 /// <summary>Màn hình Bắt đầu trước wizard: chọn Fast check / Deep check rồi
-/// liệt kê các bài sẽ chạy (thiết kế hàng giống thẻ kết quả kiểm tra nhanh
-/// trên Dashboard: icon + hàng pastel + trạng thái). Bấm Bắt đầu mới vào bài
-/// chưa xong đầu tiên — màn hình này chưa khóa điều hướng.
+/// xem lưới ô kiểm tra kiểu Mac (mỗi ô nền pastel riêng + icon + trạng thái).
+/// Bấm Bắt đầu mới vào bài chưa xong đầu tiên — màn hình này chưa khóa điều hướng.
 /// Trang của host (không phải plugin), 1 instance dùng chung ở MainWindow.</summary>
 public partial class WizardIntroPage : UserControl
 {
@@ -30,7 +29,7 @@ public partial class WizardIntroPage : UserControl
     public bool DeepSelected { get; private set; }
 
     public sealed record IntroRow(string Icon, string? IconPath, Brush RowBrush, Brush IconBackground, Brush IconBrush,
-        string Name, string State, Brush StateBrush, string Mark, Brush MarkBrush);
+        string Name, string State, Brush StateBrush, string Mark, Brush MarkBrush, string? StatusIcon);
 
     static Brush HexBrush(string hex)
     {
@@ -113,7 +112,9 @@ public partial class WizardIntroPage : UserControl
                     done ? Lang.Get("Wiz.IntroDone") : Lang.Get("Wiz.IntroPending"),
                     done ? Brushes.ForestGreen : HexBrush("#888080"),
                     done ? "✓" : "○",
-                    done ? Brushes.ForestGreen : HexBrush("#888080"));
+                    done ? Brushes.ForestGreen : HexBrush("#888080"),
+                    done ? IconAssets + "21_status_pass_green.png"
+                         : IconAssets + "22_status_not_tested_gray.png");
             }).ToList();
         ModuleList.ItemsSource = rows;
     }

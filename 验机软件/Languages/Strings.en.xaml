@@ -32,6 +32,7 @@
     <system:String x:Key="Wiz.FastDesc">Quick system checks, under 5 minutes — no stress test, no disk benchmark.</system:String>
     <system:String x:Key="Wiz.DeepTitle">Deep check</system:String>
     <system:String x:Key="Wiz.DeepDesc">Checks all hardware, including stress-testing it and the disk benchmark.</system:String>
+    <system:String x:Key="Wiz.GridTitle">Step-by-step checks</system:String>
     <!-- Sidebar: buttons carry text only, icons are images in XAML -->
     <system:String x:Key="Nav.Overview">Overview</system:String>
     <system:String x:Key="Nav.Inspection">Detailed checks</system:String>
@@ -104,6 +105,20 @@
     <system:String x:Key="Dash.BatteryHealthLine">Capacity left {0} - {1}</system:String>
     <system:String x:Key="Dash.VerdictBlocked">Blocked</system:String>
     <system:String x:Key="Dash.HealthUnknown">Health: unknown</system:String>
+    <system:String x:Key="Dash.OverviewTitle">Device overview</system:String>
+    <system:String x:Key="Dash.OverviewSubtitle">This screen shows device info, battery/drive health and test progress.</system:String>
+    <system:String x:Key="Dash.Refresh">Refresh</system:String>
+    <system:String x:Key="Dash.DeviceTitle">Device info</system:String>
+    <system:String x:Key="Dash.TileRam">RAM</system:String>
+    <system:String x:Key="Dash.TileSsd">SSD</system:String>
+    <system:String x:Key="Dash.TileBattery">Battery</system:String>
+    <system:String x:Key="Dash.TileBatteryState">Battery state</system:String>
+    <system:String x:Key="Dash.TileOs">Operating system</system:String>
+    <system:String x:Key="Dash.BatteryTileValue">{0}% (worn {1}%)</system:String>
+    <system:String x:Key="Dash.PassedPrefix">Passed</system:String>
+    <system:String x:Key="Dash.PassedSuffix">tests.</system:String>
+    <system:String x:Key="Dash.TestListTitle">Test list ({0})</system:String>
+    <system:String x:Key="Dash.ContinueDetail">Continue detailed checks</system:String>
     <!-- Summary / Report page -->
     <system:String x:Key="Sum.Title">Buy verdict — worth buying or not</system:String>
     <system:String x:Key="Sum.Subtitle">For the buyer: the 2 lines below are all you need</system:String>
@@ -139,6 +154,20 @@
     <system:String x:Key="Sum.Save.Done">Session saved to {0}.{1} Only test the next machine after saving, because the next drive benchmark overwrites the source file.</system:String>
     <system:String x:Key="Sum.Save.Failed">Could not save the session: {0}. Check the USB is still writable, then press Save again.</system:String>
     <system:String x:Key="Sum.AnTamNoteLabel">An Tâm says:</system:String>
+    <system:String x:Key="Sum.ReportTitle">Test conclusion</system:String>
+    <system:String x:Key="Sum.ReportNote">Auto-summarised from functional tests, battery, storage/SMART; a short stress test does not prove long-term stability.</system:String>
+    <system:String x:Key="Sum.ProgressTitle">Session progress</system:String>
+    <system:String x:Key="Sum.ProgressCount">{0}/{1} items</system:String>
+    <system:String x:Key="Sum.ProgressDone">Test session complete.</system:String>
+    <system:String x:Key="Sum.ProgressLeft">Some tests remain.</system:String>
+    <system:String x:Key="Sum.ContinueTest">Continue testing</system:String>
+    <system:String x:Key="Sum.DetailTitle">Detailed results</system:String>
+    <system:String x:Key="Sum.PinStorageTitle">Battery &amp; Storage</system:String>
+    <system:String x:Key="Sum.PinLine">Battery: {0}% (estimated)</system:String>
+    <system:String x:Key="Sum.PinUnknown">Battery: not enough data</system:String>
+    <system:String x:Key="Sum.DrivesLine">Storage drives found: {0}</system:String>
+    <system:String x:Key="Sum.SmartNote">Unavailable SMART data is not a drive fault.</system:String>
+    <system:String x:Key="Sum.AnTamTitle">A note from An Tâm</system:String>
     <system:String x:Key="Sum.FreeSpaceWarn"> Warning: the drive holding the sessions has only {0:0} MB free.</system:String>
 
     <!-- App dialog buttons -->
