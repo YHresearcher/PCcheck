@@ -74,24 +74,8 @@ Kết luận tự động, **không chấm điểm 100**. Câu kết luận đ�
 - Sức khỏe ≥ 90% và không có lỗi nghiêm trọng → **Đạt**.
 - SMART không đọc được → **Không rõ** (kiểm tra tay bằng CrystalDiskInfo, không tự cho là tốt).
 
-## Lưu hồ sơ phiên này
-
-Ô S/N (tự điền từ serial firmware) + nút **Lưu hồ sơ phiên này** → `<thư mục app>\KetQua\<S/N>_<yyyyMMdd_HHmmss>\`, gồm `BaoCao.txt`, `KetQua.json` và bản sao kết quả đo ổ mới nhất. Chỉ mục `KetQua\DanhSach.csv` thêm 1 dòng/phiên.
-
-## Giới hạn đã biết
-
-- Vẫn cần quyền Admin.
-- Driver PawnIO không đi theo USB (cài riêng từng máy test).
-- Trạng thái thô của các module nằm trong `%APPDATA%\YanJi` trên máy test, không nằm trên USB — nhưng hồ sơ đã lưu thì nằm trong thư mục `KetQua` của app (trên USB).
-- Các tính năng mới chưa kiểm chứng trên máy Windows thật — checklist: `docs/WINDOWS-QA-v2.md`.
-
 ## Ghi công và giấy phép
 
 - BibaYanji của Bibapcs — code chính, giấy phép MIT, file LICENSE gốc giữ nguyên. Các thành phần kèm theo giữ giấy phép riêng: LibreHardwareMonitor (MPL-2.0), Prime95 (GIMPS freeware), PawnIO (GPL-2.0), CrystalDiskMark và diskspd (MIT), NAudio (Ms-PL), OpenTK (MIT), Be Vietnam Pro (OFL-1.1). Module Cổng kết nối & Sạc port từ laptop-diagnostic-tool của Tanxe Studio (MIT).
 - App không tích hợp phần mềm thương mại đóng nguồn nào (ví dụ HWiNFO). Thu thập phần cứng chỉ qua LibreHardwareMonitor và giao diện có sẵn của Windows (WMI, registry, Win32).
 - Bài nhạc test ở trang Camera - Mic - Loa: xem `AUDIO-LICENSE.md`.
-
-## Còn sót lại
-
-- Nút trình cài đặt Inno Setup vẫn tiếng Trung (chưa có file ngôn ngữ tiếng Việt `.isl`).
-- Tên file exe chính là `AnTamPCtest.exe`. Dòng ghi công bài nhạc test giữ nguyên văn bản gốc.

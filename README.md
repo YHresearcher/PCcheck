@@ -74,24 +74,8 @@ The verdict is rule-based, **no 100-point score**. Verdict sentences are read fr
 - Health ≥ 90% with no serious errors → **Pass**.
 - SMART unreadable → **Unknown** (check manually with CrystalDiskInfo; never assumed good).
 
-## Save this session
-
-A serial-number box (auto-filled from the firmware serial) + the **Lưu hồ sơ phiên này** (Save this session) button → `<app folder>\KetQua\<serial>_<yyyyMMdd_HHmmss>\`, containing `BaoCao.txt`, `KetQua.json` and a copy of the latest disk-test result. The index `KetQua\DanhSach.csv` gains one line per session.
-
-## Known limitations
-
-- Administrator rights are still required.
-- The PawnIO driver does not travel with the USB drive (install it separately on each test machine).
-- Raw module state lives in `%APPDATA%\YanJi` on the test machine, not on the USB drive — but saved session files live in the app's `KetQua` folder (on the USB drive).
-- New features have not yet been verified on a real Windows machine — checklist: `docs/WINDOWS-QA-v2.md`.
-
 ## Credits and license
 
 - BibaYanji by Bibapcs — main code, MIT license, original LICENSE file kept. Bundled components keep their own licenses: LibreHardwareMonitor (MPL-2.0), Prime95 (GIMPS freeware), PawnIO (GPL-2.0), CrystalDiskMark and diskspd (MIT), NAudio (Ms-PL), OpenTK (MIT), Be Vietnam Pro (OFL-1.1). The Ports & Charging module was ported from Tanxe Studio's laptop-diagnostic-tool (MIT).
 - The app integrates no closed-source commercial software (e.g. HWiNFO). Hardware data comes only from LibreHardwareMonitor and built-in Windows interfaces (WMI, registry, Win32).
 - Test music on the Camera - Mic - Speaker page: see `AUDIO-LICENSE.md`.
-
-## Leftovers
-
-- Inno Setup installer buttons are still in Chinese (no Vietnamese `.isl` language file yet).
-- The main exe is named `AnTamPCtest.exe`. The test music attribution line is kept verbatim from the original.
