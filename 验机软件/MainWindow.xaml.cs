@@ -358,14 +358,19 @@ public partial class MainWindow : Window
             }
         }
         // 后面没有未完成模块了：跳到终点页（若已安装）
+        bool landedOnTerminal = false;
         for (int i = NavList.SelectedIndex + 1; i < NavList.Items.Count; i++)
         {
             if (NavList.Items[i] is ListBoxItem item && item.Tag is string tag && !_passableTags.Contains(tag))
             {
                 NavList.SelectedIndex = i;
+                landedOnTerminal = true;
                 break;
             }
         }
+        // 检查完了 tự nhảy sang trang cuối thì thoát wizard luôn: trước đây
+        // _wizardMode còn true nên bấm Tổng quan/Báo cáo vẫn bị chặn dù đã xong hết.
+        if (landedOnTerminal) ExitWizardMode();
         if (_passableTags.Count > 0 && _passableTags.Where(InWizardScope).All(_doneTags.Contains))
             AllDoneHint.Visibility = Visibility.Visible;
     }
