@@ -17,7 +17,7 @@ Công cụ kiểm tra PC / Laptop cũ trước khi mua — trả lời 1 câu du
 
 ## Kiểm tra virus (bản Release mới nhất)
 
-Bản portable `AnTamPCtest-portable.zip` (build-99-1) đã quét trên [Kaspersky Threat Intelligence Portal](https://opentip.kaspersky.com/) ngày 16/11/2026 — kết quả **Clean**: 0 phát hiện malware, 0 hoạt động đáng ngờ, 0 hoạt động mạng. File quét: 209,32 MB (219.483.503 byte), SHA256 `88819946ECB2790408B8086EA1A344AC193BA3F627C83E80144DC06EB0E88883`, MD5 `D2A728BAF52CFB60EEFC195FDD11741C` — khớp đúng file zip đang phát hành, ai cũng tự kiểm chứng lại được bằng cách tải file về rồi bấm SHA256.
+Bản portable `AnTamPCtest-portable.zip` (build-99-1) đã quét trên [Kaspersky Threat Intelligence Portal](https://opentip.kaspersky.com/) ngày 16/11/2026 — kết quả **Clean**: 0 phát hiện malware, 0 hoạt động đáng ngờ, 0 hoạt động mạng. File quét: 209,32 MB (219.483.503 byte), SHA256 `88819946ECB2790408B8086EA1A344AC193BA3F627C83E80144DC06EB0E88883`, MD5 `D2A728BAF52CFB60EEFC195FDD11741C` — các mã này ứng với đúng file zip của build-99-1 (bản mới hơn được đóng gói lại nên hash có thể khác).
 
 ![Kết quả quét Kaspersky: Clean](docs/screenshots/kaspersky-report-clean.png)
 

@@ -17,7 +17,7 @@ A tool for testing used PCs / laptops before buying — it answers one question:
 
 ## Virus scan (latest Release)
 
-The portable `AnTamPCtest-portable.zip` (build-99-1) was scanned on the [Kaspersky Threat Intelligence Portal](https://opentip.kaspersky.com/) on 16 Nov 2026 — result **Clean**: 0 malware detections, 0 suspicious activities, 0 network activities. Scanned file: 209.32 MB (219,483,503 bytes), SHA256 `88819946ECB2790408B8086EA1A344AC193BA3F627C83E80144DC06EB0E88883`, MD5 `D2A728BAF52CFB60EEFC195FDD11741C` — matching the zip currently published, which anyone can verify by downloading the file and checking its SHA256.
+The portable `AnTamPCtest-portable.zip` (build-99-1) was scanned on the [Kaspersky Threat Intelligence Portal](https://opentip.kaspersky.com/) on 16 Nov 2026 — result **Clean**: 0 malware detections, 0 suspicious activities, 0 network activities. Scanned file (build-99-1): 209.32 MB (219,483,503 bytes), SHA256 `88819946ECB2790408B8086EA1A344AC193BA3F627C83E80144DC06EB0E88883`, MD5 `D2A728BAF52CFB60EEFC195FDD11741C` — these hashes match the build-99-1 zip exactly (newer releases are repackaged, so their hashes may differ).
 
 ![Kaspersky scan result: Clean](docs/screenshots/kaspersky-report-clean.png)
 
