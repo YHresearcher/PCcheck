@@ -242,11 +242,12 @@ public partial class MainWindow : Window
     // wizard / tự nhảy bài / chấm trạng thái), không còn expander "Danh sách bài test" ở sidebar.
     bool NavigateFromSidebar(string moduleId)
     {
-        if (_wizardMode)
-        {
-            Dialogs.Info(this, Lang.Get("Shell.WizardGuard"));
-            return false;
-        }
+        // Bấm Tổng quan/Báo cáo ở sidebar lúc nào cũng được: đang kiểm tra
+        // thì thoát wizard trước rồi mới chuyển trang (tiến độ các bài đã
+        // làm vẫn giữ nguyên, bấm "Bắt đầu kiểm tra" là tiếp tục từ bài
+        // chưa xong). Chuyển giữa các bài test vẫn đi bằng nút Quay lại /
+        // Bài tiếp theo của thanh wizard.
+        if (_wizardMode) ExitWizardMode();
         return NavigateToModule(moduleId);
     }
 
