@@ -5,6 +5,7 @@ using Windows.Media.Capture;
 using Windows.Media.Capture.Frames;
 using Windows.Media.MediaProperties;
 using Windows.Storage.Streams;
+using YanJi.PluginSdk;
 
 namespace YanJi.Plugin.AvConference;
 
@@ -52,7 +53,7 @@ public class CameraService : IDisposable
         if (source == null)
         {
             capture.Dispose();
-            throw new InvalidOperationException("Camera này không có nguồn xem trước");
+            throw new InvalidOperationException(Lang.Get("Av.CameraNoPreviewSource"));
         }
         _capture = capture;
         _reader = await capture.CreateFrameReaderAsync(source, MediaEncodingSubtypes.Bgra8);

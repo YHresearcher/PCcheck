@@ -27,6 +27,8 @@ public partial class AvConferencePage : UserControl, YanJi.PluginSdk.IModulePage
     WriteableBitmap? _wb;
     bool _initializing;
     bool _recording;
+    bool _playingRec;
+    bool _playingMusic;
 
     /// <summary>核对完成状态变化（true = 已通过，false = 回到待测试）；MainWindow 据此同步导航圆点并自动跳转。</summary>
     public event Action<bool>? PassChanged;
@@ -39,12 +41,26 @@ public partial class AvConferencePage : UserControl, YanJi.PluginSdk.IModulePage
         _host = host;
         InitializeComponent();
         _camera.FrameReady += OnCameraFrame;
+        Lang.Changed += ApplyLanguage;
         _levelTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(50) };
         _levelTimer.Tick += (_, _) => MicLevel.Value = _audio.Peak * 100;
         _recordLimitTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(RecordLimitSec) };
         _recordLimitTimer.Tick += (_, _) => StopRecord();
         Loaded += (_, _) => _ = InitAsync();
         Unloaded += (_, _) => Cleanup();
+    }
+
+    /// <summary>Language switch: re-render labels owned by code-behind
+    /// (XAML strings use DynamicResource so they follow the dictionary).
+    /// Does not touch PassChanged.</summary>
+    void ApplyLanguage()
+    {
+        RefreshStatus();
+        RecordButton.Content = Lang.Get(_recording ? "Av.StopRecord" : "Av.Record");
+        PlayRecButton.Content = Lang.Get(_playingRec ? "Av.Stop" : "Av.Playback");
+        PlayMusicButton.Content = Lang.Get(_playingMusic ? "Av.Stop" : "Av.PlayMusic");
+        if (_recording) MicStatus.Text = Lang.Get("Av.Recording");
+        if (_playingMusic) MusicStatus.Text = Lang.Get("Av.PlayingMusic");
     }
 
     // ═══ 初始化 / 资源释放 ═══
@@ -62,9 +78,9 @@ public partial class AvConferencePage : UserControl, YanJi.PluginSdk.IModulePage
             FillBox(MicBox, _micDevices);
             FillBox(SpkBox, _spkDevices);
             if (_spkDevices.Count == 0)
-                MusicStatus.Text = "Không phát hiện thiết bị phát âm thanh";
+                MusicStatus.Text = Lang.Get("Av.NoOutputDevice");
             else if (!File.Exists(MusicPath()))
-                MusicStatus.Text = "Không tìm thấy file nhạc test (file này đi kèm với chương trình)";
+                MusicStatus.Text = Lang.Get("Av.MusicFileMissing");
 
             // 摄像头（异步枚举）
             try { _camDevices = await CameraService.GetDevicesAsync(); }
@@ -74,7 +90,7 @@ public partial class AvConferencePage : UserControl, YanJi.PluginSdk.IModulePage
             if (CurrentMicId != null) StartInput(CurrentMicId);
             _levelTimer.Start();
             if (CurrentCamId != null) await StartPreviewAsync(CurrentCamId);
-            else CameraError.Text = "Không phát hiện camera";
+            else CameraError.Text = Lang.Get("Av.NoCamera");
         }
         finally { _initializing = false; }
     }
@@ -103,9 +119,11 @@ public partial class AvConferencePage : UserControl, YanJi.PluginSdk.IModulePage
         _levelTimer.Stop();
         _recordLimitTimer.Stop();
         _recording = false;
-        RecordButton.Content = "Ghi âm";
-        PlayMusicButton.Content = "Phát nhạc test";
-        PlayRecButton.Content = "Phát lại";
+        _playingRec = false;
+        _playingMusic = false;
+        RecordButton.Content = Lang.Get("Av.Record");
+        PlayMusicButton.Content = Lang.Get("Av.PlayMusic");
+        PlayRecButton.Content = Lang.Get("Av.Playback");
         _audio.Dispose();
         _ = _camera.StopAsync();
         _wb = null;
@@ -127,7 +145,7 @@ public partial class AvConferencePage : UserControl, YanJi.PluginSdk.IModulePage
         PreviewImage.Source = null;
         if (deviceId == null)
         {
-            CameraError.Text = "Không phát hiện camera";
+            CameraError.Text = Lang.Get("Av.NoCamera");
             CameraError.Visibility = Visibility.Visible;
             return;
         }
@@ -135,7 +153,7 @@ public partial class AvConferencePage : UserControl, YanJi.PluginSdk.IModulePage
         try { await _camera.StartAsync(deviceId); }
         catch (Exception ex)
         {
-            CameraError.Text = "Camera không dùng được: " + ex.Message + "\n(Có thể đang bị chương trình khác chiếm hoặc chưa được cấp quyền)";
+            CameraError.Text = string.Format(Lang.Get("Av.CameraUnusable"), ex.Message);
             CameraError.Visibility = Visibility.Visible;
         }
     }
@@ -171,7 +189,7 @@ public partial class AvConferencePage : UserControl, YanJi.PluginSdk.IModulePage
         }
         catch (Exception ex)
         {
-            MicStatus.Text = "Mic không dùng được: " + ex.Message;
+            MicStatus.Text = string.Format(Lang.Get("Av.MicUnusable"), ex.Message);
         }
     }
 
@@ -182,14 +200,14 @@ public partial class AvConferencePage : UserControl, YanJi.PluginSdk.IModulePage
         {
             _audio.StartRecord(_recordFile);
             _recording = true;
-            RecordButton.Content = "Dừng ghi âm";
+            RecordButton.Content = Lang.Get("Av.StopRecord");
             PlayRecButton.IsEnabled = false;
-            MicStatus.Text = "Đang ghi âm…";
+            MicStatus.Text = Lang.Get("Av.Recording");
             _recordLimitTimer.Start();
         }
         catch (Exception ex)
         {
-            MicStatus.Text = "Không ghi âm được: " + ex.Message;
+            MicStatus.Text = string.Format(Lang.Get("Av.RecordFailed"), ex.Message);
         }
     }
 
@@ -199,21 +217,23 @@ public partial class AvConferencePage : UserControl, YanJi.PluginSdk.IModulePage
         _recordLimitTimer.Stop();
         _audio.StopRecord();
         _recording = false;
-        RecordButton.Content = "Ghi âm";
+        RecordButton.Content = Lang.Get("Av.Record");
         PlayRecButton.IsEnabled = true;
-        MicStatus.Text = "Đã ghi xong, bấm “Phát lại” để nghe thử";
+        MicStatus.Text = Lang.Get("Av.RecordDone");
     }
 
     void PlayRecButton_Click(object sender, RoutedEventArgs e)
     {
         if (_audio.IsPlaying) { _audio.StopPlay(); return; }
-        if (!File.Exists(_recordFile)) { MicStatus.Text = "Chưa có bản ghi âm"; return; }
-        PlayRecButton.Content = "Dừng";
+        if (!File.Exists(_recordFile)) { MicStatus.Text = Lang.Get("Av.NoRecording"); return; }
+        PlayRecButton.Content = Lang.Get("Av.Stop");
+        _playingRec = true;
         try { _audio.Play(_recordFile, CurrentSpkId, OnPlaybackStopped); }
         catch (Exception ex)
         {
-            PlayRecButton.Content = "Phát lại";
-            MicStatus.Text = "Phát lại thất bại: " + ex.Message;
+            _playingRec = false;
+            PlayRecButton.Content = Lang.Get("Av.Playback");
+            MicStatus.Text = string.Format(Lang.Get("Av.PlaybackFailed"), ex.Message);
         }
     }
 
@@ -224,16 +244,18 @@ public partial class AvConferencePage : UserControl, YanJi.PluginSdk.IModulePage
         if (_audio.IsPlaying) { _audio.StopPlay(); return; }
         if (!File.Exists(MusicPath()))
         {
-            MusicStatus.Text = "Không tìm thấy file nhạc test (file này đi kèm với chương trình)";
+            MusicStatus.Text = Lang.Get("Av.MusicFileMissing");
             return;
         }
-        PlayMusicButton.Content = "Dừng";
-        MusicStatus.Text = "Đang phát nhạc test…";
+        PlayMusicButton.Content = Lang.Get("Av.Stop");
+        MusicStatus.Text = Lang.Get("Av.PlayingMusic");
+        _playingMusic = true;
         try { _audio.Play(MusicPath(), CurrentSpkId, OnPlaybackStopped); }
         catch (Exception ex)
         {
-            PlayMusicButton.Content = "Phát nhạc test";
-            MusicStatus.Text = "Phát nhạc test thất bại: " + ex.Message;
+            _playingMusic = false;
+            PlayMusicButton.Content = Lang.Get("Av.PlayMusic");
+            MusicStatus.Text = string.Format(Lang.Get("Av.PlayMusicFailed"), ex.Message);
         }
     }
 
@@ -242,9 +264,11 @@ public partial class AvConferencePage : UserControl, YanJi.PluginSdk.IModulePage
     {
         Dispatcher.BeginInvoke(() =>
         {
-            PlayRecButton.Content = "Phát lại";
-            PlayMusicButton.Content = "Phát nhạc test";
-            if (MusicStatus.Text == "Đang phát nhạc test…") MusicStatus.Text = "";
+            _playingRec = false;
+            _playingMusic = false;
+            PlayRecButton.Content = Lang.Get("Av.Playback");
+            PlayMusicButton.Content = Lang.Get("Av.PlayMusic");
+            if (MusicStatus.Text == Lang.Get("Av.PlayingMusic")) MusicStatus.Text = "";
         });
     }
 
@@ -257,8 +281,8 @@ public partial class AvConferencePage : UserControl, YanJi.PluginSdk.IModulePage
         if (WebcamCheck.IsChecked == true) signals.Add("webcamFail");
         _host?.ReportSignals("av", signals);
         _host?.ReportVerdict("av", signals.Count > 0
-            ? new(ModuleVerdictLevel.CanhBao, string.Join("; ", signals.Select(s => s == "speakerDistorted" ? "Loa rè — kiểm tra chi phí sửa" : "Camera không hoạt động — xử lý trước khi mua")))
-            : new(ModuleVerdictLevel.Dat, "Đã test camera / mic / loa, không lỗi"));
+            ? new(ModuleVerdictLevel.CanhBao, string.Join("; ", signals.Select(s => s == "speakerDistorted" ? Lang.Get("Av.Note.SpeakerDistorted") : Lang.Get("Av.Note.WebcamFail"))))
+            : new(ModuleVerdictLevel.Dat, Lang.Get("Av.Note.Passed")));
         SetPassed(true);
         PassButton.IsEnabled = false;
     }
@@ -267,24 +291,32 @@ public partial class AvConferencePage : UserControl, YanJi.PluginSdk.IModulePage
     void SetPassed(bool passed)
     {
         Passed = passed;
-        if (passed)
+        RefreshStatus();
+        PassChanged?.Invoke(passed);
+    }
+
+    /// <summary>Re-render the status line from current state (passed /
+    /// with faults / not tested); re-called on language change without
+    /// touching PassChanged.</summary>
+    void RefreshStatus()
+    {
+        if (Passed)
         {
             if (SpeakerCheck.IsChecked == true || WebcamCheck.IsChecked == true)
             {
-                StatusText.Text = "✓ Đã ghi nhận lỗi, cho qua (có lỗi)";
+                StatusText.Text = Lang.Get("Av.PassedWithFaults");
                 StatusText.SetResourceReference(TextBlock.ForegroundProperty, "AccentBrush");
             }
             else
             {
-                StatusText.Text = "✓ Đã xác nhận không lỗi, cho qua";
+                StatusText.Text = Lang.Get("Av.PassedClean");
                 StatusText.Foreground = Brushes.ForestGreen;
             }
         }
         else
         {
-            StatusText.Text = "Chưa test";
+            StatusText.Text = Lang.Get("Av.NotTested");
             StatusText.SetResourceReference(TextBlock.ForegroundProperty, "TextSecondaryBrush");
         }
-        PassChanged?.Invoke(passed);
     }
 }

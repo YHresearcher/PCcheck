@@ -1,5 +1,6 @@
 using NAudio.CoreAudioApi;
 using NAudio.Wave;
+using YanJi.PluginSdk;
 
 namespace YanJi.Plugin.AvConference;
 
@@ -78,7 +79,7 @@ public class AudioService : IDisposable
     /// <summary>开始录制到指定 wav（格式沿用当前捕获流）。</summary>
     public void StartRecord(string wavPath)
     {
-        if (_capture == null) throw new InvalidOperationException("Mic chưa bật chế độ nghe");
+        if (_capture == null) throw new InvalidOperationException(Lang.Get("Av.MicNotListening"));
         _writer?.Dispose();
         _writer = new WaveFileWriter(wavPath, _capture.WaveFormat);
         _recording = true;

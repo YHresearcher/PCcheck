@@ -7,8 +7,8 @@
 
             <!-- 状态行：通过后变绿（通用约定） -->
             <StackPanel Orientation="Horizontal" Margin="0,4">
-                <TextBlock Text="Trạng thái kiểm tra:" FontWeight="SemiBold"/>
-                <TextBlock x:Name="StatusText" Text="Chưa đo tốc độ" Margin="8,0,0,0"
+                <TextBlock Text="{DynamicResource Disk.StatusLabel}" FontWeight="SemiBold"/>
+                <TextBlock x:Name="StatusText" Text="{DynamicResource Disk.StatusNotMeasured}" Margin="8,0,0,0"
                            Foreground="{DynamicResource TextSecondaryBrush}"/>
             </StackPanel>
 
@@ -16,24 +16,24 @@
             <Border Style="{StaticResource CardBorder}" Width="Auto" Margin="0,8,0,0" Padding="14,10">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <TextBlock Text="Ổ cần đo" VerticalAlignment="Center"
+                        <TextBlock Text="{DynamicResource Disk.DriveLabel}" VerticalAlignment="Center"
                                    Foreground="{DynamicResource TextSecondaryBrush}"/>
                         <ComboBox x:Name="DriveBox" Width="90" Margin="8,0,0,0"
-                                  ToolTip="CrystalDiskMark sẽ tạo file đo tạm 1 GiB trên ổ này (đo xong tự xóa), cần thư mục gốc của ổ ghi được và còn trống &gt; 2 GiB"/>
-                        <Button x:Name="RunButton" Content="Bắt đầu đo" FontSize="14" FontWeight="SemiBold"
+                                  ToolTip="{DynamicResource Disk.DriveTooltip}"/>
+                        <Button x:Name="RunButton" Content="{DynamicResource Disk.Run}" FontSize="14" FontWeight="SemiBold"
                                 Padding="16,7" Margin="12,3,2,3" Click="RunButton_Click"
-                                ToolTip="Đo ổ đã chọn: đọc/ghi tuần tự SEQ1M Q8T1 + đọc/ghi ngẫu nhiên 4K RND4K Q1T1, 4 bài (khoảng 2 phút)"/>
-                        <Button x:Name="CancelButton" Content="Hủy" IsEnabled="False"
+                                ToolTip="{DynamicResource Disk.RunTooltip}"/>
+                        <Button x:Name="CancelButton" Content="{DynamicResource Disk.Cancel}" IsEnabled="False"
                                 Padding="16,7" Margin="8,3,2,3" Click="CancelButton_Click"/>
                         <ProgressBar x:Name="TestProgress" Width="220" Height="8" Margin="14,0,0,0"
                                      VerticalAlignment="Center" Minimum="0" Maximum="100"/>
                         <TextBlock x:Name="PhaseText" Margin="10,0,0,0" VerticalAlignment="Center"
                                    Foreground="{DynamicResource TextSecondaryBrush}"/>
                     </StackPanel>
-                    <TextBlock Text="Cách đo: tích hợp mã nguồn CrystalDiskMark (engine biên dịch nguyên bản + tiến trình con diskspd tùy chỉnh), đọc/ghi tuần tự SEQ1M Q8T1 + đọc/ghi ngẫu nhiên 4K RND4K Q1T1, dữ liệu ngẫu nhiên 1 GiB × 5 vòng (+1 vòng làm nóng)"
+                    <TextBlock Text="{DynamicResource Disk.HowText}"
                                Margin="0,6,0,0" TextWrapping="Wrap" FontSize="11"
                                Foreground="{DynamicResource TextSecondaryBrush}"/>
-                    <TextBlock Text="⚠ Trong lúc đo, ổ được đo sẽ bị chiếm hết đọc/ghi: đừng chép file lớn trên ổ đó; kết quả chịu ảnh hưởng của nhiệt độ và mức dùng ổ, chỉ để tham khảo và so sánh"
+                    <TextBlock Text="{DynamicResource Disk.WarningText}"
                                Margin="0,2,0,0" TextWrapping="Wrap" FontSize="11"
                                Foreground="{DynamicResource TextSecondaryBrush}"/>
                 </StackPanel>
@@ -51,29 +51,29 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <StackPanel Grid.Column="0" Margin="0,0,24,0">
-                            <TextBlock Text="Đọc tuần tự (MB/s)" FontSize="11"
+                            <TextBlock Text="{DynamicResource Disk.SeqRead}" FontSize="11"
                                        Foreground="{DynamicResource TextSecondaryBrush}"/>
                             <TextBlock x:Name="ScoreSeqRead" Text="—" FontSize="24" FontWeight="SemiBold"/>
                         </StackPanel>
                         <StackPanel Grid.Column="1" Margin="0,0,24,0">
-                            <TextBlock Text="Ghi tuần tự (MB/s)" FontSize="11"
+                            <TextBlock Text="{DynamicResource Disk.SeqWrite}" FontSize="11"
                                        Foreground="{DynamicResource TextSecondaryBrush}"/>
                             <TextBlock x:Name="ScoreSeqWrite" Text="—" FontSize="24" FontWeight="SemiBold"/>
                         </StackPanel>
                         <StackPanel Grid.Column="2" Margin="0,0,24,0">
-                            <TextBlock Text="Đọc ngẫu nhiên 4K (MB/s)" FontSize="11"
+                            <TextBlock Text="{DynamicResource Disk.Rnd4KRead}" FontSize="11"
                                        Foreground="{DynamicResource TextSecondaryBrush}"/>
                             <TextBlock x:Name="Score4KRead" Text="—" FontSize="24" FontWeight="SemiBold"/>
                         </StackPanel>
                         <StackPanel Grid.Column="3" Margin="0,0,24,0">
-                            <TextBlock Text="Ghi ngẫu nhiên 4K (MB/s)" FontSize="11"
+                            <TextBlock Text="{DynamicResource Disk.Rnd4KWrite}" FontSize="11"
                                        Foreground="{DynamicResource TextSecondaryBrush}"/>
                             <TextBlock x:Name="Score4KWrite" Text="—" FontSize="24" FontWeight="SemiBold"/>
                         </StackPanel>
                         <StackPanel Grid.Column="4" VerticalAlignment="Center">
-                            <Button x:Name="OpenResultDirButton" Content="Mở thư mục kết quả" Padding="12,3"
+                            <Button x:Name="OpenResultDirButton" Content="{DynamicResource Disk.OpenResultDir}" Padding="12,3"
                                     FontSize="11" HorizontalAlignment="Right" Click="OpenResultDir_Click"
-                                    ToolTip="File JSON kết quả và file CSV ghi kết quả được lưu ở %APPDATA%\YanJi\disk_result"/>
+                                    ToolTip="{DynamicResource Disk.OpenResultDirTooltip}"/>
                         </StackPanel>
                     </Grid>
                     <TextBlock x:Name="DetailText" Margin="0,6,0,0" TextWrapping="Wrap" FontSize="11"
@@ -84,7 +84,7 @@
             <!-- 结论卡：硬盘结论（仅评价这块盘好不好，不是整机购买结论；不 chặn nút cho qua，不改结论总） -->
             <Border Style="{StaticResource CardBorder}" Width="Auto" Margin="0,12,0,0" Padding="14,10">
                 <StackPanel>
-                    <TextBlock Text="Kết luận ổ cứng" FontWeight="SemiBold" FontSize="13"/>
+                    <TextBlock Text="{DynamicResource Disk.ConclusionTitle}" FontWeight="SemiBold" FontSize="13"/>
                     <TextBlock x:Name="DriveInfoText" Margin="0,6,0,0" TextWrapping="Wrap" FontSize="11"
                                Foreground="{DynamicResource TextSecondaryBrush}"/>
                     <TextBlock x:Name="DriveHealthText" Margin="0,2,0,0" TextWrapping="Wrap" FontSize="11"
@@ -99,7 +99,7 @@
             <!-- 运行日志：Consolas（LogBox 惯例），自动滚底，上限 500 条；圆角 = 外套圆角 Border -->
             <Border Style="{StaticResource CardBorder}" Width="Auto" Margin="0,12,0,0" Padding="14,10">
                 <StackPanel>
-                    <TextBlock Text="Nhật ký chạy" FontWeight="SemiBold" FontSize="13"/>
+                    <TextBlock Text="{DynamicResource Disk.LogTitle}" FontWeight="SemiBold" FontSize="13"/>
                     <Border Margin="0,6,0,0" CornerRadius="6"
                             Background="{DynamicResource SurfaceBgBrush}"
                             BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
@@ -114,9 +114,9 @@
 
             <!-- 通过区 -->
             <StackPanel Orientation="Horizontal" Margin="0,14,0,4">
-                <Button x:Name="PassButton" Content="Xác nhận đã đo xong, đạt"
+                <Button x:Name="PassButton" Content="{DynamicResource Disk.Pass}"
                         FontSize="14" FontWeight="SemiBold" Padding="16,7" Click="PassButton_Click"
-                        ToolTip="Bấm sau khi xem kết luận ổ ở trên thấy đạt (nếu đang đo thì sẽ hủy đo rồi chuyển tiếp)"/>
+                        ToolTip="{DynamicResource Disk.PassTooltip}"/>
                 <TextBlock x:Name="PassHintText" Margin="10,0,0,0" VerticalAlignment="Center"
                            Foreground="{DynamicResource TextSecondaryBrush}"/>
             </StackPanel>

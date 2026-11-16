@@ -17,6 +17,7 @@ namespace YanJi.Plugin.Visual;
 public partial class VisualPage : UserControl, IModulePage
 {
     readonly IHostContext? _host;
+    bool _blocked; // pin phồng chặn cho qua — trạng thái này không nằm trong Passed
 
     public event Action<bool>? PassChanged;
 
@@ -26,6 +27,7 @@ public partial class VisualPage : UserControl, IModulePage
     {
         _host = host;
         InitializeComponent();
+        Lang.Changed += RefreshStatusText;
     }
 
     /// <summary>Danh sách hạng mục: ô tick, mã tín hiệu, ghi chú hiển thị trong
@@ -33,15 +35,15 @@ public partial class VisualPage : UserControl, IModulePage
     /// các mã còn lại Tổng kết sẽ về câu cảnh báo chung qua verdict Cảnh báo.</summary>
     (CheckBox Box, string Signal, string Note)[] Items() =>
     [
-        (CaseCrackedCheck, "caseCracked", "Vỏ nứt / móp / vỡ góc"),
-        (HingeCheck, "hingeLoose", "Bản lề lỏng — kiểm tra kỹ vì ảnh hưởng màn hình và vỏ"),
-        (ScreenScratchesCheck, "screenScratches", "Màn hình trầy / viền nứt"),
-        (KeyMissingCheck, "keyMissing", "Phím bong / mất phím"),
-        (TrackpadFailCheck, "trackpadFail", "Trackpad không hoạt động hoặc thao tác lỗi"),
-        (PortDamagedCheck, "portDamaged", "Cổng móp / gãy chân"),
-        (BatterySwollenCheck, "batterySwollen", "Pin phồng"),
-        (OpenedSignCheck, "openedSign", "Thiếu ốc / tem rách / dấu mở máy — kiểm tra kỹ lịch sử sửa chữa"),
-        (ScratchesCheck, "scratchesLight", "Trầy xước nhẹ — thương lượng giá"),
+        (CaseCrackedCheck, "caseCracked", Lang.Get("Visual.Item.CaseCracked")),
+        (HingeCheck, "hingeLoose", Lang.Get("Visual.Note.Hinge")),
+        (ScreenScratchesCheck, "screenScratches", Lang.Get("Visual.Item.ScreenScratches")),
+        (KeyMissingCheck, "keyMissing", Lang.Get("Visual.Item.KeyMissing")),
+        (TrackpadFailCheck, "trackpadFail", Lang.Get("Visual.Note.TrackpadFail")),
+        (PortDamagedCheck, "portDamaged", Lang.Get("Visual.Item.PortDamaged")),
+        (BatterySwollenCheck, "batterySwollen", Lang.Get("Visual.Note.BatterySwollen")),
+        (OpenedSignCheck, "openedSign", Lang.Get("Visual.Note.OpenedSign")),
+        (ScratchesCheck, "scratchesLight", Lang.Get("Visual.Note.Scratches")),
     ];
 
     void PassButton_Click(object sender, RoutedEventArgs e)
@@ -56,15 +58,15 @@ public partial class VisualPage : UserControl, IModulePage
         if (BatterySwollenCheck.IsChecked == true)
         {
             _host?.ReportVerdict("visual", new(ModuleVerdictLevel.Chan,
-                "Pin phồng — không cho qua, thay pin rồi kiểm tra lại" +
+                Lang.Get("Visual.Blocked.Battery") +
                 (ticked.Count > 1 ? "; " + string.Join("; ", ticked.Where(i => i.Signal != "batterySwollen").Select(i => i.Note)) : "")));
-            StatusText.Text = "Pin phồng — không cho qua, thay pin rồi kiểm tra lại";
-            StatusText.SetResourceReference(TextBlock.ForegroundProperty, "ErrorBrush");
+            _blocked = true;
+            RefreshStatusText();
             return;
         }
         _host?.ReportVerdict("visual", ticked.Count > 0
             ? new(ModuleVerdictLevel.CanhBao, string.Join("; ", ticked.Select(i => i.Note)))
-            : new(ModuleVerdictLevel.Dat, "Đã kiểm tra ngoại quan, không lỗi"));
+            : new(ModuleVerdictLevel.Dat, Lang.Get("Visual.Verdict.Pass")));
         SetPassed(true);
         PassButton.IsEnabled = false;
     }
@@ -74,7 +76,7 @@ public partial class VisualPage : UserControl, IModulePage
         foreach (var item in Items()) item.Box.IsChecked = false;
         TrackpadVerifiedCheck.IsChecked = false;
         _host?.ReportSignals("visual", []);
-        _host?.ReportVerdict("visual", new(ModuleVerdictLevel.ChuaTest, "Chưa test"));
+        _host?.ReportVerdict("visual", new(ModuleVerdictLevel.ChuaTest, Lang.Get("Visual.Status.NotTested")));
         SetPassed(false);
         PassButton.IsEnabled = true;
     }
@@ -82,24 +84,39 @@ public partial class VisualPage : UserControl, IModulePage
     void SetPassed(bool passed)
     {
         Passed = passed;
-        if (passed)
+        _blocked = false;
+        RefreshStatusText();
+        PassChanged?.Invoke(passed);
+    }
+
+    /// <summary>Vẽ lại dòng trạng thái theo ngôn ngữ hiện tại (chỉ dòng này
+    /// là chữ đặt bằng code, còn lại XAML tự đổi qua DynamicResource).
+    /// Đổi ngôn ngữ không phát lại PassChanged — trạng thái cho qua không đổi,
+    /// chỉ chữ hiển thị đổi theo.</summary>
+    void RefreshStatusText()
+    {
+        if (_blocked)
+        {
+            StatusText.Text = Lang.Get("Visual.Blocked.Battery");
+            StatusText.SetResourceReference(TextBlock.ForegroundProperty, "ErrorBrush");
+        }
+        else if (Passed)
         {
             if (Items().Any(i => i.Box.IsChecked == true))
             {
-                StatusText.Text = "✓ Đã ghi nhận lỗi, cho qua (có lỗi ngoại quan)";
+                StatusText.Text = Lang.Get("Visual.Status.PassedWithFaults");
                 StatusText.SetResourceReference(TextBlock.ForegroundProperty, "AccentBrush");
             }
             else
             {
-                StatusText.Text = "✓ Đã xác nhận không lỗi";
+                StatusText.Text = Lang.Get("Visual.Status.PassedClean");
                 StatusText.Foreground = Brushes.ForestGreen;
             }
         }
         else
         {
-            StatusText.Text = "Chưa test";
+            StatusText.Text = Lang.Get("Visual.Status.NotTested");
             StatusText.SetResourceReference(TextBlock.ForegroundProperty, "TextSecondaryBrush");
         }
-        PassChanged?.Invoke(passed);
     }
 }

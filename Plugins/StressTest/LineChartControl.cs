@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Windows;
 using System.Windows.Media;
+using YanJi.PluginSdk;
 
 namespace YanJi.Plugin.StressTest;
 
@@ -51,6 +52,8 @@ public sealed class LineChartControl : FrameworkElement
     {
         Height = 150;
         SnapsToDevicePixels = false;
+        // 占位文案走语言字典：换语言时重画（页面也会重设不可用文案，见 StressTestPage.RefreshLanguage）
+        Lang.Changed += () => InvalidateVisual();
     }
 
     /// <summary>推入一个采样点（调用方须已在 UI 线程；页面由轮询事件封送进来）。</summary>
@@ -118,7 +121,7 @@ public sealed class LineChartControl : FrameworkElement
         // 占位：不可用 / 暂无数据
         if (_unavailableText != null || _samples.Count == 0)
         {
-            string msg = _unavailableText ?? "Đang chờ dữ liệu…";
+            string msg = _unavailableText ?? Lang.Get("Stress.Chart.WaitingData");
             var ft = MkText(msg, noData);
             dc.DrawText(ft, new Point((W - ft.Width) / 2, (top + bottom - ft.Height) / 2));
             // 不可用/无数据也画个底框网格，保持四图视觉一致

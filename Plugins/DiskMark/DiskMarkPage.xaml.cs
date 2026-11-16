@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using YanJi.PluginSdk;
+using YanJi.PluginSdk.Services;
 
 namespace YanJi.Plugin.DiskMark;
 
@@ -25,6 +26,7 @@ public partial class DiskMarkPage : UserControl, IModulePage
     CdmService.CdmResult? _result;
     CancellationTokenSource? _cts;   // 非 null = 正在跑（防重入）
     bool _passed;
+    string _statusKey = "Disk.StatusNotMeasured"; // key trạng thái hiện tại, để đổi ngôn ngữ vẽ lại
 
     public DiskMarkPage(IHostContext? host = null)
     {
@@ -47,8 +49,9 @@ public partial class DiskMarkPage : UserControl, IModulePage
                 break;
             }
         if (DriveBox.SelectedIndex < 0 && DriveBox.Items.Count > 0) DriveBox.SelectedIndex = 0;
+        Lang.Changed += RefreshLabels;
         if (!CdmService.HostAvailable)
-            Log("Lỗi: không tìm thấy CdmHost (phải đi kèm plugin): " + CdmService.HostExe);
+            Log(string.Format(Lang.Get("Disk.Error.HostMissing"), CdmService.HostExe));
         // 页面常驻机制下切走即从视觉树移除：兜底停跑分
         Unloaded += (_, _) => Cleanup();
         // Trang resident: quay lại trang sau khi Đối chiếu cấu hình chạy xong thì
@@ -73,7 +76,7 @@ public partial class DiskMarkPage : UserControl, IModulePage
         if (_cts != null) return; // 防重入
         if (!CdmService.HostAvailable)
         {
-            Log("Lỗi: không tìm thấy CdmHost (phải đi kèm plugin): " + CdmService.HostExe);
+            Log(string.Format(Lang.Get("Disk.Error.HostMissing"), CdmService.HostExe));
             return;
         }
         string drive = (DriveBox.SelectedItem as ComboBoxItem)?.Tag as string ?? "C:\\";
@@ -94,7 +97,7 @@ public partial class DiskMarkPage : UserControl, IModulePage
         RefreshDriveConclusion();
         try
         {
-            Log($"Bắt đầu đo tốc độ ổ (ổ {drive.TrimEnd('\\')}, SEQ1M Q8T1 + RND4K Q1T1, tổng {CdmService.TotalRuns} vòng)");
+            Log(string.Format(Lang.Get("Disk.Log.Start"), drive.TrimEnd('\\'), CdmService.TotalRuns));
             var progress = new Progress<CdmService.RunProgress>(p =>
                 Dispatcher.BeginInvoke(() =>
                 {
@@ -108,20 +111,23 @@ public partial class DiskMarkPage : UserControl, IModulePage
             ScoreSeqWrite.Text = res.SeqWrite.ToString("0.0");
             Score4KRead.Text = res.Rnd4KRead.ToString("0.0");
             Score4KWrite.Text = res.Rnd4KWrite.ToString("0.0");
-            DetailText.Text = $"Tuần tự {res.SeqRead:0.0} / {res.SeqWrite:0.0} MB/s, ngẫu nhiên 4K {res.Rnd4KRead:0.0} / {res.Rnd4KWrite:0.0} MB/s"
-                + $" (đọc / ghi); kết quả đã lưu: {res.JsonPath}";
-            SetIdle("Đo xong");
-            Log($"Hoàn tất: tuần tự {res.SeqRead:0.0} / {res.SeqWrite:0.0}, ngẫu nhiên 4K {res.Rnd4KRead:0.0} / {res.Rnd4KWrite:0.0} MB/s (đọc/ghi)");
+            DetailText.Text = string.Format(Lang.Get("Disk.Detail"),
+                res.SeqRead.ToString("0.0"), res.SeqWrite.ToString("0.0"),
+                res.Rnd4KRead.ToString("0.0"), res.Rnd4KWrite.ToString("0.0"), res.JsonPath);
+            SetIdle("Disk.StatusDone");
+            Log(string.Format(Lang.Get("Disk.Log.Done"),
+                res.SeqRead.ToString("0.0"), res.SeqWrite.ToString("0.0"),
+                res.Rnd4KRead.ToString("0.0"), res.Rnd4KWrite.ToString("0.0")));
         }
         catch (OperationCanceledException)
         {
-            SetIdle("Đã hủy");
-            Log("Đã hủy");
+            SetIdle("Disk.StatusCancelled");
+            Log(Lang.Get("Disk.StatusCancelled"));
         }
         catch (Exception ex)
         {
-            SetIdle("Lỗi");
-            Log("Lỗi: " + ex.Message.Split('\n')[0]);
+            SetIdle("Disk.StatusError");
+            Log(string.Format(Lang.Get("Disk.Log.Error"), ex.Message.Split('\n')[0]));
         }
         finally
         {
@@ -173,19 +179,19 @@ public partial class DiskMarkPage : UserControl, IModulePage
     {
         if (_cts != null)
         {
-            DriveInfoText.Text = "Đang đo...";
-            DriveHealthText.Text = "Đang đo...";
-            DriveSpeedText.Text = "Đang đo...";
-            DriveConclusionText.Text = "Đang đo, đo xong sẽ hiện kết luận ổ ở đây.";
+            DriveInfoText.Text = Lang.Get("Disk.Conclusion.RunningLine");
+            DriveHealthText.Text = Lang.Get("Disk.Conclusion.RunningLine");
+            DriveSpeedText.Text = Lang.Get("Disk.Conclusion.RunningLine");
+            DriveConclusionText.Text = Lang.Get("Disk.Conclusion.Running");
             DriveConclusionText.SetResourceReference(TextBlock.ForegroundProperty, "TextSecondaryBrush");
             return;
         }
         if (_result == null)
         {
-            DriveInfoText.Text = "Chưa có thông tin ổ";
-            DriveHealthText.Text = "Chưa có thông tin sức khỏe";
-            DriveSpeedText.Text = "Chưa đo tốc độ";
-            DriveConclusionText.Text = "Chưa đo — bấm Bắt đầu đo để đo rồi xem kết luận ổ ở đây.";
+            DriveInfoText.Text = Lang.Get("Disk.Conclusion.NoInfo");
+            DriveHealthText.Text = Lang.Get("Disk.Conclusion.NoHealth");
+            DriveSpeedText.Text = Lang.Get("Disk.StatusNotMeasured");
+            DriveConclusionText.Text = Lang.Get("Disk.Conclusion.NotMeasured");
             DriveConclusionText.SetResourceReference(TextBlock.ForegroundProperty, "TextSecondaryBrush");
             return;
         }
@@ -197,65 +203,69 @@ public partial class DiskMarkPage : UserControl, IModulePage
         if (summary != null)
         {
             string letters = summary.Letters.Count > 0 ? $" ({string.Join(" ", summary.Letters)})" : "";
-            DriveInfoText.Text = $"Ổ {letter}: {summary.Model} — {summary.Capacity}{letters}";
+            DriveInfoText.Text = string.Format(Lang.Get("Disk.Conclusion.DriveInfo"), letter, summary.Model, summary.Capacity, letters);
+            // Kết luận ổ do Đối chiếu cấu hình sinh bằng tiếng Việt (canonical) —
+            // dịch tại đây qua bảng dùng chung với trang đó (PluginSdk).
+            string verdict = DriveVerdictText.TranslateVerdict(summary.VerdictText);
             DriveHealthText.Text = summary.HealthPercent is int hp
-                ? $"Sức khỏe: {hp}% — {summary.VerdictText}"
-                : $"Sức khỏe: Không rõ — {summary.VerdictText}";
+                ? string.Format(Lang.Get("Disk.Conclusion.HealthKnown"), hp, verdict)
+                : string.Format(Lang.Get("Disk.Conclusion.HealthUnknown"), verdict);
         }
         else
         {
-            DriveInfoText.Text = $"Ổ {letter}: chưa có thông tin model/dung lượng (chạy Đối chiếu cấu hình trước).";
-            DriveHealthText.Text = "Sức khỏe: Chưa rõ (chưa có thông tin từ Đối chiếu cấu hình — chạy Đối chiếu cấu hình hoặc kiểm tra tay bằng CrystalDiskInfo trước khi kết luận).";
+            DriveInfoText.Text = string.Format(Lang.Get("Disk.Conclusion.DriveInfoMissing"), letter);
+            DriveHealthText.Text = Lang.Get("Disk.Conclusion.HealthMissing");
         }
 
         // Đánh giá tốc độ theo khoảng tham khảo chung (không phải chuẩn shop):
         // tuần tự quyết định copy file lớn, 4K quyết định cảm giác mở app hàng ngày.
         bool hddLike = res.SeqRead < 250 && res.Rnd4KRead < 5;
-        string seqNote = res.SeqRead >= 1000 ? "nhanh, ngang NVMe"
-            : res.SeqRead >= 250 ? "ở mức SSD SATA"
-            : res.SeqRead >= 100 ? "thấp, ngang ổ cơ hoặc SSD chậm"
-            : "rất thấp, bất thường";
-        string fourKNote = hddLike ? "mức bình thường của ổ cơ (chậm hơn SSD nhiều)"
-            : res.Rnd4KRead >= 40 ? "mở app/khởi động máy nhanh"
-            : res.Rnd4KRead >= 20 ? "mở app/khởi động máy ở mức bình thường của SSD"
-            : res.Rnd4KRead >= 10 ? "mở app/khởi động máy hơi chậm so với SSD thông thường"
-            : "mở app/khởi động máy chậm bất thường cho SSD";
-        string speedText = $"Tốc độ (tham khảo): đọc tuần tự {res.SeqRead:0.0} MB/s ({seqNote}), đọc 4K {res.Rnd4KRead:0.0} MB/s ({fourKNote}).";
+        string seqNote = res.SeqRead >= 1000 ? Lang.Get("Disk.Speed.SeqNvme")
+            : res.SeqRead >= 250 ? Lang.Get("Disk.Speed.SeqSata")
+            : res.SeqRead >= 100 ? Lang.Get("Disk.Speed.SeqSlow")
+            : Lang.Get("Disk.Speed.SeqVeryLow");
+        string fourKNote = hddLike ? Lang.Get("Disk.Speed.FourKHdd")
+            : res.Rnd4KRead >= 40 ? Lang.Get("Disk.Speed.FourKFast")
+            : res.Rnd4KRead >= 20 ? Lang.Get("Disk.Speed.FourKNormal")
+            : res.Rnd4KRead >= 10 ? Lang.Get("Disk.Speed.FourKSlow")
+            : Lang.Get("Disk.Speed.FourKVerySlow");
+        string speedText = string.Format(Lang.Get("Disk.Speed.Line"),
+            res.SeqRead.ToString("0.0"), seqNote, res.Rnd4KRead.ToString("0.0"), fourKNote);
         if (res.SeqWrite < res.SeqRead * 0.3)
-            speedText += " Ghi tuần tự thấp hơn đọc nhiều bất thường, kiểm tra thêm (ổ gần đầy, hết cache, hoặc lỗi).";
+            speedText += Lang.Get("Disk.Speed.WriteLow");
         DriveSpeedText.Text = speedText;
 
         if (summary != null && summary.BlockReasons.Count > 0)
         {
-            DriveConclusionText.Text = "Ổ KHÔNG TỐT — nên thay ổ rồi kiểm tra lại.";
+            DriveConclusionText.Text = Lang.Get("Disk.Conclusion.Bad");
             DriveConclusionText.SetResourceReference(TextBlock.ForegroundProperty, "ErrorBrush");
         }
         else if (summary != null && summary.WarningReasons.Count > 0)
         {
-            DriveConclusionText.Text = "Ổ DÙNG ĐƯỢC CÓ ĐIỀU KIỆN — cân nhắc trừ giá / kiểm tra thêm.";
+            DriveConclusionText.Text = Lang.Get("Disk.Conclusion.Conditional");
             DriveConclusionText.SetResourceReference(TextBlock.ForegroundProperty, "AccentBrush");
         }
         else if (summary != null && summary.HealthPercent != null)
         {
             if (hddLike)
             {
-                DriveConclusionText.Text = "Ổ KHỎE, TỐC ĐỘ NGANG Ổ CƠ — dùng văn phòng cơ bản được nhưng chậm hơn SSD nhiều, cân nhắc nâng cấp SSD.";
+                DriveConclusionText.Text = Lang.Get("Disk.Conclusion.HddLike");
                 DriveConclusionText.SetResourceReference(TextBlock.ForegroundProperty, "AccentBrush");
             }
             else if (res.Rnd4KRead < 10)
             {
-                DriveConclusionText.Text = "Ổ KHỎE NHƯNG TỐC ĐỘ THẤP BẤT THƯỜNG — kiểm tra thêm (cáp, khe cắm, nhiệt, ổ gần đầy) trước khi kết luận.";
+                DriveConclusionText.Text = Lang.Get("Disk.Conclusion.SlowAbnormal");
                 DriveConclusionText.SetResourceReference(TextBlock.ForegroundProperty, "AccentBrush");
             }
             else
             {
-                DriveConclusionText.Text = "Ổ TỐT — dùng bình thường.";
+                DriveConclusionText.Text = Lang.Get("Disk.Conclusion.Good");
                 DriveConclusionText.Foreground = Brushes.ForestGreen;
             }
         }
         else
         {
-            DriveConclusionText.Text = "CHƯA ĐỦ DỮ LIỆU SỨC KHỎE — tốc độ chỉ để tham khảo, chạy Đối chiếu cấu hình (hoặc kiểm tra tay bằng CrystalDiskInfo) trước khi kết luận ổ tốt hay không.";
+            DriveConclusionText.Text = Lang.Get("Disk.Conclusion.NoHealthData");
             DriveConclusionText.SetResourceReference(TextBlock.ForegroundProperty, "TextSecondaryBrush");
         }
     }
@@ -265,31 +275,49 @@ public partial class DiskMarkPage : UserControl, IModulePage
     void SetRunning()
     {
         _passed = false;
-        StatusText.Text = "Đang đo…";
+        _statusKey = "Disk.StatusRunning";
+        StatusText.Text = Lang.Get(_statusKey);
         StatusText.SetResourceReference(TextBlock.ForegroundProperty, "TextSecondaryBrush");
     }
 
-    void SetIdle(string text)
+    void SetIdle(string statusKey)
     {
         if (_passed) return;
-        StatusText.Text = text;
+        _statusKey = statusKey;
+        StatusText.Text = Lang.Get(_statusKey);
         StatusText.SetResourceReference(TextBlock.ForegroundProperty, "TextSecondaryBrush");
+    }
+
+    /// <summary>Vẽ lại các nhãn do code-behind giữ khi đổi ngôn ngữ
+    /// (theo mẫu Dashboard/Summary: Lang.Changed → re-render).</summary>
+    void RefreshLabels()
+    {
+        StatusText.Text = Lang.Get(_statusKey);
+        if (_passed) StatusText.Foreground = Brushes.ForestGreen;
+        else StatusText.SetResourceReference(TextBlock.ForegroundProperty, "TextSecondaryBrush");
+        if (_result != null)
+            DetailText.Text = string.Format(Lang.Get("Disk.Detail"),
+                _result.SeqRead.ToString("0.0"), _result.SeqWrite.ToString("0.0"),
+                _result.Rnd4KRead.ToString("0.0"), _result.Rnd4KWrite.ToString("0.0"), _result.JsonPath);
+        UpdatePassHint();
+        RefreshDriveConclusion();
     }
 
     void PassButton_Click(object sender, RoutedEventArgs e)
     {
         if (_cts != null) _cts.Cancel(); // 跑分中点通过：先取消（进程树 Kill 走 ct.Register）
         _passed = true;
-        StatusText.Text = "Đã đạt";
+        _statusKey = "Disk.StatusPassed";
+        StatusText.Text = Lang.Get(_statusKey);
         StatusText.Foreground = Brushes.ForestGreen;
         PassChanged?.Invoke(true);
     }
 
     void UpdatePassHint()
     {
-        PassHintText.Text = _cts != null ? "Đang đo"
-            : _result == null ? "Chưa đo lần nào"
-            : "Đã có kết quả + kết luận ổ ở trên, xem rồi bấm đạt";
+        PassHintText.Text = _cts != null ? Lang.Get("Disk.PassHint.Running")
+            : _result == null ? Lang.Get("Disk.PassHint.Never")
+            : Lang.Get("Disk.PassHint.Ready");
     }
 
     // ═══ 日志（LogBox 惯例：滚底 + 500 条截旧） ═══

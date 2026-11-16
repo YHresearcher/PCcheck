@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
+using YanJi.PluginSdk;
 
 namespace YanJi.Plugin.ScreenDeadPixel;
 
@@ -15,6 +16,7 @@ public class ColorTestWindow : Window
     static readonly Color[] Cycle = [Colors.White, Colors.Red, Colors.Lime, Colors.Blue, Colors.Black];
     int _index;
     readonly Border _hint;
+    readonly TextBlock _hintText;
     readonly DispatcherTimer _hintTimer;
 
     /// <param name="x">目标屏左上角 X（物理像素）</param>
@@ -32,6 +34,12 @@ public class ColorTestWindow : Window
         Background = new SolidColorBrush(Cycle[0]);
 
         // 操作提示：半透明黑底白字，所有纯色下都可读；居中不持久遮挡
+        _hintText = new TextBlock
+        {
+            Text = Lang.Get("Screen.ColorHint"),
+            Foreground = Brushes.White,
+            FontSize = 20,
+        };
         _hint = new Border
         {
             Background = new SolidColorBrush(Color.FromArgb(0x99, 0, 0, 0)),
@@ -39,14 +47,14 @@ public class ColorTestWindow : Window
             Padding = new Thickness(24, 12, 24, 12),
             HorizontalAlignment = HorizontalAlignment.Center,
             VerticalAlignment = VerticalAlignment.Center,
-            Child = new TextBlock
-            {
-                Text = "Bấm phím bất kỳ hoặc nhấp chuột để đổi màu, bấm Esc để thoát",
-                Foreground = Brushes.White,
-                FontSize = 20,
-            },
+            Child = _hintText,
         };
         Content = new Grid { Children = { _hint } };
+
+        // Đổi ngôn ngữ giữa lúc đang soi thì vẽ lại dòng hướng dẫn;
+        // đóng cửa sổ thì gỡ đăng ký để khỏi giữ cửa sổ sống.
+        Lang.Changed += OnLangChanged;
+        Closed += (_, _) => Lang.Changed -= OnLangChanged;
 
         _hintTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(3) };
         _hintTimer.Tick += (_, _) => DismissHint();
@@ -73,6 +81,8 @@ public class ColorTestWindow : Window
         _index = (_index + 1) % Cycle.Length;
         Background = new SolidColorBrush(Cycle[_index]);
     }
+
+    void OnLangChanged() => _hintText.Text = Lang.Get("Screen.ColorHint");
 
     void DismissHint()
     {

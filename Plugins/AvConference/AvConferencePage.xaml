@@ -5,17 +5,17 @@
         <StackPanel Margin="16">
             <!-- 状态行：通过后变绿 -->
             <StackPanel Orientation="Horizontal" Margin="0,4">
-                <TextBlock Text="Trạng thái test:" FontWeight="SemiBold"/>
-                <TextBlock x:Name="StatusText" Text="Chưa test" Margin="8,0,0,0"
+                <TextBlock Text="{DynamicResource Av.StatusLabel}" FontWeight="SemiBold"/>
+                <TextBlock x:Name="StatusText" Text="{DynamicResource Av.NotTested}" Margin="8,0,0,0"
                            Foreground="{DynamicResource TextSecondaryBrush}"/>
             </StackPanel>
 
             <!-- ═══ 摄像头 ═══ -->
             <Border Style="{StaticResource CardBorder}" Width="Auto" Margin="0,8,0,0" Padding="14,10">
                 <StackPanel>
-                    <TextBlock Text="Camera" FontWeight="SemiBold" FontSize="13"/>
+                    <TextBlock Text="{DynamicResource Av.CameraTitle}" FontWeight="SemiBold" FontSize="13"/>
                     <StackPanel Orientation="Horizontal" Margin="0,6,0,0" VerticalAlignment="Center">
-                        <TextBlock Text="Thiết bị:" VerticalAlignment="Center"
+                        <TextBlock Text="{DynamicResource Av.DeviceLabel}" VerticalAlignment="Center"
                                    Foreground="{DynamicResource TextSecondaryBrush}"/>
                         <ComboBox x:Name="CameraBox" Width="360" SelectionChanged="CameraBox_Changed"/>
                     </StackPanel>
@@ -27,10 +27,10 @@
                             <TextBlock x:Name="CameraError" TextWrapping="Wrap" Margin="16"
                                        HorizontalAlignment="Center" VerticalAlignment="Center"
                                        Foreground="{DynamicResource TextSecondaryBrush}"
-                                       Text="Đang khởi động camera…"/>
+                                       Text="{DynamicResource Av.CameraStarting}"/>
                         </Grid>
                     </Border>
-                    <TextBlock Text="Rời trang này là camera tự tắt (đèn báo tắt)" Margin="0,4,0,0"
+                    <TextBlock Text="{DynamicResource Av.CameraAutoOff}" Margin="0,4,0,0"
                                Foreground="{DynamicResource TextSecondaryBrush}"/>
                 </StackPanel>
             </Border>
@@ -38,18 +38,18 @@
             <!-- ═══ 麦克风 ═══ -->
             <Border Style="{StaticResource CardBorder}" Width="Auto" Margin="0,12,0,0" Padding="14,10">
                 <StackPanel>
-                    <TextBlock Text="Mic" FontWeight="SemiBold" FontSize="13"/>
+                    <TextBlock Text="{DynamicResource Av.MicTitle}" FontWeight="SemiBold" FontSize="13"/>
                     <StackPanel Orientation="Horizontal" Margin="0,6,0,0" VerticalAlignment="Center">
-                        <TextBlock Text="Thiết bị:" VerticalAlignment="Center"
+                        <TextBlock Text="{DynamicResource Av.DeviceLabel}" VerticalAlignment="Center"
                                    Foreground="{DynamicResource TextSecondaryBrush}"/>
                         <ComboBox x:Name="MicBox" Width="360" SelectionChanged="MicBox_Changed"/>
                     </StackPanel>
                     <ProgressBar x:Name="MicLevel" Margin="2,8" Minimum="0" Maximum="100"/>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <Button x:Name="RecordButton" Content="Ghi âm" Click="RecordButton_Click"
-                                ToolTip="Ghi 1 đoạn từ mic (tối đa 15 giây, tự dừng)"/>
-                        <Button x:Name="PlayRecButton" Content="Phát lại" IsEnabled="False" Click="PlayRecButton_Click"
-                                ToolTip="Phát lại đoạn vừa ghi qua loa đã chọn bên dưới"/>
+                        <Button x:Name="RecordButton" Content="{DynamicResource Av.Record}" Click="RecordButton_Click"
+                                ToolTip="{DynamicResource Av.RecordTip}"/>
+                        <Button x:Name="PlayRecButton" Content="{DynamicResource Av.Playback}" IsEnabled="False" Click="PlayRecButton_Click"
+                                ToolTip="{DynamicResource Av.PlaybackTip}"/>
                         <TextBlock x:Name="MicStatus" Margin="8,0,0,0"
                                    Foreground="{DynamicResource TextSecondaryBrush}"/>
                     </StackPanel>
@@ -59,15 +59,15 @@
             <!-- ═══ 扬声器 ═══ -->
             <Border Style="{StaticResource CardBorder}" Width="Auto" Margin="0,12,0,0" Padding="14,10">
                 <StackPanel>
-                    <TextBlock Text="Loa" FontWeight="SemiBold" FontSize="13"/>
+                    <TextBlock Text="{DynamicResource Av.SpeakerTitle}" FontWeight="SemiBold" FontSize="13"/>
                     <StackPanel Orientation="Horizontal" Margin="0,6,0,0" VerticalAlignment="Center">
-                        <TextBlock Text="Thiết bị:" VerticalAlignment="Center"
+                        <TextBlock Text="{DynamicResource Av.DeviceLabel}" VerticalAlignment="Center"
                                    Foreground="{DynamicResource TextSecondaryBrush}"/>
                         <ComboBox x:Name="SpkBox" Width="360"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0,4,0,0" VerticalAlignment="Center">
-                        <Button x:Name="PlayMusicButton" Content="Phát nhạc test" Click="PlayMusicButton_Click"
-                                ToolTip="Phát nhạc test qua thiết bị đã chọn"/>
+                        <Button x:Name="PlayMusicButton" Content="{DynamicResource Av.PlayMusic}" Click="PlayMusicButton_Click"
+                                ToolTip="{DynamicResource Av.PlayMusicTip}"/>
                         <TextBlock x:Name="MusicStatus" Margin="8,0,0,0"
                                    Foreground="{DynamicResource TextSecondaryBrush}"/>
                     </StackPanel>
@@ -81,15 +81,15 @@
                  camera không lên hình (nhìn mới biết). Tick thì bấm cho qua vẫn ghi
                  nhận lỗi vào kết luận, không phải là "không lỗi". -->
             <StackPanel Margin="0,12,0,0">
-                <CheckBox x:Name="SpeakerCheck" Content="Loa rè" Margin="0,0,0,4"
-                          ToolTip="Tick khi nghe loa rè khi phát nhạc test — bấm cho qua vẫn ghi nhận lỗi vào kết luận"/>
-                <CheckBox x:Name="WebcamCheck" Content="Camera không hoạt động / không lên hình" Margin="0,0,0,8"
-                          ToolTip="Tick khi camera không lên hình dù đã chọn đúng thiết bị — bấm cho qua vẫn ghi nhận lỗi vào kết luận"/>
+                <CheckBox x:Name="SpeakerCheck" Content="{DynamicResource Av.SpeakerDistorted}" Margin="0,0,0,4"
+                          ToolTip="{DynamicResource Av.SpeakerDistortedTip}"/>
+                <CheckBox x:Name="WebcamCheck" Content="{DynamicResource Av.WebcamFail}" Margin="0,0,0,8"
+                          ToolTip="{DynamicResource Av.WebcamFailTip}"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
-                <Button x:Name="PassButton" Content="Xác nhận không lỗi, cho qua" Click="PassButton_Click"
+                <Button x:Name="PassButton" Content="{DynamicResource Av.PassButton}" Click="PassButton_Click"
                         FontSize="14" FontWeight="SemiBold" Padding="16,7"
-                        ToolTip="Khi camera lên hình, mic có mức âm và ghi/phát lại bình thường, loa kêu thì bấm nút này"/>
+                        ToolTip="{DynamicResource Av.PassTip}"/>
             </StackPanel>
         </StackPanel>
     </ScrollViewer>

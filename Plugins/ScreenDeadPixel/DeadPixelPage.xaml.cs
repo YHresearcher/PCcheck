@@ -24,7 +24,18 @@ public partial class DeadPixelPage : UserControl, YanJi.PluginSdk.IModulePage
     {
         _host = host;
         InitializeComponent();
+        Lang.Changed += RefreshLanguage;
         Loaded += (_, _) => RefreshMonitors();
+    }
+
+    /// <summary>Vẽ lại các nhãn do code-behind đặt khi đổi ngôn ngữ
+    /// (chuỗi XAML tự đổi qua DynamicResource; không gọi SetPassed để
+    /// khỏi phát lại PassChanged).</summary>
+    void RefreshLanguage()
+    {
+        RenderStatus();
+        if (_testWindow != null)
+            TestingHint.Text = Lang.Get("Screen.TestingHint");
     }
 
     /// <summary>枚举活动显示器填充下拉框（默认选主屏 = 坐标原点 (0,0) 的那台）。</summary>
@@ -63,7 +74,7 @@ public partial class DeadPixelPage : UserControl, YanJi.PluginSdk.IModulePage
             TestingHint.Text = "";
         };
         StartButton.IsEnabled = false;
-        TestingHint.Text = "Đang test: bấm phím bất kỳ hoặc nhấp chuột để đổi màu, bấm Esc để thoát";
+        TestingHint.Text = Lang.Get("Screen.TestingHint");
         _testWindow.Show();
     }
 
@@ -71,9 +82,11 @@ public partial class DeadPixelPage : UserControl, YanJi.PluginSdk.IModulePage
     {
         bool dead = DeadPixelCheck.IsChecked == true;
         _host?.ReportSignals("screen", dead ? ["screenDeadPixel"] : []);
+        // Ghi chú kết luận dịch theo ngôn ngữ hiện tại (như các module khác);
+        // báo cáo đã lưu ghi lại đúng câu đang hiện (giống tiêu đề kết luận).
         _host?.ReportVerdict("screen", dead
-            ? new(ModuleVerdictLevel.CanhBao, "Màn hình có điểm chết / điểm sáng — cân nhắc vị trí và thương lượng giá")
-            : new(ModuleVerdictLevel.Dat, "Đã soi màn hình, không lỗi"));
+            ? new(ModuleVerdictLevel.CanhBao, Lang.Get("Screen.Note.DeadPixel"))
+            : new(ModuleVerdictLevel.Dat, Lang.Get("Screen.Note.Passed")));
         SetPassed(true);
         PassButton.IsEnabled = false;
     }
@@ -82,24 +95,31 @@ public partial class DeadPixelPage : UserControl, YanJi.PluginSdk.IModulePage
     void SetPassed(bool passed)
     {
         Passed = passed;
-        if (passed)
+        RenderStatus();
+        PassChanged?.Invoke(passed);
+    }
+
+    /// <summary>Chỉ vẽ lại dòng trạng thái theo trạng thái hiện tại
+    /// (đổi ngôn ngữ gọi thẳng hàm này, không qua SetPassed).</summary>
+    void RenderStatus()
+    {
+        if (Passed)
         {
             if (DeadPixelCheck.IsChecked == true)
             {
-                StatusText.Text = "✓ Đã ghi nhận lỗi, cho qua (có điểm chết)";
+                StatusText.Text = Lang.Get("Screen.StatusPassedWithDefect");
                 StatusText.SetResourceReference(TextBlock.ForegroundProperty, "AccentBrush");
             }
             else
             {
-                StatusText.Text = "✓ Đã xác nhận không lỗi";
+                StatusText.Text = Lang.Get("Screen.StatusPassed");
                 StatusText.Foreground = Brushes.ForestGreen;
             }
         }
         else
         {
-            StatusText.Text = "Chưa test";
+            StatusText.Text = Lang.Get("Screen.NotTested");
             StatusText.SetResourceReference(TextBlock.ForegroundProperty, "TextSecondaryBrush");
         }
-        PassChanged?.Invoke(passed);
     }
 }

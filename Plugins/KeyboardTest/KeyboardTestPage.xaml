@@ -12,28 +12,28 @@
 
         <!-- 状态行：通过后变绿 -->
         <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,4">
-            <TextBlock Text="Trạng thái test:" FontWeight="SemiBold"/>
-            <TextBlock x:Name="StatusText" Text="Chưa test" Margin="8,0,0,0"
+            <TextBlock Text="{DynamicResource Keyboard.StatusLabel}" FontWeight="SemiBold"/>
+            <TextBlock x:Name="StatusText" Text="{DynamicResource Keyboard.NotTested}" Margin="8,0,0,0"
                        Foreground="{DynamicResource TextSecondaryBrush}"/>
         </StackPanel>
 
         <!-- 操作行 -->
         <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,8">
-            <Button x:Name="ResetButton" Content="Đặt lại" Click="ResetButton_Click"
-                    ToolTip="Xóa hết các phím đã test, bắt đầu lại từ đầu"/>
-            <Button x:Name="PassButton" Content="Xác nhận không lỗi, cho qua" Margin="8,3,2,3" Click="PassButton_Click"
-                    ToolTip="Bấm đủ từng phím, chắc chắn không có phím liệt hay phím nhảy loạn rồi mới bấm. Phím nào laptop không có thì cứ để xám là bình thường."/>
-            <CheckBox x:Name="DeadKeyCheck" Content="Có phím liệt / không nhận" Margin="16,0,0,0" VerticalAlignment="Center"
-                      ToolTip="Tick khi phát hiện phím liệt — bấm cho qua vẫn ghi nhận lỗi vào kết luận (cảnh báo, tính chi phí thay bàn phím), không phải là 'không lỗi'"/>
+            <Button x:Name="ResetButton" Content="{DynamicResource Keyboard.Reset}" Click="ResetButton_Click"
+                    ToolTip="{DynamicResource Keyboard.ResetTip}"/>
+            <Button x:Name="PassButton" Content="{DynamicResource Keyboard.Pass}" Margin="8,3,2,3" Click="PassButton_Click"
+                    ToolTip="{DynamicResource Keyboard.PassTip}"/>
+            <CheckBox x:Name="DeadKeyCheck" Content="{DynamicResource Keyboard.DeadKey}" Margin="16,0,0,0" VerticalAlignment="Center"
+                      ToolTip="{DynamicResource Keyboard.DeadKeyTip}"/>
         </StackPanel>
 
         <!-- 进度行 -->
         <StackPanel Grid.Row="2" Margin="0,0,0,8">
             <ProgressBar x:Name="KeyProgress" Height="10" Minimum="0" Maximum="104"/>
             <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
-                <TextBlock x:Name="ProgressText" Text="Đã test 0 / 104"
+                <TextBlock x:Name="ProgressText" Text="{DynamicResource Keyboard.ProgressInitial}"
                            Foreground="{DynamicResource TextSecondaryBrush}"/>
-                <TextBlock Text="｜ Bấm thẳng trên bàn phím thật để test; phím nào laptop không có (ví dụ cụm phím số) cứ để xám là bình thường"
+                <TextBlock Text="{DynamicResource Keyboard.Hint}"
                            Foreground="{DynamicResource TextSecondaryBrush}"/>
             </StackPanel>
         </StackPanel>
@@ -48,7 +48,7 @@
         <!-- 按键历史 Log 区：Consolas（LogBox 惯例），自动滚底，上限 500 条；
              圆角 = 外套圆角 Border（TextBox 本身无圆角，去边框去底色嵌进去），与分组卡片/键帽一致 -->
         <StackPanel Grid.Row="4" Margin="0,12,0,0">
-            <TextBlock Text="Nhật ký bấm phím" FontWeight="SemiBold"/>
+            <TextBlock Text="{DynamicResource Keyboard.LogTitle}" FontWeight="SemiBold"/>
             <Border Margin="0,4,0,0" CornerRadius="6"
                     Background="{DynamicResource SurfaceBgBrush}"
                     BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">

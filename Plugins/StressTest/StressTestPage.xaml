@@ -7,8 +7,8 @@
 
             <!-- 状态行：通过后变绿（通用约定） -->
             <StackPanel Orientation="Horizontal" Margin="0,4">
-                <TextBlock Text="Trạng thái kiểm tra:" FontWeight="SemiBold"/>
-                <TextBlock x:Name="StatusText" Text="Chờ kiểm tra" Margin="8,0,0,0"
+                <TextBlock Text="{DynamicResource Stress.StatusLabel}" FontWeight="SemiBold"/>
+                <TextBlock x:Name="StatusText" Text="{DynamicResource Stress.Status.Waiting}" Margin="8,0,0,0"
                            Foreground="{DynamicResource TextSecondaryBrush}"/>
             </StackPanel>
 
@@ -21,38 +21,38 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <TextBlock Text="Chế độ nướng máy" VerticalAlignment="Center"/>
+                            <TextBlock Text="{DynamicResource Stress.ModeLabel}" VerticalAlignment="Center"/>
                             <ComboBox x:Name="ModeBox" Width="130" Margin="8,0,0,0" SelectedIndex="2">
-                                <ComboBoxItem Content="Nướng CPU" Tag="Cpu"/>
-                                <ComboBoxItem Content="Nướng GPU" Tag="Gpu"/>
-                                <ComboBoxItem Content="Nướng cả hai" Tag="Both"/>
+                                <ComboBoxItem Content="{DynamicResource Stress.Mode.Cpu}" Tag="Cpu"/>
+                                <ComboBoxItem Content="{DynamicResource Stress.Mode.Gpu}" Tag="Gpu"/>
+                                <ComboBoxItem Content="{DynamicResource Stress.Mode.Both}" Tag="Both"/>
                             </ComboBox>
-                            <Button x:Name="StartButton" Content="Bắt đầu nướng máy" Margin="12,3,2,3"
+                            <Button x:Name="StartButton" Content="{DynamicResource Stress.Start}" Margin="12,3,2,3"
                                     FontSize="14" FontWeight="SemiBold" Padding="16,7" Click="StartButton_Click"
-                                    ToolTip="Khởi động prime95 và/hoặc FurMark theo chế độ đã chọn (mở cửa sổ riêng)"/>
-                            <Button x:Name="StopButton" Content="Dừng nướng" Margin="8,3,2,3" IsEnabled="False"
+                                    ToolTip="{DynamicResource Stress.StartTip}"/>
+                            <Button x:Name="StopButton" Content="{DynamicResource Stress.Stop}" Margin="8,3,2,3" IsEnabled="False"
                                     Padding="16,7" Click="StopButton_Click"
-                                    ToolTip="Dừng toàn bộ tiến trình nướng máy"/>
+                                    ToolTip="{DynamicResource Stress.StopTip}"/>
                         </StackPanel>
-                        <TextBlock x:Name="ElapsedText" Grid.Column="1" Text="Chưa nướng máy"
+                        <TextBlock x:Name="ElapsedText" Grid.Column="1" Text="{DynamicResource Stress.NotStressed}"
                                    HorizontalAlignment="Right" VerticalAlignment="Center"
                                    Foreground="{DynamicResource TextSecondaryBrush}"/>
                     </Grid>
-                    <TextBlock x:Name="RunStateText" Text="Chưa nướng máy lần nào; nướng máy làm phần cứng chạy hết công suất và nóng lên, chú ý nhiệt độ và quạt"
+                    <TextBlock x:Name="RunStateText" Text="{DynamicResource Stress.RunState.Never}"
                                Margin="0,6,0,0" TextWrapping="Wrap"
                                Foreground="{DynamicResource TextSecondaryBrush}"/>
-                    <TextBlock Text="Nướng máy để làm gì: cho CPU/GPU chạy hết công suất để xem máy có nóng quá, có tự tắt hay crash, có lỗi hiển thị không. Nướng ngắn đạt chỉ chứng minh máy chịu được chừng đó phút ở tải cao, không chứng minh ổn định lâu dài."
+                    <TextBlock Text="{DynamicResource Stress.Purpose}"
                                Margin="0,6,0,0" TextWrapping="Wrap" FontSize="11"
                                Foreground="{DynamicResource TextSecondaryBrush}"/>
-                    <TextBlock Text="Khuyến nghị: 3 phút cho kiểm tra nhanh; máy nghi ngờ thì nướng lâu hơn."
+                    <TextBlock Text="{DynamicResource Stress.Recommendation}"
                                Margin="0,4,0,0" TextWrapping="Wrap" FontSize="11"
                                Foreground="{DynamicResource TextSecondaryBrush}"/>
                     <StackPanel Orientation="Horizontal" Margin="0,6,0,0" VerticalAlignment="Center">
-                        <TextBlock Text="Thời lượng nướng:" VerticalAlignment="Center"/>
+                        <TextBlock Text="{DynamicResource Stress.DurationLabel}" VerticalAlignment="Center"/>
                         <TextBox x:Name="StressMinutesBox" Width="60" Margin="8,0,0,0" Padding="6,4"/>
-                        <TextBlock Text="phút" VerticalAlignment="Center" Margin="8,0,0,0"/>
-                        <CheckBox x:Name="AutoStopCheck" Content="Tự dừng khi đủ giờ" VerticalAlignment="Center" Margin="16,0,0,0"/>
-                        <Button x:Name="SaveStressSettingsButton" Content="Lưu" Padding="16,7" Margin="12,0,0,0" Click="SaveStressSettingsButton_Click"/>
+                        <TextBlock Text="{DynamicResource Stress.Minutes}" VerticalAlignment="Center" Margin="8,0,0,0"/>
+                        <CheckBox x:Name="AutoStopCheck" Content="{DynamicResource Stress.AutoStop}" VerticalAlignment="Center" Margin="16,0,0,0"/>
+                        <Button x:Name="SaveStressSettingsButton" Content="{DynamicResource Stress.Save}" Padding="16,7" Margin="12,0,0,0" Click="SaveStressSettingsButton_Click"/>
                         <TextBlock x:Name="StressSettingsStatusText" Margin="10,0,0,0" VerticalAlignment="Center" FontSize="11"
                                    Foreground="{DynamicResource TextSecondaryBrush}"/>
                     </StackPanel>
@@ -60,10 +60,10 @@
                          và lỗi hiển thị GPU (artifact) chỉ mắt người mới thấy khi nướng.
                          Tick 1 trong 2 ô này thì nút cho qua sẽ bị chặn (giống ổ bị chặn),
                          và Tổng kết ra câu lỗi nghiêm trọng tương ứng. -->
-                    <CheckBox x:Name="CpuFailCheck" Content="CPU gặp lỗi / crash khi nướng (prime95 báo lỗi hoặc tự thoát)"
-                              Margin="0,8,0,0" ToolTip="Chỉ tick khi tận mắt thấy prime95 báo lỗi hoặc tự thoát — phần mềm không tự đọc được lỗi prime95"/>
-                    <CheckBox x:Name="GpuArtifactCheck" Content="Phát hiện lỗi hiển thị GPU (artifact: sọc, đốm, hình vỡ) khi nướng FurMark"
-                              Margin="0,4,0,0" ToolTip="Chỉ tick khi tận mắt thấy lỗi hiển thị trong cửa sổ FurMark — phần mềm không tự phát hiện artifact"/>
+                    <CheckBox x:Name="CpuFailCheck" Content="{DynamicResource Stress.CpuFailCheck}"
+                              Margin="0,8,0,0" ToolTip="{DynamicResource Stress.CpuFailTip}"/>
+                    <CheckBox x:Name="GpuArtifactCheck" Content="{DynamicResource Stress.GpuArtifactCheck}"
+                              Margin="0,4,0,0" ToolTip="{DynamicResource Stress.GpuArtifactTip}"/>
                 </StackPanel>
             </Border>
 
@@ -77,9 +77,9 @@
                 <Border Grid.Column="0" Style="{StaticResource CardBorder}" Width="Auto"
                         Margin="0,0,6,0" Padding="14,10">
                     <StackPanel>
-                        <TextBlock Text="Cài đặt FurMark (Nướng GPU)" FontWeight="SemiBold" FontSize="13"/>
+                        <TextBlock Text="{DynamicResource Stress.FurMarkTitle}" FontWeight="SemiBold" FontSize="13"/>
                         <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
-                            <TextBlock Text="Độ phân giải" Width="64" VerticalAlignment="Center"
+                            <TextBlock Text="{DynamicResource Stress.Resolution}" Width="64" VerticalAlignment="Center"
                                        Foreground="{DynamicResource TextSecondaryBrush}"/>
                             <ComboBox x:Name="ResolutionBox" Width="150">
                                 <ComboBoxItem Content="1280 × 720" Tag="1280x720"/>
@@ -90,41 +90,41 @@
                             </ComboBox>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
-                            <TextBlock Text="Chống răng cưa" Width="64" VerticalAlignment="Center"
+                            <TextBlock Text="{DynamicResource Stress.AntiAliasing}" Width="64" VerticalAlignment="Center"
                                        Foreground="{DynamicResource TextSecondaryBrush}"/>
                             <ComboBox x:Name="MsaaBox" Width="150">
-                                <ComboBoxItem Content="Tắt" Tag="0" IsSelected="True"/>
+                                <ComboBoxItem Content="{DynamicResource Stress.MsaaOff}" Tag="0" IsSelected="True"/>
                                 <ComboBoxItem Content="2x MSAA" Tag="2"/>
                                 <ComboBoxItem Content="4x MSAA" Tag="4"/>
                                 <ComboBoxItem Content="8x MSAA" Tag="8"/>
                             </ComboBox>
                         </StackPanel>
-                        <CheckBox x:Name="FullscreenCheck" Content="Nướng toàn màn hình (bấm Esc hoặc đóng cửa sổ để thoát)" Margin="0,6,0,0"/>
-                        <CheckBox x:Name="FurShowUiCheck" Content="Hiện giao diện (không tick thì nướng chạy ngầm, không hiện cửa sổ)" Margin="0,2,0,0"/>
+                        <CheckBox x:Name="FullscreenCheck" Content="{DynamicResource Stress.Fullscreen}" Margin="0,6,0,0"/>
+                        <CheckBox x:Name="FurShowUiCheck" Content="{DynamicResource Stress.ShowUi}" Margin="0,2,0,0"/>
                     </StackPanel>
                 </Border>
 
                 <Border Grid.Column="1" Style="{StaticResource CardBorder}" Width="Auto"
                         Margin="6,0,0,0" Padding="14,10">
                     <StackPanel>
-                        <TextBlock Text="Cài đặt prime95 (Nướng CPU)" FontWeight="SemiBold" FontSize="13"/>
+                        <TextBlock Text="{DynamicResource Stress.Prime95Title}" FontWeight="SemiBold" FontSize="13"/>
                         <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
-                            <TextBlock Text="Số luồng" Width="64" VerticalAlignment="Center"
+                            <TextBlock Text="{DynamicResource Stress.Threads}" Width="64" VerticalAlignment="Center"
                                        Foreground="{DynamicResource TextSecondaryBrush}"/>
                             <ComboBox x:Name="ThreadsBox" Width="150"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
-                            <TextBlock Text="Chế độ FFT" Width="64" VerticalAlignment="Center"
+                            <TextBlock Text="{DynamicResource Stress.FftMode}" Width="64" VerticalAlignment="Center"
                                        Foreground="{DynamicResource TextSecondaryBrush}"/>
                             <ComboBox x:Name="FftBox" Width="150" SelectedIndex="1">
-                                <ComboBoxItem Content="Cân bằng Blend" Tag="Blend"/>
-                                <ComboBoxItem Content="FFT nhỏ (nhiệt cao)" Tag="SmallHot"/>
-                                <ComboBoxItem Content="FFT lớn (nặng RAM)" Tag="LargeMem"/>
+                                <ComboBoxItem Content="{DynamicResource Stress.Fft.Blend}" Tag="Blend"/>
+                                <ComboBoxItem Content="{DynamicResource Stress.Fft.SmallHot}" Tag="SmallHot"/>
+                                <ComboBoxItem Content="{DynamicResource Stress.Fft.LargeMem}" Tag="LargeMem"/>
                             </ComboBox>
                         </StackPanel>
                         <TextBlock x:Name="CoresHint" Margin="0,8,0,0" TextWrapping="Wrap"
                                    Foreground="{DynamicResource TextSecondaryBrush}"/>
-                        <CheckBox x:Name="P95ShowUiCheck" Content="Hiện giao diện (không tick thì nướng chạy ngầm, không hiện cửa sổ)" Margin="0,2,0,0"/>
+                        <CheckBox x:Name="P95ShowUiCheck" Content="{DynamicResource Stress.ShowUi}" Margin="0,2,0,0"/>
                     </StackPanel>
                 </Border>
             </Grid>
@@ -133,7 +133,7 @@
             <Border Style="{StaticResource CardBorder}" Width="Auto" Margin="0,12,0,0" Padding="14,10">
                 <StackPanel>
                     <Grid>
-                        <TextBlock Text="Theo dõi số liệu (LibreHardwareMonitor quét mỗi 2 giây)" FontWeight="SemiBold" FontSize="13"
+                        <TextBlock Text="{DynamicResource Stress.MonitorTitle}" FontWeight="SemiBold" FontSize="13"
                                    VerticalAlignment="Center"/>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
                             <TextBlock Text="GPU" VerticalAlignment="Center"
@@ -141,7 +141,7 @@
                             <!-- 显卡选择：LHM 枚举的全部带温度/功耗传感器的显卡，默认独显（启发式口径见交接文档） -->
                             <ComboBox x:Name="GpuBox" Width="290" Margin="6,0,0,0"
                                       SelectionChanged="GpuBox_Changed" Visibility="Collapsed"
-                                      ToolTip="Chọn card màn hình cần theo dõi nhiệt độ/công suất (đổi là đổi card theo dõi, xóa đồ thị cũ)"/>
+                                      ToolTip="{DynamicResource Stress.GpuSelectTip}"/>
                         </StackPanel>
                     </Grid>
                     <Grid Margin="0,6,0,0">
@@ -157,34 +157,34 @@
                              可用时收起，图表正常画线） -->
                         <Grid Grid.Row="0" Grid.Column="0" Margin="0,0,6,0">
                             <views:LineChartControl x:Name="CpuTempChart"
-                                                    Title="Nhiệt độ CPU" Unit="℃" SampleIntervalSeconds="2"/>
+                                                    Title="{DynamicResource Stress.Chart.CpuTemp}" Unit="℃" SampleIntervalSeconds="2"/>
                             <StackPanel x:Name="CpuTempOverlay" Visibility="Collapsed"
                                         HorizontalAlignment="Center" VerticalAlignment="Center">
-                                <TextBlock Text="Không đọc được cảm biến (cần driver PawnIO)"
+                                <TextBlock Text="{DynamicResource Stress.NoSensorDriver}"
                                            Foreground="{DynamicResource ChartNoDataBrush}"
                                            HorizontalAlignment="Center"/>
-                                <Button Content="Cài driver PawnIO" Margin="0,6,0,0" Padding="14,4"
+                                <Button x:Name="InstallDriverButtonCpuTemp" Content="{DynamicResource Stress.InstallDriver}" Margin="0,6,0,0" Padding="14,4"
                                         Click="InstallPawnIo_Click"
-                                        ToolTip="Chạy trình cài đặt chính thức có chữ ký (namazso, GPL-2.0) để cài lặng driver nhân PawnIO; driver này cài trên từng máy test, không đi theo USB; cài xong dùng được ngay, không cần khởi động lại"/>
+                                        ToolTip="{DynamicResource Stress.InstallDriverTip}"/>
                             </StackPanel>
                         </Grid>
                         <Grid Grid.Row="0" Grid.Column="1" Margin="6,0,0,0">
                             <views:LineChartControl x:Name="CpuPowerChart"
-                                                    Title="Công suất CPU" Unit="W" SampleIntervalSeconds="2"/>
+                                                    Title="{DynamicResource Stress.Chart.CpuPower}" Unit="W" SampleIntervalSeconds="2"/>
                             <StackPanel x:Name="CpuPowerOverlay" Visibility="Collapsed"
                                         HorizontalAlignment="Center" VerticalAlignment="Center">
-                                <TextBlock Text="Không đọc được cảm biến (cần driver PawnIO)"
+                                <TextBlock Text="{DynamicResource Stress.NoSensorDriver}"
                                            Foreground="{DynamicResource ChartNoDataBrush}"
                                            HorizontalAlignment="Center"/>
-                                <Button Content="Cài driver PawnIO" Margin="0,6,0,0" Padding="14,4"
+                                <Button x:Name="InstallDriverButtonCpuPower" Content="{DynamicResource Stress.InstallDriver}" Margin="0,6,0,0" Padding="14,4"
                                         Click="InstallPawnIo_Click"
-                                        ToolTip="Chạy trình cài đặt chính thức có chữ ký (namazso, GPL-2.0) để cài lặng driver nhân PawnIO; driver này cài trên từng máy test, không đi theo USB; cài xong dùng được ngay, không cần khởi động lại"/>
+                                        ToolTip="{DynamicResource Stress.InstallDriverTip}"/>
                             </StackPanel>
                         </Grid>
                         <views:LineChartControl x:Name="GpuTempChart" Grid.Row="1" Grid.Column="0"
-                                                Title="Nhiệt độ GPU" Unit="℃" Margin="0,0,6,0" SampleIntervalSeconds="2"/>
+                                                Title="{DynamicResource Stress.Chart.GpuTemp}" Unit="℃" Margin="0,0,6,0" SampleIntervalSeconds="2"/>
                         <views:LineChartControl x:Name="GpuPowerChart" Grid.Row="1" Grid.Column="1"
-                                                Title="Công suất GPU" Unit="W" Margin="6,0,0,0" SampleIntervalSeconds="2"/>
+                                                Title="{DynamicResource Stress.Chart.GpuPower}" Unit="W" Margin="6,0,0,0" SampleIntervalSeconds="2"/>
                     </Grid>
                     <!-- 传感器口径：每路一行「指标 ← 硬件 / 传感器」，不可用的行注明状态 -->
                     <TextBlock x:Name="SensorHintText" Margin="0,8,0,0" TextWrapping="Wrap"
@@ -197,7 +197,7 @@
                  圆角 = 外套圆角 Border（TextBox 去边框去底色嵌入） -->
             <Border Style="{StaticResource CardBorder}" Width="Auto" Margin="0,12,0,0" Padding="14,10">
                 <StackPanel>
-                    <TextBlock Text="Nhật ký chạy" FontWeight="SemiBold" FontSize="13"/>
+                    <TextBlock Text="{DynamicResource Stress.LogTitle}" FontWeight="SemiBold" FontSize="13"/>
                     <Border Margin="0,6,0,0" CornerRadius="6"
                             Background="{DynamicResource SurfaceBgBrush}"
                             BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
@@ -212,9 +212,9 @@
 
             <!-- 通过区 -->
             <StackPanel Orientation="Horizontal" Margin="0,14,0,4">
-                <Button x:Name="PassButton" Content="Xác nhận tản nhiệt đạt, cho qua"
+                <Button x:Name="PassButton" Content="{DynamicResource Stress.Pass}"
                         FontSize="14" FontWeight="SemiBold" Padding="16,7" Click="PassButton_Click"
-                        ToolTip="Người test tự đánh giá nhiệt độ và độ ổn định trong lúc nướng thấy đạt thì bấm (sẽ dừng nướng máy)"/>
+                        ToolTip="{DynamicResource Stress.PassTip}"/>
                 <TextBlock x:Name="PassHintText" Margin="10,0,0,0" VerticalAlignment="Center"
                            Foreground="{DynamicResource TextSecondaryBrush}"/>
             </StackPanel>

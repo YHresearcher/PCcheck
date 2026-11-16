@@ -9,11 +9,11 @@
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0">
-            <TextBlock Text="Sức khỏe thiết bị" FontSize="18" FontWeight="Bold"/>
-            <TextBlock Text="Đánh giá theo mức độ nghiêm trọng, chỉ đọc — không phải bài test mới" FontSize="11"
+            <TextBlock Text="{DynamicResource Health.Title}" FontSize="18" FontWeight="Bold"/>
+            <TextBlock Text="{DynamicResource Health.Subtitle}" FontSize="11"
                        Foreground="{DynamicResource TextSecondaryBrush}"/>
         </StackPanel>
-        <TextBlock Grid.Row="1" Text="Khác với Thông tin phần cứng (số liệu thô): đây là đánh giá. Module chưa có dữ liệu thì hiện Chưa test, không được hiểu là khỏe. Bài stress ngắn đạt không chứng minh ổn định lâu dài — xem thời gian nướng ở trang Tản nhiệt."
+        <TextBlock Grid.Row="1" Text="{DynamicResource Health.Intro}"
                    TextWrapping="Wrap" FontSize="11" Margin="0,8,0,12"
                    Foreground="{DynamicResource TextSecondaryBrush}"/>
 

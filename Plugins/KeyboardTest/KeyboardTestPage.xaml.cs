@@ -40,6 +40,16 @@ public partial class KeyboardTestPage : UserControl, YanJi.PluginSdk.IModulePage
         _host = host;
         InitializeComponent();
         BuildKeyboard();
+        Lang.Changed += RefreshLabels;
+    }
+
+    /// <summary>Đổi ngôn ngữ: vẽ lại các nhãn do code-behind đặt
+    /// (XAML đã tự theo qua DynamicResource). Không gọi SetPassed
+    /// ở đây — nó sẽ bắn lại PassChanged, chỉ vẽ lại chữ thôi.</summary>
+    void RefreshLabels()
+    {
+        UpdateProgress();
+        RenderStatus();
     }
 
     // ═══ 键盘生成（u 单位坐标 → Canvas 绝对定位） ═══
@@ -78,7 +88,7 @@ public partial class KeyboardTestPage : UserControl, YanJi.PluginSdk.IModulePage
             list.Add(v);
         }
         KeyProgress.Maximum = _all.Count;
-        ProgressText.Text = $"Đã test 0 / {_all.Count}";
+        ProgressText.Text = string.Format(Lang.Get("Keyboard.ProgressFormat"), 0, _all.Count);
     }
 
     /// <summary>全尺寸 ANSI 104 键布局：主键区 + F1-F12 功能行 + 编辑/方向键区 + 数字小键盘。
@@ -182,7 +192,7 @@ public partial class KeyboardTestPage : UserControl, YanJi.PluginSdk.IModulePage
     /// <summary>追加一条按键日志（时间戳 + 键名 + 动作），自动滚底；超上限删最旧一条。</summary>
     void Log(string label, bool down)
     {
-        LogBox.AppendText($"{DateTime.Now:HH:mm:ss.fff}  {label}  {(down ? "Đã bấm" : "Đã nhả")}\r\n");
+        LogBox.AppendText($"{DateTime.Now:HH:mm:ss.fff}  {label}  {(down ? Lang.Get("Keyboard.LogPressed") : Lang.Get("Keyboard.LogReleased"))}\r\n");
         if (LogBox.LineCount > MaxLogLines)
         {
             int cut = LogBox.Text.IndexOf('\n');
@@ -218,7 +228,7 @@ public partial class KeyboardTestPage : UserControl, YanJi.PluginSdk.IModulePage
     void UpdateProgress()
     {
         KeyProgress.Value = _testedCount;
-        ProgressText.Text = $"Đã test {_testedCount} / {_all.Count}";
+        ProgressText.Text = string.Format(Lang.Get("Keyboard.ProgressFormat"), _testedCount, _all.Count);
     }
 
     // ═══ 按钮与通过态 ═══
@@ -235,7 +245,7 @@ public partial class KeyboardTestPage : UserControl, YanJi.PluginSdk.IModulePage
         LogBox.Clear();
         DeadKeyCheck.IsChecked = false;
         _host?.ReportSignals("keyboard", []);
-        _host?.ReportVerdict("keyboard", new(ModuleVerdictLevel.ChuaTest, "Chưa test"));
+        _host?.ReportVerdict("keyboard", new(ModuleVerdictLevel.ChuaTest, Lang.Get("Keyboard.NotTested")));
         SetPassed(false);
         PassButton.IsEnabled = true;
     }
@@ -248,8 +258,8 @@ public partial class KeyboardTestPage : UserControl, YanJi.PluginSdk.IModulePage
         bool dead = DeadKeyCheck.IsChecked == true;
         _host?.ReportSignals("keyboard", dead ? ["keyboardDead"] : []);
         _host?.ReportVerdict("keyboard", dead
-            ? new(ModuleVerdictLevel.CanhBao, "Có phím liệt — tính chi phí thay bàn phím trước khi mua")
-            : new(ModuleVerdictLevel.Dat, "Đã test bàn phím, không lỗi"));
+            ? new(ModuleVerdictLevel.CanhBao, Lang.Get("Keyboard.VerdictDead"))
+            : new(ModuleVerdictLevel.Dat, Lang.Get("Keyboard.VerdictOk")));
         SetPassed(true);
         PassButton.IsEnabled = false;
     }
@@ -258,24 +268,31 @@ public partial class KeyboardTestPage : UserControl, YanJi.PluginSdk.IModulePage
     void SetPassed(bool passed)
     {
         Passed = passed;
-        if (passed)
+        RenderStatus();
+        PassChanged?.Invoke(passed);
+    }
+
+    /// <summary>Vẽ lại dòng trạng thái theo trạng thái hiện tại, không bắn
+    /// PassChanged — để đổi ngôn ngữ gọi lại được an toàn.</summary>
+    void RenderStatus()
+    {
+        if (Passed)
         {
             if (DeadKeyCheck.IsChecked == true)
             {
-                StatusText.Text = "✓ Đã ghi nhận lỗi, cho qua (có phím liệt)";
+                StatusText.Text = Lang.Get("Keyboard.StatusDeadPassed");
                 StatusText.SetResourceReference(TextBlock.ForegroundProperty, "AccentBrush");
             }
             else
             {
-                StatusText.Text = "✓ Đã xác nhận không lỗi";
+                StatusText.Text = Lang.Get("Keyboard.StatusPassed");
                 StatusText.Foreground = Brushes.ForestGreen;
             }
         }
         else
         {
-            StatusText.Text = "Chưa test";
+            StatusText.Text = Lang.Get("Keyboard.NotTested");
             StatusText.SetResourceReference(TextBlock.ForegroundProperty, "TextSecondaryBrush");
         }
-        PassChanged?.Invoke(passed);
     }
 }

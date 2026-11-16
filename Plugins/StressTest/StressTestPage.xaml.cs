@@ -18,6 +18,11 @@ public partial class StressTestPage : UserControl, YanJi.PluginSdk.IModulePage
     DateTime? _runStart;               // 本轮烤机起点（running→停止 的那一拍结算进 _lastRun）
     bool _autoStopAttempted;           // Đã thử tự dừng cho lần nướng này chưa (tránh gọi StopVerified mỗi 500ms nếu dừng không được)
     bool _autoStopped;                 // Lần nướng vừa rồi là tự dừng theo thiết lập ở trang này (để ghi chú ở trạng thái sau khi dừng)
+    bool _startFailed;                 // Lần bấm Bắt đầu gần nhất khởi động thất bại (giữ thông báo lỗi tới lần bấm sau)
+    Button? _failedInstallButton;      // Nút cài driver nào đang hiện "cài thất bại, bấm thử lại" (null = không có)
+    string? _settingsMsgKey;           // Key thông báo lưu thiết lập gần nhất (null = chưa lưu lần nào)
+    string? _settingsMsgArg;           // Tham số {0} của thông báo đó (vd lỗi lưu)
+    bool _settingsMsgIsError;          // Thông báo đó có phải lỗi không (để tô màu lại khi đổi ngôn ngữ)
 
     /// <summary>核对完成状态变化（true = 已通过，false = 回到待核对）；MainWindow 据此同步导航圆点。</summary>
     public event Action<bool>? PassChanged;
@@ -31,11 +36,8 @@ public partial class StressTestPage : UserControl, YanJi.PluginSdk.IModulePage
         InitializeComponent();
 
         // 线程数下拉：1 .. 逻辑核心数，默认拉满
-        var (phys, logical) = StressTestService.CoreCounts;
-        for (int i = 1; i <= logical; i++)
-            ThreadsBox.Items.Add(new ComboBoxItem { Content = $"{i} luồng", Tag = i });
-        ThreadsBox.SelectedIndex = logical - 1;
-        CoresHint.Text =  $"Máy này có {phys} nhân vật lý / {logical} luồng logic; phần vượt quá số nhân vật lý sẽ chạy bằng siêu phân luồng";
+        FillThreadsBox();
+        Lang.Changed += RefreshLanguage;
         // Thời lượng nướng + tự dừng chỉnh ngay trên trang này (không còn trang Cài đặt):
         // điền giá trị đã lưu để kỹ thuật viên thấy và sửa.
         StressMinutesBox.Text = YanJi.PluginSdk.Services.AppSettings.StressMinutes.ToString();
@@ -57,27 +59,85 @@ public partial class StressTestPage : UserControl, YanJi.PluginSdk.IModulePage
         };
         // 页面可见时才开传感器轮询（Loaded 在切回时会重发，Start 幂等）
         Loaded += (_, _) => SensorMonitorService.Start();
-        SensorHintText.Text = "Đang khởi tạo cảm biến…";
+        SensorHintText.Text = Lang.Get("Stress.SensorInit");
         RefreshRunningState();
+    }
+
+    /// <summary>线程数下拉 + 提示：1 .. 逻辑核心数，默认拉满；换语言时重建以换文字，
+    ///  giữ nguyên lựa chọn đang chọn.</summary>
+    void FillThreadsBox()
+    {
+        int selected = ThreadsBox.SelectedIndex;
+        var (phys, logical) = StressTestService.CoreCounts;
+        ThreadsBox.Items.Clear();
+        for (int i = 1; i <= logical; i++)
+            ThreadsBox.Items.Add(new ComboBoxItem { Content = string.Format(Lang.Get("Stress.ThreadsCount"), i), Tag = i });
+        ThreadsBox.SelectedIndex = selected >= 0 && selected < ThreadsBox.Items.Count ? selected : logical - 1;
+        CoresHint.Text = string.Format(Lang.Get("Stress.CoresHint"), phys, logical);
+    }
+
+    /// <summary>换语言时重画全部代码设置的文字（XAML 的 DynamicResource 自行重画）。
+    /// 在 UI 线程跑（Lang.Changed 由语言切换按钮在 UI 线程触发，与 Dashboard/Summary 相同）。</summary>
+    void RefreshLanguage()
+    {
+        FillThreadsBox();
+        if (_sensorMap == null) SensorHintText.Text = Lang.Get("Stress.SensorInit");
+        else RefreshSensorHint();
+        // 图表占位文案是调用时传入的已本地化字符串，换语言要重设一次
+        if (_gpuTempDown) GpuTempChart.SetUnavailable(Lang.Get("Stress.NoSensor"));
+        if (_gpuPowerDown) GpuPowerChart.SetUnavailable(Lang.Get("Stress.NoSensor"));
+        // Nút cài driver đang báo lỗi thì vẽ lại chữ lỗi; còn lại XAML DynamicResource tự lo
+        if (_failedInstallButton != null)
+            _failedInstallButton.Content = Lang.Get("Stress.InstallFailedRetry");
+        if (_settingsMsgKey != null)
+        {
+            StressSettingsStatusText.Text = _settingsMsgArg == null
+                ? Lang.Get(_settingsMsgKey)
+                : string.Format(Lang.Get(_settingsMsgKey), _settingsMsgArg);
+            StressSettingsStatusText.SetResourceReference(TextBlock.ForegroundProperty,
+                _settingsMsgIsError ? "ErrorBrush" : "TextSecondaryBrush");
+        }
+        RefreshRunningState();
+        // Trạng thái kiểm tra (RefreshRunningState không chạm tới StatusText)
+        if (Passed)
+        {
+            StatusText.Text = Lang.Get("Stress.Status.Passed");
+            StatusText.Foreground = Brushes.ForestGreen;
+            PassHintText.Text = "";
+        }
+        else
+        {
+            StatusText.Text = Lang.Get("Stress.Status.Waiting");
+            StatusText.SetResourceReference(TextBlock.ForegroundProperty, "TextSecondaryBrush");
+        }
     }
 
     void SaveStressSettingsButton_Click(object sender, RoutedEventArgs e)
     {
         if (!int.TryParse(StressMinutesBox.Text.Trim(), out int minutes) || minutes < 1 || minutes > 60)
         {
-            StressSettingsStatusText.Text = "Số phút phải từ 1 đến 60.";
+            _settingsMsgKey = "Stress.Settings.MinutesRange";
+            _settingsMsgArg = null;
+            _settingsMsgIsError = true;
+            StressSettingsStatusText.Text = Lang.Get(_settingsMsgKey);
             StressSettingsStatusText.SetResourceReference(TextBlock.ForegroundProperty, "ErrorBrush");
             return;
         }
         bool autoStop = AutoStopCheck.IsChecked == true;
         if (YanJi.PluginSdk.Services.AppSettings.Save(minutes, autoStop, out string error))
         {
-            StressSettingsStatusText.Text = "Đã lưu.";
+            _settingsMsgKey = "Stress.Settings.Saved";
+            _settingsMsgArg = null;
+            _settingsMsgIsError = false;
+            StressSettingsStatusText.Text = Lang.Get(_settingsMsgKey);
             StressSettingsStatusText.SetResourceReference(TextBlock.ForegroundProperty, "TextSecondaryBrush");
         }
         else
         {
-            StressSettingsStatusText.Text = $"Lưu không được: {error}";
+            _settingsMsgKey = "Stress.Settings.SaveFailed";
+            _settingsMsgArg = error;
+            _settingsMsgIsError = true;
+            StressSettingsStatusText.Text = string.Format(Lang.Get(_settingsMsgKey), error);
             StressSettingsStatusText.SetResourceReference(TextBlock.ForegroundProperty, "ErrorBrush");
         }
     }
@@ -86,9 +146,10 @@ public partial class StressTestPage : UserControl, YanJi.PluginSdk.IModulePage
     {
         _autoStopAttempted = false;
         _autoStopped = false;
+        _startFailed = false;
         _maxCpuTemp = null;
         _host?.ReportSignals("stress", []);
-        _host?.ReportVerdict("stress", new(YanJi.PluginSdk.ModuleVerdictLevel.ChuaTest, "Đang nướng lại"));
+        _host?.ReportVerdict("stress", new(YanJi.PluginSdk.ModuleVerdictLevel.ChuaTest, Lang.Get("Stress.Verdict.Restarting")));
         SetPassed(false);
         var mode = ParseTag<StressTestService.StressMode>(ModeBox);
         var fft = ParseTag<StressTestService.FftPreset>(FftBox);
@@ -102,9 +163,17 @@ public partial class StressTestPage : UserControl, YanJi.PluginSdk.IModulePage
                 new StressTestService.FurMarkSettings(w, h, FullscreenCheck.IsChecked == true, msaa,
                     FurShowUiCheck.IsChecked == true));
         }
+        catch (FileNotFoundException ex)
+        {
+            // Tool nướng máy thiếu: thông báo ngoại lệ của service vẫn giữ nguyên
+            // văn bản chẩn đoán, trang này bọc lại bằng câu đã bản địa hóa + đường dẫn file.
+            _startFailed = true;
+            RunStateText.Text = string.Format(Lang.Get("Stress.StartFailedToolMissing"), ex.FileName);
+        }
         catch (Exception ex)
         {
-            RunStateText.Text = "Khởi động thất bại: " + ex.Message;
+            _startFailed = true;
+            RunStateText.Text = string.Format(Lang.Get("Stress.StartFailed"), ex.Message);
         }
         RefreshRunningState();
     }
@@ -139,7 +208,7 @@ public partial class StressTestPage : UserControl, YanJi.PluginSdk.IModulePage
         var survivors = StressTestService.StopVerified();
         if (survivors.Count > 0)
         {
-            RunStateText.Text = $"Chưa dừng được {string.Join(", ", survivors)} — chưa cho qua, kiểm tra Task Manager rồi bấm Dừng lại";
+            RunStateText.Text = string.Format(Lang.Get("Stress.Pass.NotStopped"), string.Join(", ", survivors));
             return;
         }
         // Lỗi do mắt người tick tay thì CHẶN cho qua (giống ổ bị chặn): báo verdict
@@ -154,9 +223,9 @@ public partial class StressTestPage : UserControl, YanJi.PluginSdk.IModulePage
             if (gpuArtifact) failSignals.Add("gpuArtifact");
             _host?.ReportSignals("stress", failSignals);
             _host?.ReportVerdict("stress", new(ModuleVerdictLevel.Chan,
-                cpuFail && gpuArtifact ? "CPU gặp lỗi khi nướng và GPU có artifact"
-                : cpuFail ? "CPU gặp lỗi khi nướng" : "GPU có artifact khi nướng"));
-            RunStateText.Text = "Đã ghi nhận lỗi nghiêm trọng — không cho qua, Tổng kết sẽ ra câu không khuyến nghị mua.";
+                cpuFail && gpuArtifact ? Lang.Get("Stress.Verdict.CpuFailGpuArtifact")
+                : cpuFail ? Lang.Get("Stress.Verdict.CpuFail") : Lang.Get("Stress.Verdict.GpuArtifact")));
+            RunStateText.Text = Lang.Get("Stress.Pass.BlockedNote");
             return;
         }
         // Quá nhiệt: ngưỡng 95°C cho CPU là mốc nháp từ checklist cũ (chưa phải tiêu
@@ -170,8 +239,8 @@ public partial class StressTestPage : UserControl, YanJi.PluginSdk.IModulePage
         else if (runCompleted) signals.Add("cpuGood");
         _host?.ReportSignals("stress", signals);
         _host?.ReportVerdict("stress", overheat
-            ? new(ModuleVerdictLevel.CanhBao, $"CPU quá nhiệt khi nướng (tối đa {_maxCpuTemp:0}°C, ≥95°C) — kiểm tra tản nhiệt")
-            : new(ModuleVerdictLevel.Dat, runCompleted ? "Đã nướng máy, không phát hiện lỗi" : "Đã cho qua (chưa nướng máy lần nào)"));
+            ? new(ModuleVerdictLevel.CanhBao, string.Format(Lang.Get("Stress.Verdict.Overheat"), $"{_maxCpuTemp:0}"))
+            : new(ModuleVerdictLevel.Dat, runCompleted ? Lang.Get("Stress.Verdict.DoneOk") : Lang.Get("Stress.Verdict.PassedNoRun")));
         SetPassed(true);
     }
 
@@ -225,7 +294,7 @@ public partial class StressTestPage : UserControl, YanJi.PluginSdk.IModulePage
             }
             else
             {
-                chart.SetUnavailable("Không đọc được cảm biến");
+                chart.SetUnavailable(Lang.Get("Stress.NoSensor"));
             }
         }
         RefreshSensorHint();
@@ -237,16 +306,16 @@ public partial class StressTestPage : UserControl, YanJi.PluginSdk.IModulePage
         var m = _sensorMap;
         if (m == null) return;
         SensorHintText.Text =
-            $"Nhiệt độ CPU  ←  {Line(m.CpuName, m.CpuTemp, _cpuTempDown, needsDriver: true)}\n" +
-            $"Công suất CPU  ←  {Line(m.CpuName, m.CpuPower, _cpuPowerDown, needsDriver: true)}\n" +
-            $"Nhiệt độ GPU  ←  {Line(m.GpuName, m.GpuTemp, _gpuTempDown, needsDriver: false)}\n" +
-            $"Công suất GPU  ←  {Line(m.GpuName, m.GpuPower, _gpuPowerDown, needsDriver: false)}";
+            string.Format(Lang.Get("Stress.Sensor.CpuTemp"), Line(m.CpuName, m.CpuTemp, _cpuTempDown, needsDriver: true)) + "\n" +
+            string.Format(Lang.Get("Stress.Sensor.CpuPower"), Line(m.CpuName, m.CpuPower, _cpuPowerDown, needsDriver: true)) + "\n" +
+            string.Format(Lang.Get("Stress.Sensor.GpuTemp"), Line(m.GpuName, m.GpuTemp, _gpuTempDown, needsDriver: false)) + "\n" +
+            string.Format(Lang.Get("Stress.Sensor.GpuPower"), Line(m.GpuName, m.GpuPower, _gpuPowerDown, needsDriver: false));
 
         static string Line(string? hw, string? sensor, bool down, bool needsDriver)
         {
-            if (sensor == null) return "Không tìm thấy cảm biến";
+            if (sensor == null) return Lang.Get("Stress.Sensor.NotFound");
             string s = $"{hw} / {sensor}";
-            if (down) s += needsDriver ? " (số đọc không hợp lệ, cần driver PawnIO)" : " (hiện không dùng được)";
+            if (down) s += Lang.Get(needsDriver ? "Stress.Sensor.BadReadingDriver" : "Stress.Sensor.UnavailableNow");
             return s;
         }
     }
@@ -296,7 +365,8 @@ public partial class StressTestPage : UserControl, YanJi.PluginSdk.IModulePage
     {
         if (sender is not Button btn) return;
         btn.IsEnabled = false;
-        btn.Content = "Đang cài đặt…";
+        _failedInstallButton = null;
+        btn.Content = Lang.Get("Stress.Installing");
         bool ok = await Task.Run(SensorMonitorService.InstallDriver);
         if (ok)
         {
@@ -304,7 +374,8 @@ public partial class StressTestPage : UserControl, YanJi.PluginSdk.IModulePage
         }
         else
         {
-            btn.Content = "Cài đặt thất bại, bấm vào đây thử lại";
+            _failedInstallButton = btn;
+            btn.Content = Lang.Get("Stress.InstallFailedRetry");
             btn.IsEnabled = true;
         }
     }
@@ -333,9 +404,9 @@ public partial class StressTestPage : UserControl, YanJi.PluginSdk.IModulePage
                 return;
             }
             ElapsedText.Text = span >= TimeSpan.FromMinutes(minutes)
-                ? $"Đã nướng {FormatSpan(span)} — đã đủ thời lượng khuyến nghị {minutes} phút, có thể dừng"
-                : $"Đã nướng {FormatSpan(span)}";
-            RunStateText.Text = "Đang nướng máy… Chú ý nhiệt độ và quạt; rời khỏi trang này sẽ tự dừng nướng máy";
+                ? string.Format(Lang.Get("Stress.Elapsed.Enough"), FormatSpan(span), minutes)
+                : string.Format(Lang.Get("Stress.Elapsed.Running"), FormatSpan(span));
+            RunStateText.Text = Lang.Get("Stress.RunState.Running");
         }
         else
         {
@@ -345,21 +416,21 @@ public partial class StressTestPage : UserControl, YanJi.PluginSdk.IModulePage
                 _lastRun = DateTime.Now - rs;
                 _runStart = null;
             }
-            ElapsedText.Text = "Chưa nướng máy";
+            ElapsedText.Text = Lang.Get("Stress.NotStressed");
             if (_lastRun > TimeSpan.Zero)
                 RunStateText.Text = _autoStopped
-                    ? $"Đã tự dừng khi đủ thời lượng khuyến nghị ({FormatSpan(_lastRun)}); có thể nướng lại hoặc đánh giá luôn tản nhiệt có đạt không"
-                    : $"Lần này đã nướng {FormatSpan(_lastRun)}; có thể nướng lại hoặc đánh giá luôn tản nhiệt có đạt không";
-            else if (!RunStateText.Text.StartsWith("Khởi động thất bại"))
-                RunStateText.Text = "Chưa nướng máy lần nào; nướng máy làm phần cứng chạy hết công suất và nóng lên, chú ý nhiệt độ và quạt";
+                    ? string.Format(Lang.Get("Stress.RunState.AutoStopped"), FormatSpan(_lastRun))
+                    : string.Format(Lang.Get("Stress.RunState.LastRun"), FormatSpan(_lastRun));
+            else if (!_startFailed)
+                RunStateText.Text = Lang.Get("Stress.RunState.Never");
             // Không xóa _autoStopped ở đây: cờ này chỉ xóa khi bắt đầu lần nướng mới
             // (StartButton_Click), để ghi chú "tự dừng" không bị mất ngay sau lần Refresh đầu tiên.
         }
 
         // 通过按钮旁的提示：未在烤 / 已烤时长，由用户自行判断（不做强限制）
         if (!Passed)
-            PassHintText.Text = running ? "Đang nướng máy" :
-                _lastRun > TimeSpan.Zero ? $"Lần này đã nướng {FormatSpan(_lastRun)}" : "Chưa nướng máy lần nào";
+            PassHintText.Text = running ? Lang.Get("Stress.PassHint.Running") :
+                _lastRun > TimeSpan.Zero ? string.Format(Lang.Get("Stress.PassHint.LastRun"), FormatSpan(_lastRun)) : Lang.Get("Stress.PassHint.Never");
     }
 
     /// <summary>更新核对状态行（通过 = 绿色「✓ 已核对通过」）并通知导航圆点。</summary>
@@ -368,13 +439,13 @@ public partial class StressTestPage : UserControl, YanJi.PluginSdk.IModulePage
         Passed = passed;
         if (passed)
         {
-            StatusText.Text = "✓ Đã kiểm tra, cho qua";
+            StatusText.Text = Lang.Get("Stress.Status.Passed");
             StatusText.Foreground = Brushes.ForestGreen;
             PassHintText.Text = "";
         }
         else
         {
-            StatusText.Text = "Chờ kiểm tra";
+            StatusText.Text = Lang.Get("Stress.Status.Waiting");
             StatusText.SetResourceReference(TextBlock.ForegroundProperty, "TextSecondaryBrush");
         }
         PassChanged?.Invoke(passed);

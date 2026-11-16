@@ -25,7 +25,7 @@
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
-                    <Expander Header="Chi tiết" Style="{StaticResource DetailsExpander}">
+                    <Expander Header="{DynamicResource Config.Details}" Style="{StaticResource DetailsExpander}">
                         <ItemsControl ItemsSource="{Binding Details}" Margin="14,2,0,0">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
@@ -60,8 +60,8 @@
         <!-- Tiêu đề khu vực Thông tin phần cứng: số liệu thô kiểu CPU-Z, không phải kết luận.
              Kết luận (Đạt / Cảnh báo / Chặn) ở trang Sức khỏe và Tổng kết, không ở đây. -->
         <StackPanel Grid.Row="0">
-            <TextBlock Text="Thông tin phần cứng" FontSize="18" FontWeight="Bold"/>
-            <TextBlock Text="Số liệu thô kiểu CPU-Z — chỉ để xem và đối chiếu, không phải kết luận. Kết luận ổ / sạc ở trang Sức khỏe và Tổng kết."
+            <TextBlock Text="{DynamicResource Config.Title}" FontSize="18" FontWeight="Bold"/>
+            <TextBlock Text="{DynamicResource Config.Subtitle}"
                        FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}"/>
             <!-- Thẻ chung Hãng / Model / S/N máy (1 chỗ, ngay dưới tiêu đề, khỏi phải
                  chui vào tab Khác tìm trong nhóm Máy & Mainboard). Giá trị lấy từ nhóm
@@ -77,16 +77,16 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <StackPanel Grid.Column="0" Margin="0,0,8,0">
-                        <TextBlock Text="Hãng" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}"/>
-                        <TextBlock x:Name="BrandText" Text="Chưa thu thập" FontSize="13" FontWeight="SemiBold" TextWrapping="Wrap"/>
+                        <TextBlock Text="{DynamicResource Config.Brand}" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}"/>
+                        <TextBlock x:Name="BrandText" Text="{DynamicResource Config.NotCollected}" FontSize="13" FontWeight="SemiBold" TextWrapping="Wrap"/>
                     </StackPanel>
                     <StackPanel Grid.Column="1" Margin="0,0,8,0">
-                        <TextBlock Text="Model" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}"/>
-                        <TextBlock x:Name="ModelText" Text="Chưa thu thập" FontSize="13" FontWeight="SemiBold" TextWrapping="Wrap"/>
+                        <TextBlock Text="{DynamicResource Config.Model}" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}"/>
+                        <TextBlock x:Name="ModelText" Text="{DynamicResource Config.NotCollected}" FontSize="13" FontWeight="SemiBold" TextWrapping="Wrap"/>
                     </StackPanel>
                     <StackPanel Grid.Column="2">
-                        <TextBlock Text="S/N máy" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}"/>
-                        <TextBlock x:Name="SerialText" Text="Chưa thu thập" FontSize="13" FontWeight="SemiBold" TextWrapping="Wrap"/>
+                        <TextBlock Text="{DynamicResource Config.Serial}" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}"/>
+                        <TextBlock x:Name="SerialText" Text="{DynamicResource Config.NotCollected}" FontSize="13" FontWeight="SemiBold" TextWrapping="Wrap"/>
                     </StackPanel>
                 </Grid>
             </Border>
@@ -94,25 +94,25 @@
 
         <!-- 状态行：通过后变绿 -->
         <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,8">
-            <TextBlock Text="Trạng thái đối chiếu:" FontWeight="SemiBold"/>
-            <TextBlock x:Name="StatusText" Text="Chờ đối chiếu" Margin="8,0,0,0"
+            <TextBlock Text="{DynamicResource Config.StatusLabel}" FontWeight="SemiBold"/>
+            <TextBlock x:Name="StatusText" Text="{DynamicResource Config.Status.Waiting}" Margin="8,0,0,0"
                        Foreground="{DynamicResource TextSecondaryBrush}"/>
         </StackPanel>
 
         <!-- 操作行（进入页面即自动检测，这里只保留手动重新检测） -->
         <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,8">
-            <Button x:Name="RunButton" Content="Kiểm tra lại"
+            <Button x:Name="RunButton" Content="{DynamicResource Config.CheckAgain}"
                     FontSize="14" FontWeight="SemiBold" Padding="16,7" Click="RunButton_Click"
-                    ToolTip="Thu thập lại thông tin CPU / Card màn hình / RAM / Ổ / Màn hình / Pin (sẽ xóa trạng thái đã cho qua)"/>
-            <Button x:Name="PassButton" Content="Xác nhận đúng, cho qua" IsEnabled="False"
+                    ToolTip="{DynamicResource Config.CheckAgainTip}"/>
+            <Button x:Name="PassButton" Content="{DynamicResource Config.Pass}" IsEnabled="False"
                     Margin="8,3,2,3" Click="PassButton_Click"
-                    ToolTip="Đối chiếu từng mục bên dưới với cấu hình đơn hàng rồi mới bấm"/>
+                    ToolTip="{DynamicResource Config.PassTip}"/>
         </StackPanel>
 
         <!-- 进度行 -->
         <StackPanel Grid.Row="3" Margin="0,0,0,8">
             <ProgressBar x:Name="DetectProgress" Height="10" Minimum="0" Maximum="100"/>
-            <TextBlock x:Name="PhaseText" Text="Chưa đối chiếu" Margin="0,6,0,0"
+            <TextBlock x:Name="PhaseText" Text="{DynamicResource Config.Phase.NotChecked}" Margin="0,6,0,0"
                        Foreground="{DynamicResource TextSecondaryBrush}"/>
         </StackPanel>
 
@@ -128,7 +128,7 @@
         <Border x:Name="BatteryCard" Grid.Row="4" Style="{StaticResource CardBorder}"
                 Margin="0,0,0,12" Padding="14" Visibility="Collapsed">
             <StackPanel>
-                <TextBlock Text="🔋  Pin — độ chai" FontWeight="SemiBold" FontSize="13" Margin="0,0,0,10"/>
+                <TextBlock Text="{DynamicResource Config.BatteryTitle}" FontWeight="SemiBold" FontSize="13" Margin="0,0,0,10"/>
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="1*"/>
@@ -184,7 +184,7 @@
                     <ItemsControl x:Name="GraphicsHost" ItemTemplate="{StaticResource GroupCardTemplate}"/>
                 </ScrollViewer>
             </TabItem>
-            <TabItem Header="Khác">
+            <TabItem Header="{DynamicResource Config.Tab.Other}">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <ItemsControl x:Name="OtherHost" ItemTemplate="{StaticResource GroupCardTemplate}"/>
                 </ScrollViewer>

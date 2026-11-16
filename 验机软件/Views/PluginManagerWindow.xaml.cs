@@ -24,6 +24,7 @@ public partial class PluginManagerWindow : Window
         _loaded = loaded;
         _loadPlugin = loadPlugin;
         InitializeComponent();
+        Lang.Changed += Reload;
         Loaded += (_, _) => Reload();
     }
 
@@ -37,7 +38,7 @@ public partial class PluginManagerWindow : Window
         {
             PluginList.Children.Add(new TextBlock
             {
-                Text = "(Chưa cài module nào)",
+                Text = Lang.Get("Plugins.NoneInstalled"),
                 Foreground = (Brush)FindResource("TextSecondaryBrush"),
                 Margin = new Thickness(2, 4, 0, 4),
             });
@@ -63,16 +64,16 @@ public partial class PluginManagerWindow : Window
         {
             var tb = new TextBlock
             {
-                Text = "Ghi nhận: " + string.Join("; ", credits.Select(c => $"{c.Name} ({c.Usage}, {c.License})")),
+                Text = Lang.Get("Plugins.Credits") + string.Join("; ", credits.Select(c => $"{c.Name} ({c.Usage}, {c.License})")),
                 TextWrapping = TextWrapping.Wrap, FontSize = 11, Margin = new Thickness(0, 4, 0, 0),
             };
             tb.SetResourceReference(TextBlock.ForegroundProperty, "TextSecondaryBrush");
             texts.Children.Add(tb);
         }
 
-        var del = new Button { Content = "Xóa", Padding = new Thickness(12, 4, 12, 4),
+        var del = new Button { Content = Lang.Get("Plugins.Delete"), Padding = new Thickness(12, 4, 12, 4),
             VerticalAlignment = VerticalAlignment.Center,
-            ToolTip = "Xóa module này (module đang chạy sẽ tự khởi động lại chương trình để hoàn tất việc xóa)" };
+            ToolTip = Lang.Get("Plugins.DeleteTip") };
         del.Click += (_, _) => OnDeleteClick(m);
 
         var grid = new Grid { Margin = new Thickness(10, 6, 10, 6) };
@@ -92,14 +93,14 @@ public partial class PluginManagerWindow : Window
 
     void OnDeleteClick(PluginManifest m)
     {
-        if (!Dialogs.Confirm(this, $"Xóa module “{m.Name}” phải không?"))
+        if (!Dialogs.Confirm(this, string.Format(Lang.Get("Plugins.DeleteConfirm"), m.Name)))
             return;
         if (IsPluginLoaded(m.Id))
         {
             // 运行中的插件 dll 被进程锁定，排队待删除并自动重启（启动时在插件加载前执行，无锁）
             PluginPackageService.QueuePendingOp("delete", m.Id);
             if (Dialogs.Ask(this,
-                    $"“{m.Name}” đang chạy, việc xóa sẽ hoàn tất sau khi khởi động lại chương trình.\nKhởi động lại ngay bây giờ? (Chọn “Không” thì lần mở sau mới có hiệu lực)"))
+                    string.Format(Lang.Get("Plugins.DeleteRunning"), m.Name)))
                 MainWindow.RestartApp();
         }
         else
@@ -111,7 +112,7 @@ public partial class PluginManagerWindow : Window
             }
             catch (Exception ex)
             {
-                Dialogs.Error(this, "Xóa thất bại: " + ex.Message);
+                Dialogs.Error(this, Lang.Get("Plugins.DeleteFailed") + ex.Message);
             }
         }
     }
@@ -120,8 +121,8 @@ public partial class PluginManagerWindow : Window
     {
         var dlg = new OpenFileDialog
         {
-            Title = "Chọn gói module (chọn được nhiều gói)",
-            Filter = "Gói module dạng zip (*.zip)|*.zip",
+            Title = Lang.Get("Plugins.ImportDialogTitle"),
+            Filter = Lang.Get("Plugins.ImportDialogFilter"),
             Multiselect = true,
         };
         if (dlg.ShowDialog(this) != true || dlg.FileNames.Length == 0) return;
@@ -140,11 +141,11 @@ public partial class PluginManagerWindow : Window
         var skipIds = new HashSet<string>();
         if (runningIds.Count > 0 &&
             !Dialogs.Ask(this,
-                $"Các module sau đang chạy, việc ghi đè sẽ hoàn tất sau khi khởi động lại: {string.Join(", ", runningIds.Distinct())}\nTiếp tục không? (Chọn “Không” thì bỏ qua các module này)"))
+                string.Format(Lang.Get("Plugins.OverwriteRunning"), string.Join(", ", runningIds.Distinct()))))
             skipIds.UnionWith(runningIds);
         if (existIds.Count > 0 &&
             !Dialogs.Confirm(this,
-                $"Các module sau đã có sẵn, nhập vào sẽ ghi đè: {string.Join(", ", existIds.Distinct())}. Tiếp tục không? (Chọn “Hủy” thì bỏ qua các module này)"))
+                string.Format(Lang.Get("Plugins.OverwriteExisting"), string.Join(", ", existIds.Distinct()))))
             skipIds.UnionWith(existIds);
 
         // 解压大插件包耗时（GPU 包约 7GB），整个批量过程走后台线程 + 进度窗口（防 UI 卡死焦虑）
@@ -160,8 +161,8 @@ public partial class PluginManagerWindow : Window
             for (int i = 0; i < dlg.FileNames.Length; i++)
             {
                 string zipPath = dlg.FileNames[i];
-                progressWin.SetFile($"Đang nhập {i + 1}/{dlg.FileNames.Length}: {Path.GetFileName(zipPath)}");
-                progressWin.SetIndeterminate("Đang kiểm tra gói module…");
+                progressWin.SetFile(string.Format(Lang.Get("Plugins.ImportingFile"), i + 1, dlg.FileNames.Length, Path.GetFileName(zipPath)));
+                progressWin.SetIndeterminate(Lang.Get("Plugins.CheckingPackage"));
                 try
                 {
                     string? peekId = PeekId(zipPath);
@@ -169,7 +170,7 @@ public partial class PluginManagerWindow : Window
                     if (peekId != null && IsPluginLoaded(peekId))
                     {
                         // 覆盖正在运行的插件：文件被锁定无法直接替换，暂存 zip + 排队（重启时执行，无锁）
-                        progressWin.SetIndeterminate("Đang lưu tạm gói module (copy file lớn hơi lâu)…");
+                        progressWin.SetIndeterminate(Lang.Get("Plugins.StagingPackage"));
                         await Task.Run(() =>
                         {
                             string stagedPath = PluginPackageService.StageZipForPendingImport(peekId, zipPath);
@@ -180,7 +181,7 @@ public partial class PluginManagerWindow : Window
                     }
                     var m = await Task.Run(() => PluginPackageService.ImportZip(zipPath, progress));
                     // 新插件（或此前未加载的插件）导入后立即加载，无需重启
-                    imported.Add(_loadPlugin(m.Id) ? m.Name : $"{m.Name} (tải sau khi khởi động lại)");
+                    imported.Add(_loadPlugin(m.Id) ? m.Name : string.Format(Lang.Get("Plugins.LoadLater"), m.Name));
                 }
                 catch (Exception ex) when (ex is InvalidDataException or IOException or UnauthorizedAccessException)
                 {
@@ -197,15 +198,15 @@ public partial class PluginManagerWindow : Window
 
         // 汇总（单选时与旧流程等价：一次覆盖确认 + 一次结果提示）
         var sb = new System.Text.StringBuilder();
-        if (imported.Count > 0) sb.AppendLine($"Đã nhập thành công {imported.Count} module: {string.Join(", ", imported)} (đã xuất hiện ở thanh điều hướng bên trái)");
-        if (staged.Count > 0) sb.AppendLine($"Đã xếp hàng ghi đè {staged.Distinct().Count()} module (có hiệu lực sau khi khởi động lại): {string.Join(", ", staged.Distinct())}");
-        if (failed.Count > 0) sb.AppendLine($"Thất bại {failed.Count} module:\n" + string.Join("\n", failed));
-        if (sb.Length == 0) sb.Append("Không có module nào để nhập.");
+        if (imported.Count > 0) sb.AppendLine(string.Format(Lang.Get("Plugins.ImportedOk"), imported.Count, string.Join(", ", imported)));
+        if (staged.Count > 0) sb.AppendLine(string.Format(Lang.Get("Plugins.StagedOk"), staged.Distinct().Count(), string.Join(", ", staged.Distinct())));
+        if (failed.Count > 0) sb.AppendLine(string.Format(Lang.Get("Plugins.FailedCount"), failed.Count, string.Join("\n", failed)));
+        if (sb.Length == 0) sb.Append(Lang.Get("Plugins.NothingToImport"));
         if (failed.Count > 0) Dialogs.Warn(this, sb.ToString().TrimEnd());
         else Dialogs.Info(this, sb.ToString().TrimEnd());
 
         if (staged.Count > 0 &&
-            Dialogs.Ask(this, "Việc ghi đè sẽ hoàn tất sau khi khởi động lại chương trình. Khởi động lại ngay bây giờ? (Chọn “Không” thì lần mở sau mới có hiệu lực)"))
+            Dialogs.Ask(this, Lang.Get("Plugins.RestartToFinish")))
             MainWindow.RestartApp();
     }
 
@@ -219,7 +220,7 @@ public partial class PluginManagerWindow : Window
 
         public ImportProgressWindow()
         {
-            Title = "Nhập gói module";
+            Title = Lang.Get("Plugins.ProgressTitle");
             Width = 440;
             SizeToContent = SizeToContent.Height;
             WindowStartupLocation = WindowStartupLocation.CenterOwner;
@@ -242,7 +243,7 @@ public partial class PluginManagerWindow : Window
             _bar.IsIndeterminate = false;
             _bar.Maximum = Math.Max(1, total);
             _bar.Value = done;
-            _detailText.Text = $"Đã giải nén {done} / {total} file";
+            _detailText.Text = string.Format(Lang.Get("Plugins.ProgressDone"), done, total);
         }
 
         public void SetIndeterminate(string detail)

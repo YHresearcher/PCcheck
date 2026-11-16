@@ -34,7 +34,7 @@
                         Style="{DynamicResource FlatButton}"
                         Padding="8,4" Background="Transparent" BorderThickness="0"
                         Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12"
-                        Click="CloseButton_Click" ToolTip="Đóng"/>
+                        Click="CloseButton_Click" ToolTip="{DynamicResource Dialog.Close}"/>
             </Grid>
 
             <!-- Nội dung: icon tròn + câu nhắn. -->

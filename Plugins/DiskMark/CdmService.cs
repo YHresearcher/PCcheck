@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Text.Json;
+using YanJi.PluginSdk;
 
 namespace YanJi.Plugin.DiskMark;
 
@@ -63,7 +64,7 @@ public class CdmService
     {
         string d = drive.Trim().TrimEnd(':', '\\', '/').Trim().ToUpperInvariant();
         if (d.Length != 1 || d[0] < 'A' || d[0] > 'Z')
-            throw new ArgumentException("Ký tự ổ không hợp lệ: " + drive);
+            throw new ArgumentException(string.Format(Lang.Get("Disk.Error.InvalidDrive"), drive));
         return d;
     }
 
@@ -78,7 +79,7 @@ public class CdmService
     {
         string exe = HostExe;
         if (!File.Exists(exe))
-            throw new FileNotFoundException("Không tìm thấy CdmHost (phải đi kèm plugin): " + exe);
+            throw new FileNotFoundException(string.Format(Lang.Get("Disk.Error.HostMissing"), exe));
         drive = NormalizeDrive(drive);
 
         var psi = new ProcessStartInfo
@@ -118,12 +119,13 @@ public class CdmService
                 // 新一轮开始：从 diskspd 参数判定项目（-b4K=随机 / -w100=写入），项目各自计轮
                 runs++;
                 sawTotalIo = false;
-                string ioNew = line.Contains("-b4K", StringComparison.OrdinalIgnoreCase) ? "Ngẫu nhiên 4K" : "Tuần tự";
-                string opNew = line.Contains("-w100", StringComparison.Ordinal) ? "Ghi" : "Đọc";
-                string key = ioNew + opNew;
+                string ioNew = line.Contains("-b4K", StringComparison.OrdinalIgnoreCase) ? Lang.Get("Disk.Phase.Random4K") : Lang.Get("Disk.Phase.Sequential");
+                string opNew = line.Contains("-w100", StringComparison.Ordinal) ? Lang.Get("Disk.Phase.Write") : Lang.Get("Disk.Phase.Read");
+                string key = (line.Contains("-b4K", StringComparison.OrdinalIgnoreCase) ? "4K" : "SEQ")
+                    + (line.Contains("-w100", StringComparison.Ordinal) ? "W" : "R");
                 if (key != phaseKey) { phaseKey = key; io = ioNew; op = opNew; itemRuns = 1; }
                 else itemRuns++;
-                Report($"{io} {op} vòng {itemRuns}/{RunsPerItem}", runs - 1);
+                Report(string.Format(Lang.Get("Disk.Phase.Round"), io, op, itemRuns, RunsPerItem), runs - 1);
             }
             else if (line.StartsWith("Total IO", StringComparison.Ordinal)) sawTotalIo = true;
             else if (sawTotalIo && line.StartsWith("total:", StringComparison.OrdinalIgnoreCase))
@@ -132,8 +134,8 @@ public class CdmService
                 // total: bytes | I/Os | MiB/s | I/O per s | …（Total IO 段首行即本轮吞吐）
                 var parts = line.Split('|');
                 string mib = parts.Length >= 3 ? parts[2].Trim() : "?";
-                Logged?.Invoke($"{io} {op} vòng {itemRuns}/{RunsPerItem} xong: {mib} MB/s");
-                Report($"{io} {op} vòng {itemRuns}/{RunsPerItem}", runs);
+                Logged?.Invoke(string.Format(Lang.Get("Disk.Log.RoundDone"), io, op, itemRuns, RunsPerItem, mib));
+                Report(string.Format(Lang.Get("Disk.Phase.Round"), io, op, itemRuns, RunsPerItem), runs);
             }
             else if (line.EndsWith("..."))
             {
@@ -161,7 +163,7 @@ public class CdmService
             }
             catch (OperationCanceledException) when (!ct.IsCancellationRequested)
             {
-                throw new TimeoutException("Đo tốc độ ổ quá thời gian (chưa xong sau 15 phút)");
+                throw new TimeoutException(Lang.Get("Disk.Error.Timeout"));
             }
         }
         finally
@@ -170,7 +172,7 @@ public class CdmService
         }
 
         if (jsonLine == null)
-            throw new InvalidOperationException($"CdmHost không xuất kết quả (mã thoát {proc.ExitCode}):\n{Tail(sb.ToString(), 1200)}");
+            throw new InvalidOperationException(string.Format(Lang.Get("Disk.Error.NoResult"), proc.ExitCode, Tail(sb.ToString(), 1200)));
 
         Directory.CreateDirectory(ResultDir);
         File.WriteAllText(JsonPath, jsonLine + "\n", new UTF8Encoding(false));
@@ -229,8 +231,8 @@ public class CdmService
         var survivors = new List<string>();
         string cdmHost = Path.Combine(PluginDir, "CdmHost", "CdmHost.exe");
         string diskspd = Path.Combine(PluginDir, "CdmHost", "CdmResource", "diskspd", "diskspd64.exe");
-        if (StaleAlive("CdmHost", cdmHost)) survivors.Add("CdmHost (đo tốc độ ổ)");
-        if (StaleAlive("diskspd64", diskspd)) survivors.Add("diskspd (đo tốc độ ổ)");
+        if (StaleAlive("CdmHost", cdmHost)) survivors.Add(Lang.Get("Disk.Stop.CdmHost"));
+        if (StaleAlive("diskspd64", diskspd)) survivors.Add(Lang.Get("Disk.Stop.Diskspd"));
         return survivors;
     }
 
