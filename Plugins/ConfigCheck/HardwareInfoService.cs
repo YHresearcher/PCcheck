@@ -463,12 +463,12 @@ public static class HardwareInfoService
         int? health = d.HealthPercent;
         var blocks = new List<string>();
         if (d.CriticalWarning is > 0) blocks.Add($"cảnh báo nghiêm trọng NVMe {d.CriticalWarning} (bình thường phải 0)");
-        if (d.MediaErrors is > 0) blocks.Add($"lỗi toàn vẹn dữ liệu {d.MediaErrors} lần (bình thường phải 0)");
+        if (d.MediaErrors is > 0) { blocks.Add($"lỗi toàn vẹn dữ liệu {d.MediaErrors} lần (bình thường phải 0)"); report.HasDriveMediaError = true; }
         if (d.AvailableSpare is int sp && d.AvailableSpareThreshold is int th && sp < th)
             blocks.Add($"dự phòng NVMe còn {sp}% dưới ngưỡng {th}%");
-        if (d.Reallocated is > 0) blocks.Add($"sector đã thay thế {d.Reallocated} (bình thường phải 0)");
-        if (d.Pending is > 0) blocks.Add($"sector chờ thay thế {d.Pending} (bình thường phải 0)");
-        if (d.Uncorrectable is > 0) blocks.Add($"sector không sửa được {d.Uncorrectable} (bình thường phải 0)");
+        if (d.Reallocated is > 0) { blocks.Add($"sector đã thay thế {d.Reallocated} (bình thường phải 0)"); report.HasDriveBadSector = true; }
+        if (d.Pending is > 0) { blocks.Add($"sector chờ thay thế {d.Pending} (bình thường phải 0)"); report.HasDriveBadSector = true; }
+        if (d.Uncorrectable is > 0) { blocks.Add($"sector không sửa được {d.Uncorrectable} (bình thường phải 0)"); report.HasDriveBadSector = true; }
         if (d.ReportedUncorrectable is > 0) blocks.Add($"lỗi không sửa được đã báo {d.ReportedUncorrectable} (bình thường phải 0)");
         if (blocks.Count > 0)
         {
@@ -481,13 +481,16 @@ public static class HardwareInfoService
             return $"CHẶN — sức khỏe {health}% (<70%), thay ổ rồi kiểm tra lại";
         }
         var warnings = new List<string>();
-        if (health is < 90) warnings.Add($"sức khỏe {health}% (<90%)");
+        if (health is < 90) { warnings.Add($"sức khỏe {health}% (<90%)"); report.HasDriveWear = true; }
         if (d.CrcErrors is > 0) warnings.Add($"lỗi CRC {d.CrcErrors} lần (kiểm tra cáp/cổng rồi test lại)");
         bool anySeriousKnown = d.CriticalWarning != null || d.MediaErrors != null
             || d.AvailableSpare != null || d.Reallocated != null || d.Pending != null
             || d.Uncorrectable != null || d.ReportedUncorrectable != null;
         if (health != null && !anySeriousKnown)
+        {
             warnings.Add("không đọc được lỗi nghiêm trọng (chưa biết có lỗi hay không, không được coi là khỏe)");
+            report.HasDriveSmartUnknownWarning = true;
+        }
         if (warnings.Count > 0)
         {
             report.HasDriveWarning = true;
@@ -507,6 +510,7 @@ public static class HardwareInfoService
         if (mediaErrors is > 0)
         {
             report.DriveBlockReasons.Add($"Ổ{tag} lỗi toàn vẹn dữ liệu {mediaErrors} lần (bình thường phải 0)");
+            report.HasDriveMediaError = true;
             return $"CHẶN — lỗi toàn vẹn dữ liệu {mediaErrors} lần, thay ổ rồi kiểm tra lại";
         }
         if (health is < 70)
@@ -516,6 +520,10 @@ public static class HardwareInfoService
         }
         if (health is < 90)
         {
+            // Cố tình KHÔNG đặt HasDriveWear ở đây: nhánh WMI không ghi lý do
+            // "sức khỏe …%" vào DriveWarningReasons nên ghi chú verdict cũng không
+            // chứa chuỗi "sức khỏe" — Summary cũ không nhận diện được driveWear
+            // ở nhánh này, giữ nguyên như vậy để không đổi kết quả.
             report.HasDriveWarning = true;
             return $"CẢNH BÁO — sức khỏe {health}% (<90%), tối đa mua có điều kiện";
         }

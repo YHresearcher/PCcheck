@@ -72,7 +72,10 @@ public partial class ConfigCheckPage : UserControl, YanJi.PluginSdk.IModulePage
             _lastReport = report;
             (_batterySignals, _batteryNote, _batteryWear) = ComputeBatterySignals(report);
             SetBatteryGauge();
-            _host?.ReportSignals("config", _batterySignals);
+            // Báo cáo cả tín hiệu pin + tín hiệu ổ trong 1 lần (ReportSignals ghi
+            // đè toàn bộ tín hiệu của module): trang Tổng kết chọn kịch bản ổ từ
+            // tín hiệu này, không soi chuỗi ghi chú nữa.
+            _host?.ReportSignals("config", [.. _batterySignals, .. ComputeDriveSignals(report)]);
             _host?.ReportBatteryWear(_batteryWear < 0 ? null : _batteryWear);
             ReportConfigVerdict();
             _host?.ReportDriveSummaries(report.Drives);
@@ -207,6 +210,29 @@ public partial class ConfigCheckPage : UserControl, YanJi.PluginSdk.IModulePage
         if (worstWear < 20) return (["batteryHealthy"], $"Pin chai {worstWear:0.#}% — còn khỏe", worstWear);
         if (worstWear < 40) return (["batteryWorn20_30"], $"Pin chai {worstWear:0.#}% — chai vừa", worstWear);
         return (["batteryWornOver40"], $"Pin chai {worstWear:0.#}% — chai nặng", worstWear);
+    }
+
+    /// <summary>Tín hiệu ổ theo cấu trúc, để trang Tổng kết chọn kịch bản mà không
+    /// cần soi chuỗi tiếng Việt trong ghi chú verdict (ghi chú sẽ dịch theo ngôn
+    /// ngữ, soi chuỗi sẽ trượt ở chế độ EN). Ánh xạ đúng các điều kiện mà
+    /// SummaryPage trước đây khớp bằng chuỗi trong ghi chú:
+    /// driveMediaError = có ổ lỗi toàn vẹn dữ liệu; driveBadSector = có ổ sector
+    /// đã thay thế / chờ thay thế / không sửa được; driveWear = có ổ sức khỏe
+    /// 70–89%; driveSmartUnknown = có ổ cảnh báo "không đọc được lỗi nghiêm trọng",
+    /// hoặc ghi chú verdict đang là dòng "Có ổ chưa rõ sức khỏe" (chưa rõ mà
+    /// không có cảnh báo nào khác). "Chưa rõ" cũng tính cho combinedB giống hệt
+    /// code cũ: ghi chú đó chứa chuỗi "sức khỏe" nên trước đây cũng về combinedB
+    /// khi đủ CPU tốt + pin chai. Các cờ ổ do HardwareInfoService đặt trong
+    /// DriveVerdict cùng lúc với lý do chặn/cảnh báo.</summary>
+    static IReadOnlyList<string> ComputeDriveSignals(HardwareReport report)
+    {
+        var signals = new List<string>();
+        if (report.HasDriveMediaError) signals.Add("driveMediaError");
+        if (report.HasDriveBadSector) signals.Add("driveBadSector");
+        if (report.HasDriveWear) signals.Add("driveWear");
+        if (report.HasDriveSmartUnknownWarning || (report.HasDriveUnknown && !report.HasDriveWarning))
+            signals.Add("driveSmartUnknown");
+        return signals;
     }
 
     /// <summary>Hình viên pin thể hiện độ chai: mức đầy = dung lượng còn lại

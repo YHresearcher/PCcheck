@@ -483,11 +483,17 @@ public partial class SummaryPage : UserControl
         // Tín hiệu tốt (cpuGood, batteryHealthy) không đổi tiêu đề, chỉ thêm câu
         // vào pool tốt (xem GoodPool).
         var signals = AllSignals();
-        string configNote = _host.Verdicts.TryGetValue("config", out var cv) ? cv.Note : "";
+        // Kịch bản ổ lấy từ tín hiệu có cấu trúc do Đối chiếu cấu hình báo cáo
+        // (driveMediaError / driveBadSector / driveSmartUnknown / driveWear) —
+        // KHÔNG soi chuỗi tiếng Việt trong ghi chú verdict nữa, vì ghi chú đó
+        // dịch theo ngôn ngữ (soi chuỗi sẽ trượt ở chế độ EN). Thứ tự ưu tiên
+        // và kết quả giữ nguyên hệt như bản soi chuỗi: media thắng sector;
+        // combinedB tính cả ổ hao mòn đã đo được lẫn ổ chưa rõ (ghi chú "chưa rõ
+        // sức khỏe" trước đây chứa chuỗi "sức khỏe" nên cũng về combinedB).
         string autoTitleKey;
         string autoScenario;
-        if (configNote.Contains("lỗi toàn vẹn dữ liệu")) { autoTitleKey = "Sua"; autoScenario = "driveMediaError"; }
-        else if (configNote.Contains("sector")) { autoTitleKey = "Sua"; autoScenario = "driveBadSector"; }
+        if (signals.Contains("driveMediaError")) { autoTitleKey = "Sua"; autoScenario = "driveMediaError"; }
+        else if (signals.Contains("driveBadSector")) { autoTitleKey = "Sua"; autoScenario = "driveBadSector"; }
         else if (signals.Contains("cpuFail")) { autoTitleKey = "Sua"; autoScenario = "cpuFail"; }
         else if (signals.Contains("gpuArtifact")) { autoTitleKey = "Sua"; autoScenario = "gpuArtifact"; }
         else if (signals.Contains("batteryNotCharging")) { autoTitleKey = "Sua"; autoScenario = "batteryNotCharging"; }
@@ -501,13 +507,13 @@ public partial class SummaryPage : UserControl
         // câu đơn lẻ, nên kiểm tra trước các câu cảnh báo đơn. Ổ cũ ở đây là
         // driveWear (sức khỏe <90%) hoặc driveSmartUnknown không tính — chỉ
         // tính hao mòn đã đo được, không tính "chưa rõ" thành "cũ".
-        else if (signals.Contains("cpuGood") && configNote.Contains("sức khỏe")
+        else if (signals.Contains("cpuGood") && (signals.Contains("driveWear") || signals.Contains("driveSmartUnknown"))
             && (signals.Contains("batteryWornOver40") || signals.Contains("batteryWorn20_30"))) { autoTitleKey = "CanhBao"; autoScenario = "combinedB"; }
         else if (signals.Contains("batteryWornOver40")) { autoTitleKey = "CanhBao"; autoScenario = "batteryWornOver40"; }
         else if (signals.Contains("batteryWorn20_30")) { autoTitleKey = "CanhBao"; autoScenario = "batteryWorn20_30"; }
         else if (signals.Contains("cpuOverheat")) { autoTitleKey = "CanhBao"; autoScenario = "cpuOverheat"; }
-        else if (configNote.Contains("chưa rõ sức khỏe") || configNote.Contains("không đọc được lỗi nghiêm trọng")) { autoTitleKey = "CanhBao"; autoScenario = "driveSmartUnknown"; }
-        else if (configNote.Contains("sức khỏe")) { autoTitleKey = "CanhBao"; autoScenario = "driveWear"; }
+        else if (signals.Contains("driveSmartUnknown")) { autoTitleKey = "CanhBao"; autoScenario = "driveSmartUnknown"; }
+        else if (signals.Contains("driveWear")) { autoTitleKey = "CanhBao"; autoScenario = "driveWear"; }
         else if (signals.Contains("scratchesLight")) { autoTitleKey = "CanhBao"; autoScenario = "scratchesLight"; }
         else if (grades.Any(g => g == ModuleVerdictLevel.CanhBao)) { autoTitleKey = "CanhBao"; autoScenario = "warning"; }
         else if (modules.Count == 0 || grades.Any(g => g == ModuleVerdictLevel.ChuaTest)) { autoTitleKey = "ChuaXong"; autoScenario = "incomplete"; }

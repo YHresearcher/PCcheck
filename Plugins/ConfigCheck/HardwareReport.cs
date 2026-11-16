@@ -38,6 +38,20 @@ public class HardwareReport
     /// <summary>Có ổ chưa rõ sức khỏe (SMART đọc không được): cho qua được nhưng phải
     /// kiểm tra tay bằng CrystalDiskInfo trước khi mua, không tự cho là tốt.</summary>
     public bool HasDriveUnknown { get; set; }
+    /// <summary>Phân loại ổ theo tín hiệu có cấu trúc (để trang Tổng kết chọn kịch
+    /// bản mà không cần soi chuỗi tiếng Việt trong ghi chú verdict — ghi chú đó
+    /// được dịch theo ngôn ngữ, soi chuỗi sẽ trượt ở chế độ EN). Bốn cờ này là
+    /// ảnh của đúng các điều kiện mà SummaryPage trước đây khớp bằng chuỗi:
+    /// MediaError = có ổ lỗi toàn vẹn dữ liệu (NVMe 0E) &gt; 0; BadSector = có ổ
+    /// sector đã thay thế / chờ thay thế / không sửa được &gt; 0; SmartUnknownWarning
+    /// = có ổ đã đọc được sức khỏe nhưng không đọc được lỗi nghiêm trọng nào
+    /// (cảnh báo "không đọc được lỗi nghiêm trọng"); Wear = có ổ sức khỏe 70–89%.
+    /// Đặt trong DriveVerdict cùng lúc với lý do chặn/cảnh báo, không parse lại
+    /// chuỗi hiển thị.</summary>
+    public bool HasDriveMediaError { get; set; }
+    public bool HasDriveBadSector { get; set; }
+    public bool HasDriveSmartUnknownWarning { get; set; }
+    public bool HasDriveWear { get; set; }
     /// <summary>Thông tin máy/mainboard từ SMBIOS thô không khớp với WMI (model hoặc
     /// serial lệch nhau ở cả 2 nguồn đều đọc được): cho qua được nhưng verdict
     /// thành Cảnh báo, kỹ thuật viên phải kiểm tra tem máy tay. Rỗng = khớp hoặc
