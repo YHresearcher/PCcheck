@@ -1,10 +1,10 @@
 # Build An Tâm Check trên GitHub Actions (Windows).
-# Mỗi lần PUSH lên main và BUILD THÀNH CÔNG: tạo Release MỚI với tag
-# build-<run_number>-<run_attempt>, đánh dấu Latest. Không ghi đè release cũ.
+# Mỗi lần PUSH lên main và BUILD THÀNH CÔNG: tạo Release MỚI tên
+# "An Tâm Check V1.02" với tag build-<run_number>-<run_attempt>, đánh dấu
+# Latest. Sau khi phát hành xong thì xóa các release cũ, chỉ giữ bản mới nhất.
 # Với pull_request: chỉ build + artifact để kiểm thử, không tạo Release.
 # workflow_dispatch dùng để build thử thủ công, không tạo Release chính thức.
 # File portable cùng tên AnTamPCtest-portable.zip để link Latest ổn định.
-# Bản đang phát hành trước đây với tag "latest" được giữ nguyên (không xóa).
 name: Build Windows portable
 
 on:
@@ -73,7 +73,7 @@ jobs:
         # để giải nén ra là chạy ngay, không phải chui thêm 1 cấp thư mục.
         run: Compress-Archive -Path publish\* -DestinationPath AnTamPCtest-portable.zip -Force
 
-      - name: Phát hành phiên bản MỚI — không ghi đè bản cũ
+      - name: Phát hành phiên bản mới — An Tâm Check V1.02
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         env:
           GH_TOKEN: ${{ github.token }}
@@ -81,7 +81,7 @@ jobs:
         run: |
           $ErrorActionPreference = 'Stop'
           $tag = "build-${{ github.run_number }}-${{ github.run_attempt }}"
-          $name = "An Tâm Check — Build #${{ github.run_number }}"
+          $name = "An Tâm Check V1.02"
           $notes = @"
           Bản Windows Portable được build thành công từ nhánh main.
 
@@ -89,7 +89,25 @@ jobs:
           - Workflow run: #${{ github.run_number }} (lần chạy ${{ github.run_attempt }})
           - Tải AnTamPCtest-portable.zip, giải nén rồi chạy AnTamPCtest.exe trên Windows.
           - Nếu máy chưa cấp quyền Admin, một số cảm biến / SMART có thể không khả dụng.
-          - Các release cũ được giữ nguyên để có thể quay lại bản trước.
+          - Chỉ giữ bản mới nhất: các release cũ sẽ bị xóa ngay sau khi bản này phát hành xong.
           "@
           gh release create $tag "AnTamPCtest-portable.zip" --target "${{ github.sha }}" --title $name --notes $notes --latest
           if ($LASTEXITCODE -ne 0) { throw "Không tạo được Release $tag" }
+
+      - name: Xóa các release cũ — chỉ giữ bản mới nhất
+        # Chạy ngay sau bước phát hành, cùng điều kiện push main. Bản mới đã
+        # phát hành xong nên lỗi ở đây không làm hỏng build (chỉ cảnh báo).
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Continue'
+          $keep = "build-${{ github.run_number }}-${{ github.run_attempt }}"
+          $tags = gh release list --limit 100 --json tagName --jq '.[].tagName'
+          foreach ($t in $tags) {
+            if ($t -ne $keep) {
+              gh release delete $t --yes --cleanup-tag
+              if ($LASTEXITCODE -ne 0) { Write-Warning "Không xóa được release $t" }
+            }
+          }
