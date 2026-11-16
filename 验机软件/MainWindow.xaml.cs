@@ -111,7 +111,7 @@ public partial class MainWindow : Window
         _hostContext = new HostContext(this, tag => _doneTags.Contains(tag));
         foreach (var x in PluginLoader.ScanInstalled())
             _hostContext.AddModule(new PluginInfo(x.Manifest.Id, x.Manifest.Name, x.Manifest.Version,
-                x.Manifest.Order, x.Manifest.Terminal));
+                x.Manifest.Order, x.Manifest.Terminal, x.Manifest.NameEn));
         _plugins = PluginLoader.LoadAll(_hostContext);
         foreach (var lp in _plugins)
         {
