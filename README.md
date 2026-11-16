@@ -15,11 +15,11 @@ A tool for testing used PCs / laptops before buying — it answers one question:
 
 ## Screenshots
 
-![Start a check: Fast (under 5 minutes) or Deep check, then one test at a time](docs/screenshots/app-wizard-intro.png)
+![Start a check: Fast (under 5 minutes) or Deep check, then one test at a time](docs/screenshots/app-wizard-intro-en.png)
 
-![Config Check: CPU-Z-style hardware info, battery wear and drive health](docs/screenshots/app-config-check.png)
+![Config Check: CPU-Z-style hardware info, battery wear and drive health](docs/screenshots/app-config-check-en.png)
 
-![Summary: buy verdict, progress and the main reason](docs/screenshots/app-summary.png)
+![Summary: buy verdict, progress and the main reason](docs/screenshots/app-summary-en.png)
 
 ## Virus scan (latest Release)
 
