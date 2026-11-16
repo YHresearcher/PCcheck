@@ -1,6 +1,6 @@
 # Build An Tâm Check trên GitHub Actions (Windows).
 # Mỗi lần PUSH lên main và BUILD THÀNH CÔNG: tạo Release MỚI tên
-# "An Tâm Check V1.02" với tag build-<run_number>-<run_attempt>, đánh dấu
+# "An Tâm Check V1.1.0" với tag build-<run_number>-<run_attempt>, đánh dấu
 # Latest. Sau khi phát hành xong thì xóa các release cũ, chỉ giữ bản mới nhất.
 # Với pull_request: chỉ build + artifact để kiểm thử, không tạo Release.
 # workflow_dispatch dùng để build thử thủ công, không tạo Release chính thức.
@@ -73,7 +73,7 @@ jobs:
         # để giải nén ra là chạy ngay, không phải chui thêm 1 cấp thư mục.
         run: Compress-Archive -Path publish\* -DestinationPath AnTamPCtest-portable.zip -Force
 
-      - name: Phát hành phiên bản mới — An Tâm Check V1.02
+      - name: Phát hành phiên bản mới — An Tâm Check V1.1.0
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         env:
           GH_TOKEN: ${{ github.token }}
@@ -81,7 +81,7 @@ jobs:
         run: |
           $ErrorActionPreference = 'Stop'
           $tag = "build-${{ github.run_number }}-${{ github.run_attempt }}"
-          $name = "An Tâm Check V1.02"
+          $name = "An Tâm Check V1.1.0"
           $notes = @"
           Bản Windows Portable được build thành công từ nhánh main.
 
