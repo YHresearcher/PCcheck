@@ -23,6 +23,14 @@ https://github.com/YHresearcher/PCcheck/releases/latest/download/AnTamPCtest-por
 
 Mỗi lần push lên main mà build thành công thì workflow tạo **một Release mới** (tag `build-<số run>-<lần chạy>`, tiêu đề "An Tâm Check — Build #<số run>", đánh dấu Latest) thay vì ghi đè lên Release cũ — các Release cũ được giữ nguyên để quay lại bản trước khi cần. Bản Release mang tag `latest` từ trước vẫn giữ nguyên, không bị xóa, nhưng không còn được cập nhật nữa. Build lỗi không tạo Release mới, nên bản tốt đang phát hành không bị ghi đè. Với pull request thì workflow chỉ build + lưu artifact để kiểm thử, không tạo Release; build chạy tay bằng workflow_dispatch cũng không tạo Release chính thức. Nếu Releases chưa có file (ví dụ build đang chạy hoặc vừa lỗi), cách dự phòng là vào tab **Actions**, bấm vào run **Build Windows portable** mới nhất tick xanh, kéo xuống cuối trang run, tới mục **Artifacts**, tải **AnTamPCtest-portable** về — cách này thì GitHub bắt đăng nhập tài khoản mới tải được, kể cả repo public.
 
+## Kiểm tra virus (bản Release mới nhất)
+
+Bản portable `AnTamPCtest-portable.zip` (Release mới nhất, build-99-1) đã quét trên [Kaspersky Threat Intelligence Portal](https://opentip.kaspersky.com/) ngày 16/11/2026, cơ sở dữ liệu diệt virus cập nhật cùng ngày 05:12 — kết quả **Clean**: 0 phát hiện malware, 0 hoạt động đáng ngờ, 0 hoạt động mạng. File quét: 209,32 MB (219.483.503 byte), SHA256 `88819946ECB2790408B8086EA1A344AC193BA3F627C83E80144DC06EB0E88883`, MD5 `D2A728BAF52CFB60EEFC195FDD11741C` — khớp đúng file zip đang phát hành, ai cũng tự kiểm chứng lại được bằng cách tải file về rồi bấm SHA256.
+
+![Kết quả quét Kaspersky: Clean](docs/screenshots/kaspersky-report-clean.png)
+
+![Tóm tắt phân tích động Kaspersky: 0 phát hiện, 0 hoạt động đáng ngờ, 0 hoạt động mạng](docs/screenshots/kaspersky-dynamic-analysis.png)
+
 ## Chạy portable từ USB
 
 1. Cắm USB vào máy cần test, bấm đúp `AnTamPCtest.exe` ở thư mục gốc vừa giải nén.
