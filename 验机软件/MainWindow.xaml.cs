@@ -448,7 +448,19 @@ public partial class MainWindow : Window
         {
             if (NavList.Items[i] is ListBoxItem item && item.Tag is string tag && tag == moduleId)
             {
-                NavList.SelectedIndex = i;
+                if (NavList.SelectedIndex == i)
+                {
+                    // Đã chọn sẵn nhưng ContentHost đang hiện trang khác (vd màn hình
+                    // Bắt đầu không phải mục NavList): SelectionChanged không chạy
+                    // nên tự hiện trang, khỏi kẹt ở trang cũ.
+                    if (_pages.TryGetValue(tag, out var page))
+                    {
+                        ContentHost.Content = page;
+                        SyncPrimaryNav(tag);
+                    }
+                    if (_wizardMode) UpdateWizardButtons();
+                }
+                else NavList.SelectedIndex = i;
                 return true;
             }
         }
@@ -509,6 +521,9 @@ public partial class MainWindow : Window
             .FirstOrDefault(m => !_doneTags.Contains(m.Id));
         if (first == null)
         {
+            // Không còn bài nào trong phạm vi (vd Fast đã xong hết, chỉ còn
+            // bài Deep): thoát wizard rồi mới sang Tổng kết, khỏi kẹt khóa sidebar.
+            ExitWizardMode();
             NavigateToModule("summary");
             return;
         }
